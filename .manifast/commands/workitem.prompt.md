@@ -165,7 +165,6 @@ docs/
       {{yyyymmdd}}-{{slug workItemTitle}}/
         input/.gitkeep
         output/.gitkeep
-        context/.gitkeep
 ```
 
 #### step 1.5: Create/Edit the manifast.yaml file

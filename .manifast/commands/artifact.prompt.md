@@ -49,29 +49,28 @@ Verify that `OUTPUT_PATH` exists. If it does not, stop and tell the user to run 
 
 ## Step 2b — Resolve upstream context
 
-Read `docs/workitems.yaml`. Find the entry whose `path` matches `{MWI_PATH}`.
+Read `docs/manifast.yaml`. Find the entry whose `path` matches `{MWI_PATH}`.
 
 **If that entry has a non-empty `parent` field:**
 
 1. Record `PARENT_PATH = {parent field value}`.
-2. Set `CONTEXT_PATH = {MWI_PATH}/context/`.
-3. Find the parent entry in `workitems.yaml` by its `path`. Read its `hierarchyLevel`.
-4. Using the propagation table below, collect every artifact that exists at `{PARENT_PATH}/output/artifacts/`:
+2. Set `CONTEXT_PATH = {PARENT_PATH}/output/artifacts/`.
+3. Find the parent entry in `manifast.yaml` by its `path`. Read its `hierarchyLevel`.
+4. Using the table below, identify which artifacts are relevant for the skill to read:
 
-   | Parent `hierarchyLevel` | Artifacts to propagate |
-   |------------------------|------------------------|
+   | Parent `hierarchyLevel` | Relevant artifacts |
+   |------------------------|-------------------|
    | Strategic | `brief.md`, `requirements.md`, `adr/` (entire folder), `diagrams/` (entire folder) |
    | Product | `requirements.md`, `feature-list.md`, `der.md`, `diagrams/` (entire folder) |
 
-5. For each artifact found, copy it into `{CONTEXT_PATH}`, preserving subfolder structure (e.g. `adr/` stays as `context/adr/`). Do not copy artifacts that are already present and identical in `{CONTEXT_PATH}`.
-6. Tell the user what was loaded:
+5. Tell the user what upstream context is available:
    ```
-   Upstream context loaded from {PARENT_PATH}:
+   Upstream context from {PARENT_PATH}:
    - brief.md ✓
    - requirements.md ✓
    - adr/ (N files) ✓
    ```
-   If no artifacts exist yet in the parent's `output/artifacts/`, warn:
+   If no artifacts exist yet in `{CONTEXT_PATH}`, warn:
    > No artifacts found in parent work item. Run `/artifact` on the parent first to generate upstream context.
    Then continue without context.
 

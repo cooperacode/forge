@@ -1,5 +1,6 @@
-# Manifast Wiki
+# Manifast Documentation
 
+- [Origins](#origins)
 - [Agile-friendly by design](#agile-friendly-by-design)
 - [Requirements](#requirements)
 - [Installation](#installation)
@@ -8,6 +9,110 @@
 - [Querying the wiki](#querying-the-wiki)
 - [Maintaining wiki health](#maintaining-wiki-health)
 - [Generating artifacts](#generating-artifacts)
+
+## Origins
+
+manifast did not emerge from scratch. It is the tooling realization of a research lineage that began in academic work and evolved through a practical engineering protocol.
+
+**2021 — SPReaD (Springer)**
+
+The foundation is [SPReaD: Service-oriented Process for Reengineering and DevOps](https://link.springer.com/article/10.1007/s11761-021-00329-x) (da Silva, Justino & Adachi, SOCA 2022). SPReaD defined a structured process for migrating legacy systems to microservice architectures, integrating DevOps practices throughout — establishing the principle that software engineering activities should follow a traceable, repeatable process with defined steps, artifacts, and quality checkpoints.
+
+**2025 — protocolo-es-ai**
+
+SPReaD's process orientation was extended to the AI-assisted development era in [protocolo-es-ai](https://github.com/yanjustino/protocolo-es-ai) — a protocol for adopting LLMs across the software development cycle. Organized across three levels (Framework, Process, AI-Enabled Activities), it defined structured guidelines and evaluation metrics for AI use in activities such as requirement extraction, user story generation, architecture diagramming, and API contract creation. The protocol was validated in a real digital transformation scenario at a major Brazilian bank.
+
+**2026 — manifast**
+
+manifast operationalizes the protocolo-es-ai as a running tool. Where the protocol defines *what* AI-assisted engineering activities should look like, manifast provides the commands, skills, and wiki infrastructure that make those activities executable inside a standard git repository and editor. The work item hierarchy, the ingest-query-artifact pipeline, and the traceability chain from source document to shipped artifact are all direct implementations of the process model established in the protocol — which itself inherits the structured, artifact-driven approach of SPReaD.
+
+```
+SPReaD (Springer, 2021)        → structured process for SE + DevOps
+        ↓
+protocolo-es-ai (2023)         → protocol for LLM adoption in SE activities
+        ↓
+manifast                       → tooling that runs the protocol inside your editor
+```
+
+### Protocol → manifast mapping
+
+The diagram maps each methodological activity of the protocolo-es-ai to the manifast commands that implement it. Protocol activities are shown in dark grey; manifast commands in light grey.
+
+```mermaid
+flowchart TD
+
+    subgraph CONCEPT["① Concept"]
+        direction LR
+
+        subgraph CONCEPT_P["Methodology"]
+            CI["🧠 Ideation<br/>Benchmarking · interviews<br/>Trend extraction<br/>Context documentation"]
+            CP["📋 Plan<br/>Scope · timeline · risks<br/>MVP planning<br/>Resource allocation"]
+            CA["🔎 Analysis<br/>Requirements · business rules<br/>Backlog definition<br/>Acceptance criteria"]
+            CI --> CP --> CA
+        end
+
+        subgraph CONCEPT_M["manifast"]
+            CM1["/workitem<br/>/ingest · /query"]
+            CM2["/artifact brief"]
+            CM3["/artifact requirements"]
+            CM1 --> CM2 --> CM3
+        end
+
+        CI -->|"interview scripts<br/>context docs"| CM1
+        CP -->|"goals · risks<br/>timeline · stakeholders"| CM2
+        CA -->|"NFRs · constraints<br/>business rules"| CM3
+    end
+
+    subgraph DEVELOP["② Develop"]
+        direction LR
+
+        subgraph DEVELOP_P["Methodology"]
+            DD["🏗️ Design<br/>Architecture · ER modeling<br/>Quality attribute analysis<br/>API contract creation<br/>Prototyping"]
+        end
+
+        subgraph DEVELOP_M["manifast"]
+            DM1["/artifact feature-list"]
+            DM2["/artifact adr · /artifact der"]
+            DM3["/artifact diagram · /artifact user-story"]
+            DM1 --> DM2 --> DM3
+        end
+
+        DD -->|"feature scope"| DM1
+        DD -->|"arch decisions<br/>ER model"| DM2
+        DD -->|"C4 · flows<br/>Gherkin stories"| DM3
+    end
+
+    subgraph OPERATE["③ Release & Operate"]
+        direction LR
+
+        subgraph OPERATE_P["Methodology"]
+            OA["Maintenance<br/>Knowledge currency<br/>Contradiction resolution<br/>Process traceability"]
+        end
+
+        subgraph OPERATE_M["manifast"]
+            OM["/lint · /query"]
+        end
+
+        OA -->|"health checks<br/>knowledge queries"| OM
+    end
+
+    CONCEPT --> DEVELOP --> OPERATE
+
+    style CI fill:#abaaab,stroke:#656465,color:#1e1e3f
+    style CP fill:#abaaab,stroke:#656465,color:#1e1e3f
+    style CA fill:#abaaab,stroke:#656465,color:#1e1e3f
+    style DD fill:#abaaab,stroke:#656465,color:#1e1e3f
+    style OA fill:#abaaab,stroke:#656465,color:#1e1e3f
+    style CM1 fill:#d5d4d5,stroke:#8f8e8f,color:#1e1e3f
+    style CM2 fill:#d5d4d5,stroke:#8f8e8f,color:#1e1e3f
+    style CM3 fill:#d5d4d5,stroke:#8f8e8f,color:#1e1e3f
+    style DM1 fill:#d5d4d5,stroke:#8f8e8f,color:#1e1e3f
+    style DM2 fill:#d5d4d5,stroke:#8f8e8f,color:#1e1e3f
+    style DM3 fill:#d5d4d5,stroke:#8f8e8f,color:#1e1e3f
+    style OM  fill:#d5d4d5,stroke:#8f8e8f,color:#1e1e3f
+```
+
+---
 
 ## Agile-friendly by design
 
@@ -264,49 +369,54 @@ Respond to guide the ingest, or say **"go ahead"** to proceed with Claude's judg
 ### 4. Wiki structure after ingest
 
 ```mermaid
-
-flowchart TD
-    SRC(["input/product-spec.pdf"])
-    IDX["index.md"]
-    LOG["log.md"]
-    OV["overview.md"]
-
+graph TD
     subgraph INPUT["input/"]
-        SRC
-    end   
-
-    subgraph WIKI["output/"]
-
-        subgraph S["sources"]
-             product-spec.md
-        end   
-
-        subgraph CN["concepts"]
-            sku-management.md
-        end  
-
-        subgraph EN["entities"]
-            inventory-service.md
-        end
+        product-spec.pdf
     end
 
-    SRC -->|ingest| S
+    subgraph QUERY
+        ANSWER["• SKU, description, price tier<br>• Inventory service integration<br>• Bulk import post-MVP"]
+    end
+
+    subgraph OUTPUT["output/"]
+        direction TD
+
+        subgraph DB
+            IDX["index.md"]  
+            LOG["log.md"]  
+        end
+    
+        subgraph WIKI
+            subgraph S["sources"]
+                product-spec.md
+            end   
+
+            subgraph CN["concepts"]
+                sku-management.md
+            end  
+
+            subgraph EN["entities"]
+                inventory-service.md
+            end
+        end
+         
+        OV["overview.md"]
+    end
+
+    INPUT -->|ingest| OUTPUT
     S -->|extracts| CN
     S -->|extracts| EN
     CN -.->|wikilink| OV
     EN -.->|wikilink| OV
-    IDX -.-> S
-    IDX -.-> CN
-    IDX -.-> EN
-    LOG -.->|audit| S
+    DB -->|navigation| WIKI
+    QUERY -->|answers with citations| OUTPUT
 
-    style SRC fill:#fffeff,stroke:#c0bfc0,color:#1e1e3f
+    style IDX fill:#c0bfc0,stroke:#abaaab,color:#1e1e3f
+    style LOG fill:#c0bfc0,stroke:#abaaab,color:#1e1e3f
     style S fill:#c0bfc0,stroke:#7a797a,color:#1e1e3f
     style CN fill:#c0bfc0,stroke:#7a797a,color:#1e1e3f
     style EN fill:#c0bfc0,stroke:#7a797a,color:#1e1e3f
     style OV fill:#d5d4d5,stroke:#8f8e8f,color:#1e1e3f
-    style IDX fill:#fffeff,stroke:#c0bfc0,color:#1e1e3f
-    style LOG fill:#eae9ea,stroke:#abaaab,color:#1e1e3f
 ```
 
 Claude writes into `output/`:
@@ -409,23 +519,23 @@ Omit the type to see the menu for the active level. Pass a type to skip the menu
 
 flowchart TD
     subgraph STRATEGIC["Strategic — Theme · Initiative"]
-        SB["brief\nStrategic Brief"]
-        SR["requirements\nQuality attributes & constraints"]
-        SA["adr\nFoundational ADRs"]
-        SD["diagram\nC4 L1 · C4 L2"]
+        SB["brief<br/>Strategic Brief"]
+        SR["requirements<br/>Quality attributes & constraints"]
+        SA["adr<br/>Foundational ADRs"]
+        SD["diagram<br/>C4 L1 · C4 L2"]
     end
 
     subgraph PRODUCT["Product — Epic · Feature"]
-        PR["requirements\nFunctional requirements"]
-        PD["der\nEntity-Relationship Diagram"]
-        PA["adr\nFeature-scoped ADRs"]
-        PF["feature-list\nFeature List"]
-        PG["diagram\nC4 L3 · Process · Data flow"]
+        PR["requirements<br/>Functional requirements"]
+        PD["der<br/>Entity-Relationship Diagram"]
+        PA["adr<br/>Feature-scoped ADRs"]
+        PF["feature-list<br/>Feature List"]
+        PG["diagram<br/>C4 L3 · Process · Data flow"]
     end
 
     subgraph TACTICAL["Tactical — User Story · Task · Bug"]
-        TU["user-story\nUser Story + Gherkin"]
-        TG["diagram\nSequence · State"]
+        TU["user-story<br/>User Story + Gherkin"]
+        TG["diagram<br/>Sequence · State"]
     end
 
     SB -.->|context| PR

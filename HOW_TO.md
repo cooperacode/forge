@@ -59,6 +59,8 @@ Work item levels and types:
 | Product | Epic, Feature |
 | Tactical | User Story, Task, Bug |
 
+First time? See the detailed walkthrough: [How To: Work Items](HOW_TO_WORKITEMS.md)
+
 ---
 
 ## 3. Drop source files into `input/`
@@ -135,6 +137,8 @@ brief → requirements → feature-list → adr → der → diagram → user-sto
 ```
 
 Each artifact enriches the next. `feature-list` is a hard dependency for `user-story`.
+
+First time? See the detailed walkthrough: [How To: Artifacts](HOW_TO_ARTIFACTS.md)
 
 ### Available artifacts by level
 

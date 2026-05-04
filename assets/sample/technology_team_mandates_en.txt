@@ -1,0 +1,37 @@
+Technology Team Mandates
+Project: Cultural Project Intake and Evaluation Platform
+Version: 1.0
+
+1. Platform and language directives
+- The project's standard infrastructure will be AWS.
+- The primary backend development language will be Java.
+- Any proposed stack exception must be formally justified and approved by technical leadership.
+
+2. Mandatory development practices
+- Use Git version control with the branch strategy defined by the team.
+- All code must go through Pull Request review by at least one technical peer.
+- Automated tests are mandatory (minimum: unit tests for critical business rules).
+- Continuous integration pipeline must run build, tests, and static validations.
+
+3. Architecture and quality standards
+- Clear layer separation (API, domain, persistence).
+- Use design principles that promote high cohesion and low coupling.
+- Consistent error handling and structured logging.
+- Auditability for critical business actions.
+
+4. Security and compliance
+- Apply least-privilege access principles for credentials and permissions.
+- Secrets and keys must not be committed to source control.
+- Sensitive data must comply with privacy requirements and applicable regulation.
+- Periodic dependency and vulnerability reviews are required.
+
+5. Operations and observability
+- Monitor availability, errors, and latency.
+- Minimum alerts for downtime and critical flow failures.
+- Separate environments for development, staging, and production.
+- Defined rollback procedures for releases.
+
+6. Delivery management
+- Incremental planning oriented to MVP.
+- Break scope into smaller deliveries with clear acceptance criteria.
+- Communicate risks and blockers on a weekly cadence.

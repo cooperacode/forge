@@ -1,0 +1,22 @@
+{
+    "chat.promptFilesLocations": {
+        ".github/prompts": true,
+        ".claude/prompts": true,
+        "~/.copilot/prompts": true,
+        ".manifast/commands": true
+    },
+    "chat.agent.enabled": true,
+    "chat.agentFilesLocations": {
+        ".github/agents": true,
+        ".claude/agents": true,
+        "~/.copilot/agents": true,
+        ".manifast/agents": true
+    },
+    "chat.useAgentSkills": true,
+    "chat.agentSkillsLocations": {
+        ".github/skills": true,
+        ".claude/skills": true,
+        "~/.copilot/skills": true,
+        ".manifast/skills": true
+    }
+}

@@ -1,0 +1,73 @@
+Initial Requirements Meeting Transcript
+Project: Cultural Event Project Intake and Evaluation Platform
+Date: 2026-05-03
+Participants:
+- Client (Marina)
+- Business Analyst (Rafael)
+- Systems Analyst (Camila)
+
+Marina (Client): Thank you for your time. The goal is to create a platform to receive proposals for cultural events, such as concerts, theater, films, musicals, and local festivals. Today we handle everything by email and spreadsheets, and it is becoming unmanageable.
+
+Rafael (Business Analyst): Perfect. To understand the main objective: do you want to improve intake, evaluation, or both with equal priority?
+
+Marina: Both. We need to publish calls for proposals, receive submissions, validate documents, score projects, and provide feedback to applicants.
+
+Camila (Systems Analyst): When you mention document validation, do you expect automatic checks for file format and required fields only, or also content rules?
+
+Marina: Initially, format and required items. In the future, maybe content checks too.
+
+Rafael: Who takes part in evaluation today? Do you have a review committee with different profiles?
+
+Marina: Yes. We have an internal team and external reviewers. Each project gets scores on criteria such as cultural impact, financial feasibility, audience reach, and social inclusion.
+
+Rafael: Do these criteria change by call for proposals?
+
+Marina: They change a bit. Some criteria are fixed, others vary depending on the event type.
+
+Camila: Understood. Then it is important for the system to allow configurable criteria and weights per call.
+
+Marina: Exactly.
+
+Rafael: Regarding the call lifecycle, which stages do you currently have?
+
+Marina: Publication, submission period, document screening, technical evaluation, ranking, approval, and result publication.
+
+Camila: Do you need an audit trail? For example, tracking who changed status, score, or documents.
+
+Marina: Yes, because we have accountability requirements and formal challenges.
+
+Rafael: And communication with applicants? Do you want automatic messages by stage?
+
+Marina: That would be great. At least submission confirmation, document pending notices, and final result.
+
+Camila: In terms of access, will we have separate roles? Applicant, evaluator, manager, and administrator?
+
+Marina: Yes, these four roles solve our initial needs.
+
+Rafael: Is there a need for appeal/reconsideration after results?
+
+Marina: Yes, but that can be part of phase two, after the core scope.
+
+Camila: About integrations, do you have any finance or institutional protocol systems that must connect to the platform?
+
+Marina: Not in the short term. We only need data export to spreadsheet and PDF.
+
+Rafael: What is the biggest current pain you want to eliminate first?
+
+Marina: Lack of traceability and delays in evaluation. Sometimes we miss deadlines because data is scattered.
+
+Camila: In terms of volume, how many submissions per call do you estimate?
+
+Marina: Between 200 and 1,000, depending on the category.
+
+Rafael: And in terms of timeline, what is your expectation for having something operational?
+
+Marina: A basic version in 4 months, because we have a major call in the second half of the year.
+
+Camila: Great. At a high level, we can plan a first version focused on: call setup, submissions, required documents, evaluation workflow with configurable criteria, and a tracking dashboard.
+
+Marina: That would be excellent to start.
+
+Rafael: Agreed. We will consolidate these initial needs and structure a high-level backlog prioritized by value and risk.
+
+Marina: Perfect.

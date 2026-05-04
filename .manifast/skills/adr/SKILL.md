@@ -1,0 +1,247 @@
+---
+name: adr
+description: "Generate Architecture Decision Records (ADR) from the active wiki. Produces foundational ADRs for Strategic items; feature-scoped ADRs for Product items. Follows the MADR format."
+---
+
+# Skill: ADR (Architecture Decision Record)
+
+You were invoked by the orchestrator because the user wants to generate Architecture Decision Records from the active wiki. Your job is to detect architectural decisions — explicit or implicit — in the wiki and record them in MADR format.
+
+The orchestrator passed `OUTPUT_PATH`, `WORK_ITEM_TITLE`, and `WORK_ITEM_TYPE` — use those values for all file operations and metadata.
+
+Follow every step in order.
+
+---
+
+## Step 1 — Verify wiki has content
+
+Read `{OUTPUT_PATH}index.md`.
+
+- If the file does not exist or is empty, stop. Tell the user the wiki has no content yet and suggest running `/ingest` first.
+- Note the total number of pages indexed.
+
+---
+
+## Step 2 — Determine ADR scope
+
+Check `{WORK_ITEM_TYPE}`:
+
+| Work Item Type | ADR scope |
+|---|---|
+| Theme, Initiative | **Foundational** — architectural style, technology platform, cross-cutting principles |
+| Epic, Feature | **Feature-scoped** — library selection, API design choices, data model decisions, integration patterns |
+
+This scope determines what counts as a decision worth recording. Apply it in Step 3.
+
+---
+
+## Step 3 — Detect decisions in the wiki
+
+Read in this order:
+
+1. `{OUTPUT_PATH}overview.md`
+2. All `sources/` pages
+3. All `concepts/` pages
+4. All `entities/` pages
+
+**If `{CONTEXT_PATH}` is non-empty**, read all files present in `{CONTEXT_PATH}` after completing the list above. These are upstream ADRs and artifacts from the parent work item:
+- Upstream `adr/` files define already-accepted decisions — do not create a new ADR that contradicts an accepted upstream one without flagging the conflict explicitly.
+- If a decision in the local wiki is already captured in an upstream ADR, do not duplicate it — reference it instead: "See upstream ADR-NNN."
+- Upstream `brief.md` and `requirements.md` provide architectural context for classifying new decisions.
+
+**What counts as a decision:**
+- An explicit choice made between named alternatives ("we chose X over Y because...")
+- A technology, framework, library, or platform selected
+- An architectural pattern adopted (event-driven, CQRS, REST vs GraphQL, etc.)
+- A boundary or interface agreed upon between systems or teams
+- A constraint that rules out a category of solutions
+
+**What does NOT count:**
+- Requirements (what the system must do)
+- Open questions without a resolution
+- Preferences stated without rationale
+
+For each decision found, note:
+- The decision itself (what was chosen)
+- The alternatives mentioned (what was considered but rejected)
+- The rationale (why the choice was made)
+- The source wiki page
+
+---
+
+## Step 4 — Confirm the decision list with the user
+
+Before writing, surface what you found:
+
+```
+I detected {N} architectural decisions in the wiki:
+
+1. {Decision title} — [{Strategic | Feature-scoped}]
+   Chosen: {option}
+   Alternatives: {options}
+   Source: [[sources/slug]]
+
+2. ...
+
+Are these correct? Any decisions I missed or that should be excluded?
+```
+
+Wait for a response. Adjust based on user feedback. If the user says "go ahead", proceed.
+
+---
+
+## Step 5 — Write one ADR file per decision
+
+Create a numbered ADR file for each confirmed decision at:
+`{OUTPUT_PATH}artifacts/adr/NNN-{slug-of-decision-title}.md`
+
+Number sequentially starting at `001`. If ADR files already exist in that folder, continue from the highest existing number.
+
+Use this exact structure for each file:
+
+```markdown
+---
+title: "ADR-NNN: {Decision title}"
+type: artifact
+subtype: adr
+adr_number: NNN
+status: accepted
+work_item_type: {WORK_ITEM_TYPE}
+hierarchy_level: {Strategic | Product}
+generated: YYYY-MM-DD
+---
+
+# ADR-NNN: {Decision title}
+
+## Status
+
+accepted
+
+(Valid values: proposed | accepted | deprecated | superseded by [[artifacts/adr/NNN-other]])
+
+---
+
+## Context
+
+What situation, constraint, or question prompted this decision?
+Write in past tense — this is the context that existed when the decision was made.
+2–4 sentences. Cite the wiki pages that establish this context using [[wikilinks]].
+
+---
+
+## Decision
+
+**We will {chosen option}.**
+
+One clear sentence stating the decision. Then 1–2 sentences of elaboration if needed.
+
+---
+
+## Alternatives Considered
+
+| Alternative | Why rejected |
+|-------------|-------------|
+| {Option A} | {Reason — cite [[source]] if available} |
+| {Option B} | {Reason} |
+
+If no alternatives were documented in the wiki:
+> [!gap] No alternatives were documented in the ingested sources for this decision.
+
+---
+
+## Consequences
+
+### Positive
+- ...
+
+### Negative / Trade-offs
+- ...
+
+### Neutral
+- ...
+
+---
+
+## Sources
+
+Wiki pages that informed this ADR:
+
+- [[sources/slug]]
+- [[concepts/slug]]
+```
+
+---
+
+## Step 6 — Write the ADR index
+
+Create or update `{OUTPUT_PATH}artifacts/adr/index.md`:
+
+```markdown
+---
+title: "ADR Index — {WORK_ITEM_TITLE}"
+type: artifact
+subtype: adr-index
+generated: YYYY-MM-DD
+---
+
+# Architecture Decision Records: {WORK_ITEM_TITLE}
+
+| # | Title | Status | Date |
+|---|-------|--------|------|
+| ADR-001 | [[artifacts/adr/001-slug\|Decision title]] | accepted | YYYY-MM-DD |
+| ADR-002 | ... | ... | ... |
+```
+
+---
+
+## Step 7 — Update navigation files
+
+**`{OUTPUT_PATH}index.md`** — add or update the `## Artifacts` section:
+
+```markdown
+## Artifacts
+
+- [[artifacts/adr/index]] — Architecture Decision Records ({N} ADRs, generated YYYY-MM-DD)
+```
+
+**`{OUTPUT_PATH}log.md`** — append one entry at the top:
+
+```markdown
+## [YYYY-MM-DD] artifact | Architecture Decision Records
+
+Generated: artifacts/adr/ ({N} ADR files + index)
+Scope: {Foundational | Feature-scoped}
+Decisions recorded: N
+Gaps flagged: N (decisions without documented alternatives)
+Sources read: N pages
+```
+
+---
+
+## Step 8 — Close the loop
+
+```
+Done. {N} ADR(s) generated at {OUTPUT_PATH}artifacts/adr/.
+
+ADRs created:
+- ADR-001: {title}
+- ADR-002: {title}
+...
+
+Gaps flagged: N (decisions without documented alternatives in the wiki)
+Sources read: N pages
+
+Anything you want me to revise?
+```
+
+---
+
+## Rules
+
+- **Write all content in `{LANGUAGE}`.** If `LANGUAGE` is `pt-BR`, write in Brazilian Portuguese. If `LANGUAGE` is `en`, write in English. Apply this to artifact content, section headings, and all messages shown to the user. If `LANGUAGE` is not set, default to English.
+- **Never record a decision not present in the wiki.** If the wiki implies a choice but does not state it, do not create an ADR — flag it as a gap instead.
+- **Never merge two distinct decisions into one ADR.** One decision = one file.
+- **Status is always `accepted` on generation** unless the wiki explicitly marks something as proposed or superseded.
+- **Never write to source/concept/entity pages.** ADR generation is read-only on the wiki.
+- **Never skip Step 4.** Decisions misidentified here produce misleading ADRs.
+- **Alternatives section uses `> [!gap]`** when none were documented — never invent alternatives from training knowledge.

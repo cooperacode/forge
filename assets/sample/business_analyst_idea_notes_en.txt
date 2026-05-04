@@ -1,0 +1,48 @@
+Business Analyst Idea Notes
+Context: Initial requirements gathering for a cultural project intake and evaluation platform
+
+1. Perceived business goals
+- Reduce time between submission and final result.
+- Increase transparency and traceability of the selection process.
+- Standardize evaluation criteria across different calls for proposals.
+- Improve communication with applicants and reduce operational rework.
+
+2. Mapped stakeholders (high level)
+- Applicants (individuals/legal entities submitting projects).
+- Internal review committee.
+- External reviewers.
+- Cultural program managers.
+- Administrative/legal team.
+
+3. Suggested MVP scope hypotheses
+- Call for proposals creation and publication.
+- Submission form with required documents.
+- Project status workflow (submitted, under screening, under evaluation, approved/rejected).
+- Configurable evaluation criteria and weights per call.
+- Score entry by reviewers.
+- Management dashboard for process tracking.
+- Automatic email communication at key milestones.
+
+4. Open questions for next refinement rounds
+- Exact eligibility rules by event type.
+- How to handle projects with missing documents (correction window, retry limits).
+- Tie-break model for projects with identical scores.
+- Whether appeals should be included in MVP or phase two.
+- Accessibility requirements and plain-language form expectations.
+
+5. Success criteria (initial proposal)
+- 100% of submissions centralized in the platform (no parallel email process).
+- At least 30% reduction in document screening time.
+- Result publication with auditable project history.
+- Positive baseline satisfaction from reviewers and managers regarding usability.
+
+6. Perceived business risks
+- Change resistance from teams used to spreadsheets.
+- Call deadlines may pressure adoption without enough training.
+- Poorly defined criteria may increase formal disputes and legal uncertainty.
+- Scope expansion too early (risk of delaying core delivery).
+
+7. Suggested approach
+- Phase 1: end-to-end essential flow for one call.
+- Phase 2: appeals, integrations, and advanced reporting.
+- Conduct short workshops with reviewers to validate criteria and user experience.

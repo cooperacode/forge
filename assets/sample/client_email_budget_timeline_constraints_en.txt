@@ -1,0 +1,17 @@
+Subject: Budget and timeline constraints for the cultural platform project
+
+Dear team,
+
+I would like to reinforce an important point before we move to the next planning phase.
+
+We have a limited budget for this project and a very challenging timeline. We need a first functional version within 4 months to meet the schedule of the next cultural call, which is already institutionally committed.
+
+For this reason, please ensure the technical and functional proposal strictly prioritizes what is essential to operate the submission and evaluation process, leaving complementary features for later stages.
+
+We also need cost predictability and a phased delivery plan so I can validate internally with leadership and finance without risk of overruns.
+
+Please propose a realistic and sustainable scope within these constraints.
+
+Best regards,
+Marina
+Client - Cultural Promotion Program

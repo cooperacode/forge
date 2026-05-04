@@ -1,0 +1,45 @@
+Systems Analyst Technical Notes
+Context: Initial discovery for a cultural project intake and evaluation solution
+
+1. Preliminary technical view
+- Web system with role-based authentication: applicant, evaluator, manager, administrator.
+- Modular architecture separating: call management, submissions, evaluation, notifications, and reports.
+- Need for audit trail for critical events (status, score, and document changes).
+
+2. Initial high-level technical requirements
+- Configurable call setup including:
+  - submission period,
+  - evaluation criteria,
+  - criterion weights,
+  - required documents.
+- File upload with type/size validation.
+- Project status workflow with minimum transition rules.
+- Score recording per evaluator and consolidated scoring logic.
+- Data export (CSV/PDF) for accountability reporting.
+
+3. Non-functional focus areas
+- Security and data privacy compliance for personal data and sensitive documents.
+- Performance for submission peaks near deadlines.
+- Availability during critical submission windows.
+- Minimum observability: structured logs, metrics, and error tracking.
+
+4. Initial technical risks
+- Variable business rules by call may increase complexity early.
+- Document upload requires careful handling of storage, malware scanning, and retention.
+- Without clear historical volume, there is a risk of under-sizing database/storage.
+- Auditability requirements may significantly impact early domain modeling.
+
+5. Technical decisions to confirm with engineering team
+- Authentication strategy (institutional SSO vs local login).
+- Relational database with model oriented to status/evaluation history.
+- Queue-based mechanism for bulk email notifications.
+- Versioning strategy for evaluation criteria per call.
+
+6. Proposed technical slice for MVP
+- Deliver one full call flow first:
+  - create call,
+  - receive submission,
+  - validate required documents,
+  - evaluate and rank,
+  - publish results.
+- Implement logging and audit capabilities from day one to avoid costly rework.

@@ -15,10 +15,5 @@
     "work items",
     "project management"
   ],
-  "skills": "./.manifast/skills/",
-  "commands": [
-    "./.manifast/commands/workitem.prompt.md",
-    "./.manifast/commands/artifact.prompt.md",
-    "./.manifast/commands/language.prompt.md"
-  ]
+  "skills": "./.manifast/skills/"
 }

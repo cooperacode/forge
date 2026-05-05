@@ -122,7 +122,7 @@ arguments:
 
 #### step 1.3b: Select parent work item
 
-After gathering the details above, read `docs/workitems.yaml` (if it exists).
+After gathering the details above, read `docs/manifast.yaml` (if it exists).
 
 Filter the existing items to show only **valid parents** for the chosen `{{hierarchyLevel}}`:
 

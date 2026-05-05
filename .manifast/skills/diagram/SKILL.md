@@ -13,12 +13,17 @@ Follow every step in order.
 
 ---
 
-## Step 1 — Verify wiki has content
+## Step 1 — Verify content sources
 
-Read `{OUTPUT_PATH}index.md`.
+Attempt to read `{OUTPUT_PATH}index.md` and check whether `{CONTEXT_PATH}` is non-empty.
 
-- If the file does not exist or is empty, stop. Tell the user the wiki has no content yet and suggest running `/ingest` first.
-- Note the total number of pages indexed.
+Determine the content situation using the table below:
+
+| `{OUTPUT_PATH}index.md` | `{CONTEXT_PATH}` | Action |
+|-------------------------|------------------|--------|
+| exists and has content  | any              | Set `LOCAL_WIKI = true`. Note the total number of pages indexed (sources, concepts, entities). |
+| missing or empty        | has content      | Set `LOCAL_WIKI = false`. Warn the user: "Local wiki is empty — proceeding with upstream context only." |
+| missing or empty        | empty or absent  | Stop. Tell the user the work item has no wiki content and no upstream context. Suggest running `/ingest` first. |
 
 ---
 
@@ -54,7 +59,7 @@ Wait for the user's selection. Record it as `{DIAGRAM_TYPE}`. Do not proceed unt
 
 ## Step 3 — Read wiki pages for the selected type
 
-Read pages according to what each diagram type needs:
+**If `LOCAL_WIKI = true`**, read pages according to what each diagram type needs. If `LOCAL_WIKI = false`, skip the local pages column and read only from `{CONTEXT_PATH}`.
 
 | Diagram type | Primary pages to read | Secondary |
 |---|---|---|

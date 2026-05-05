@@ -15,18 +15,23 @@ Follow every step in order.
 
 ---
 
-## Step 1 — Verify wiki has content
+## Step 1 — Verify content sources
 
-Read `{OUTPUT_PATH}index.md`.
+Attempt to read `{OUTPUT_PATH}index.md` and check whether `{CONTEXT_PATH}` is non-empty.
 
-- If the file does not exist or is empty, stop. Tell the user the wiki has no content yet and suggest running `/ingest` first.
-- Note the total number of pages indexed.
+Determine the content situation using the table below:
+
+| `{OUTPUT_PATH}index.md` | `{CONTEXT_PATH}` | Action |
+|-------------------------|------------------|--------|
+| exists and has content  | any              | Set `LOCAL_WIKI = true`. Note the total number of pages indexed (sources, concepts, entities). |
+| missing or empty        | has content      | Set `LOCAL_WIKI = false`. Warn the user: "Local wiki is empty — proceeding with upstream context only." |
+| missing or empty        | empty or absent  | Stop. Tell the user the work item has no wiki content and no upstream context. Suggest running `/ingest` first. |
 
 ---
 
 ## Step 2 — Read all wiki pages
 
-Read in this order:
+**If `LOCAL_WIKI = true`**, read in this order:
 
 1. `{OUTPUT_PATH}overview.md`
 2. All `sources/` pages listed in `{OUTPUT_PATH}index.md`
@@ -158,9 +163,14 @@ Questions that affect feature scope but remain unresolved:
 
 ## Sources
 
+Local wiki pages read:
 - [[overview]]
 - [[sources/...]]
 - [[concepts/...]]
+
+Upstream context read (if `{CONTEXT_PATH}` is non-empty — substitute actual path):
+- [[{CONTEXT_PATH}brief.md]]
+- [[{CONTEXT_PATH}requirements.md]]
 ```
 
 ---
@@ -213,3 +223,4 @@ Anything you want me to revise?
 - **Never skip Step 3.** Misidentified features here produce a misleading artifact.
 - **Priority must come from the wiki.** Do not assign MVP/Post-MVP based on your own judgment — use "Unclassified" when the wiki is silent.
 - **This skill is Product-only.** If invoked for a Strategic or Tactical work item, stop immediately and tell the user.
+- **Source citation format:** use `[[sources/slug]]`, `[[concepts/slug]]`, or `[[entities/slug]]` for local wiki pages. For files read from `{CONTEXT_PATH}`, substitute the actual runtime value and write the full repo-relative path: `[[docs/strategic/initiatives/20260504-foo/output/artifacts/brief.md]]`. Never use short names (`[[brief.md]]`) or computed relative paths (`[[../../...]]`) for cross-work-item references — they resolve to the wrong location.

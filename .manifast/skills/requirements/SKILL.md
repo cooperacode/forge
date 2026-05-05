@@ -13,12 +13,17 @@ Follow every step in order.
 
 ---
 
-## Step 1 — Verify wiki has content
+## Step 1 — Verify content sources
 
-Read `{OUTPUT_PATH}index.md`.
+Attempt to read `{OUTPUT_PATH}index.md` and check whether `{CONTEXT_PATH}` is non-empty.
 
-- If the file does not exist or is empty, stop. Tell the user the wiki has no content yet and suggest running `/ingest` first.
-- Note the total number of pages indexed (sources, concepts, entities).
+Determine the content situation using the table below:
+
+| `{OUTPUT_PATH}index.md` | `{CONTEXT_PATH}` | Action |
+|-------------------------|------------------|--------|
+| exists and has content  | any              | Set `LOCAL_WIKI = true`. Note the total number of pages indexed (sources, concepts, entities). |
+| missing or empty        | has content      | Set `LOCAL_WIKI = false`. Warn the user: "Local wiki is empty — proceeding with upstream context only." |
+| missing or empty        | empty or absent  | Stop. Tell the user the work item has no wiki content and no upstream context. Suggest running `/ingest` first. |
 
 ---
 
@@ -35,16 +40,16 @@ Proceed in the corresponding mode for all subsequent steps.
 
 ---
 
-## Step 3 — Read all wiki pages
+## Step 3 — Read all content sources
 
-Read in this order:
+**If `LOCAL_WIKI = true`**, read in this order:
 
 1. `{OUTPUT_PATH}overview.md`
 2. All `sources/` pages listed in `{OUTPUT_PATH}index.md`
 3. All `concepts/` pages listed in `{OUTPUT_PATH}index.md`
 4. All `entities/` pages listed in `{OUTPUT_PATH}index.md`
 
-**If `{CONTEXT_PATH}` is non-empty**, read all files present in `{CONTEXT_PATH}` after completing the list above. These are upstream artifacts from the parent work item:
+**If `{CONTEXT_PATH}` is non-empty**, read all files present in `{CONTEXT_PATH}` after completing the local wiki list (or as the sole source if `LOCAL_WIKI = false`). These are upstream artifacts from the parent work item:
 - In NFR mode: upstream `requirements.md` from a grandparent Strategic item defines pre-existing constraints — do not contradict them, reference them.
 - In Functional mode: upstream `requirements.md` (NFR), `brief.md`, and `feature-list.md` set the frame — functional requirements must stay within those boundaries.
 - Note each upstream source when carrying a fact forward.
@@ -64,7 +69,7 @@ Read in this order:
 - Integration points with other systems
 - Out-of-scope statements (exclusions are requirements too)
 
-Track the source wiki page for every requirement you find. Never create a requirement not backed by a wiki page.
+Track the source wiki page for every requirement you find. Never create a requirement not backed by a wiki page or upstream artifact.
 
 ---
 
@@ -245,9 +250,14 @@ Sections where the wiki provided insufficient information:
 
 ## Sources
 
+Local wiki pages read:
 - [[overview]]
 - [[sources/...]]
 - [[concepts/...]]
+
+Upstream context read (if `{CONTEXT_PATH}` is non-empty — substitute actual path):
+- [[{CONTEXT_PATH}brief.md]]
+- [[{CONTEXT_PATH}requirements.md]]
 ```
 
 ---
@@ -299,3 +309,4 @@ Anything you want me to revise?
 - **Never skip Step 4.** The user must confirm scope before you write a long structured table.
 - **Priority values are Must / Should / Could / Won't only.** Do not use numeric scales unless the wiki explicitly states them.
 - **Each requirement gets its own row.** Do not bundle multiple requirements into one row.
+- **Source citation format:** use `[[sources/slug]]`, `[[concepts/slug]]`, or `[[entities/slug]]` for local wiki pages. For files read from `{CONTEXT_PATH}`, substitute the actual runtime value and write the full repo-relative path: `[[docs/strategic/initiatives/20260504-foo/output/artifacts/brief.md]]`. Never use short names (`[[brief.md]]`) or computed relative paths (`[[../../...]]`) for cross-work-item references — they resolve to the wrong location.

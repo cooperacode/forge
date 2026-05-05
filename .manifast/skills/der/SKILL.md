@@ -15,18 +15,25 @@ Follow every step in order.
 
 ---
 
-## Step 1 — Verify wiki has content
+## Step 1 — Verify content sources
 
-Read `{OUTPUT_PATH}index.md`.
+Attempt to read `{OUTPUT_PATH}index.md` and check whether `{CONTEXT_PATH}` is non-empty.
 
-- If the file does not exist or is empty, stop. Tell the user the wiki has no content yet and suggest running `/ingest` first.
-- Check whether `{OUTPUT_PATH}entities/` has any pages. If the entities folder is empty, warn the user: "No entity pages found in the wiki — the DER may be sparse. Consider running `/ingest` on domain model documentation first." Then ask if they want to proceed anyway.
+Determine the content situation using the table below:
+
+| `{OUTPUT_PATH}index.md` | `{CONTEXT_PATH}` | Action |
+|-------------------------|------------------|--------|
+| exists and has content  | any              | Set `LOCAL_WIKI = true`. Note the total number of pages indexed (sources, concepts, entities). |
+| missing or empty        | has content      | Set `LOCAL_WIKI = false`. Warn the user: "Local wiki is empty — proceeding with upstream context only." |
+| missing or empty        | empty or absent  | Stop. Tell the user the work item has no wiki content and no upstream context. Suggest running `/ingest` first. |
+
+**If `LOCAL_WIKI = true`**, also check whether `{OUTPUT_PATH}entities/` has any pages. If the entities folder is empty, warn the user: "No entity pages found in the wiki — the DER may be sparse. Consider running `/ingest` on domain model documentation first." Then ask if they want to proceed anyway.
 
 ---
 
 ## Step 2 — Read entity and concept pages
 
-Read in this order (entities are primary; concepts and sources provide relationship context):
+**If `LOCAL_WIKI = true`**, read in this order (entities are primary; concepts and sources provide relationship context):
 
 1. All `entities/` pages listed in `{OUTPUT_PATH}index.md`
 2. All `concepts/` pages listed in `{OUTPUT_PATH}index.md`
@@ -228,3 +235,4 @@ Anything you want me to revise?
 - **Never skip Step 3.** Wrong entities here produce a misleading diagram.
 - **This skill is Product-only.** If invoked for Strategic or Tactical, stop immediately.
 - **Mermaid syntax must be valid.** Prefer simpler, correct diagrams over complex, broken ones. If an entity's relationships are unclear, render the entity without relationships and flag it as a gap.
+- **Source citation format:** use `[[sources/slug]]`, `[[concepts/slug]]`, or `[[entities/slug]]` for local wiki pages. For files read from `{CONTEXT_PATH}`, substitute the actual runtime value and write the full repo-relative path: `[[docs/strategic/initiatives/20260504-foo/output/artifacts/brief.md]]`. Never use short names (`[[brief.md]]`) or computed relative paths (`[[../../...]]`) for cross-work-item references — they resolve to the wrong location.

@@ -38,6 +38,7 @@ Omit the type to see a menu for the active hierarchy level. Pass a type to skip 
 /artifact brief
 /artifact requirements
 /artifact feature-list
+/artifact feature-detail
 /artifact adr
 /artifact der
 /artifact diagram
@@ -57,11 +58,12 @@ Each level has its own set of artifacts. You can only generate an artifact that 
 | Strategic | `adr` | Foundational architecture decision records |
 | Strategic | `diagram` | C4 Level 1 (System Context) or C4 Level 2 (Container) |
 | Product | `requirements` | Functional requirements with acceptance criteria |
-| Product | `feature-list` | Prioritized feature list with dependencies |
+| Product | `feature-list` | Prioritized feature list with dependencies (generated at **Epic** level) |
+| Product | `feature-detail` | Deep analysis of one feature: personas, rules, entities, and proposed story breakdown (generated at **Feature** level) |
 | Product | `adr` | Feature-scoped architecture decision records |
 | Product | `der` | Entity-relationship diagram |
 | Product | `diagram` | C4 Level 3, process flow, or data flow |
-| Tactical | `user-story` | User story with Gherkin scenarios and Definition of Done |
+| Tactical | `user-story` | User stories with Gherkin scenarios and Definition of Done, one file per story |
 | Tactical | `diagram` | Sequence or state diagram |
 
 ---
@@ -71,10 +73,24 @@ Each level has its own set of artifacts. You can only generate an artifact that 
 Artifacts build on each other. This is the order that produces the best results:
 
 ```
-brief → requirements → feature-list → adr → der → diagram → user-story → diagram (seq/state)
+Strategic level (Initiative/Theme)
+  brief → requirements → adr → diagram
+
+Product level — Epic
+  requirements → feature-list → adr → der → diagram
+
+Product level — Feature  (child of Epic)
+  feature-detail
+
+Tactical level (User Story/Task)
+  user-story → diagram (seq/state)
 ```
 
-`feature-list` is a **hard dependency** for `user-story` — the story maps to a feature in the list. All other dependencies are soft: if a prior artifact exists, Claude reads it to produce a more precise result; if it does not, Claude continues with what is available.
+**All same-level dependencies are enforced.** If a prerequisite artifact hasn't been generated yet, Claude stops and tells you exactly what to generate first — it will not proceed.
+
+**Cross-level dependencies:**
+- `feature-list` must exist in the parent **Epic** before `feature-detail` can run on a **Feature** work item.
+- `feature-list` (or `feature-detail` when the parent is a Feature) must exist before `user-story` can run. If a `feature-detail` also exists for the selected feature, Claude uses it as the primary source for richer, more precise stories.
 
 ---
 
@@ -206,7 +222,7 @@ output/artifacts/requirements.md
 
 Sections: Functional Requirements · Integration Requirements · Data Requirements · Exclusions · Gaps · Open Questions.
 
-> If the parent Strategic work item has a `requirements.md` in its `context/` folder, Claude reads it and ensures no functional requirement violates an established constraint.
+> If the parent Strategic work item has a `requirements.md` in its `output/artifacts/` folder, Claude reads it and ensures no functional requirement violates an established constraint.
 
 ---
 
@@ -237,7 +253,43 @@ output/artifacts/feature-list.md
 
 Sections: Features table (ID, name, description, beneficiary, priority, dependencies) · Out of Scope · Dependency Map · Gaps · Open Questions.
 
-> `feature-list` is required before generating `user-story` at Tactical level.
+> `feature-list` is generated at the **Epic** level. It is required before generating `feature-detail` (at Feature level) or `user-story` (at Tactical level).
+
+---
+
+### `feature-detail` — Feature Detail
+
+**When to use:** at **Feature** level (child of an Epic), after the parent Epic has a `feature-list`. Produces a deep specification of one specific feature, including personas, business rules, entity interactions, and a proposed user story breakdown.
+
+**Requires:** `feature-list.md` in the parent Epic's `output/artifacts/`.
+
+**What Claude asks before writing:**
+```
+Analysis of F-002 — Email Verification:
+
+Personas identified: New User, System (email service)
+Behaviors found: 3
+Business rules found: 2
+Entities touched: User, VerificationToken
+
+Proposed user story breakdown (3 stories):
+
+US-001 · As a new user, I want to receive a verification email after signup, so that my account is confirmed.
+US-002 · As a new user, I want to verify my email by clicking a link, so that I can access the platform.
+US-003 · As a new user, I want to request a new verification email if mine expired, so that I can still complete registration.
+
+Does this analysis look right? Any behaviors to add, remove, or merge?
+```
+
+**What gets created:**
+```
+output/artifacts/feature-detail/
+  F-002-email-verification.md
+```
+
+Sections: Feature Statement · Goal · Personas · Functional Scope (in / out of scope) · Business Rules · Entity & Data Interactions · Feature-Level Acceptance Criteria · **Proposed User Story Breakdown** · Dependencies · Gaps · Open Questions.
+
+> The proposed story breakdown is a **planning guide**, not a contract. Stories are generated later at the Tactical level with `/artifact user-story`. When they are, Claude reads `feature-detail` as its primary source.
 
 ---
 
@@ -288,32 +340,51 @@ output/artifacts/diagrams/<type>.md
 
 ## Tactical artifacts
 
-### `user-story` — User Story
+### `user-story` — User Stories
 
-**When to use:** at User Story or Task level, after a `feature-list` exists in the parent work item's `context/` folder. Produces a complete story with Gherkin acceptance scenarios.
+**When to use:** at User Story or Task level. Requires a `feature-list` in the parent Product work item. If a `feature-detail` also exists for the selected feature, Claude uses it as the primary source — producing richer, more precise stories with less wiki re-reading.
 
-**What Claude asks before writing:**
+The behavior depends on who the **parent work item** is:
+
+**Parent = Feature** (recommended path)
+Claude reads `feature-detail` from the parent's artifacts directly — the feature scope is already known. No selection step needed.
 ```
-Based on the wiki (6 pages) and the upstream feature list, here is the story I plan to write:
+Feature detail loaded: F-002 — Email Verification
 
-Persona: New user (first-time signup)
-Behavior: Complete email verification after registration
-Feature mapping: F-002 — Email verification [MVP]
+I propose 3 user stories:
 
-Scenarios identified:
-1. Happy path — user clicks the verification link within 24 hours
-2. Expired link — user clicks after 24 hours
-3. Already verified — user clicks the link a second time
+US-001 · As a new user, I want to receive a verification email after signup, so that my account is confirmed.
+US-002 · As a new user, I want to verify my email by clicking a link, so that I can access the platform.
+US-003 · As a new user, I want to request a new link if mine expired, so that I can still complete registration.
 
-Does this look right? Anything to add or change?
-```
-
-**What gets created:**
-```
-output/artifacts/user-story.md
+Does this breakdown look right? Any stories to add, remove, or merge?
 ```
 
-Sections: Story statement (As a / I want / So that) · Acceptance Criteria table · Gherkin scenarios (Given / When / Then) · Definition of Done · Dependencies · Open Questions.
+**Parent = Epic** (direct, no Feature level)
+Claude reads `feature-list` from the parent Epic and asks which feature to cover. No `feature-detail` is available in this path.
+```
+Feature list loaded. Which feature do you want to break into user stories?
+
+| ID    | Feature              | Priority |
+|-------|---------------------|----------|
+| F-001 | User Registration   | MVP      |
+| F-002 | Email Verification  | MVP      |
+
+Note: for richer stories, create a Feature work item as a child of this Epic,
+run /artifact feature-detail on it, then return here.
+
+Reply with the feature ID (e.g. F-001).
+```
+
+**What gets created (one file per story):**
+```
+output/artifacts/user-stories/
+  F-002-US-001-receber-email-de-verificacao.md
+  F-002-US-002-verificar-email-por-link.md
+  F-002-US-003-solicitar-novo-link-expirado.md
+```
+
+Each file contains: Story statement (As a / I want / So that) · Acceptance Criteria table · Gherkin scenarios (Given / When / Then) · Business Rules · Definition of Done · Dependencies · Open Questions.
 
 ---
 
@@ -337,16 +408,24 @@ output/artifacts/diagrams/state-<slug>.md
 
 ## How context flows between levels
 
-When a Product work item is linked to a Strategic parent, the parent's artifacts are automatically copied into the child's `context/` folder before any skill runs.
+When a work item has a parent, the artifact orchestrator resolves a `CONTEXT_PATH` pointing directly to the parent's `output/artifacts/` folder. Nothing is copied — skills read from the parent path on demand.
 
 ```
-Strategic initiative/output/artifacts/
-  brief.md          →  copied to  →  Product epic/context/brief.md
-  requirements.md   →  copied to  →  Product epic/context/requirements.md
-  adr/              →  copied to  →  Product epic/context/adr/
+Parent work item
+  output/artifacts/
+    brief.md           ← read directly by child skills
+    requirements.md    ← read directly by child skills
+    adr/               ← read directly by child skills
 ```
 
-Claude reads `context/` after the local wiki. Upstream artifacts act as guardrails:
+The relevant artifacts depend on the parent's level:
+
+| Parent level | What skills read from it |
+|---|---|
+| Strategic | `brief.md`, `requirements.md`, `adr/`, `diagrams/` |
+| Product (Epic) | `requirements.md`, `feature-list.md`, `der.md`, `diagrams/` |
+
+Upstream artifacts act as guardrails:
 - `brief.md` sets the strategic goals — features that don't serve any goal are flagged as unaligned.
 - `requirements.md` defines constraints — functional requirements that violate a constraint are flagged.
 - `adr/` records accepted decisions — new ADRs that contradict an upstream one are flagged explicitly.
@@ -362,16 +441,18 @@ Run /artifact on the parent first to generate upstream context.
 
 ## Where artifacts are saved
 
-All artifacts land in the same location:
+Artifacts are organized by type under `output/artifacts/`. The table below shows which work item level generates each artifact:
 
 ```
 output/
   artifacts/
-    brief.md
-    requirements.md
-    feature-list.md
-    der.md
-    user-story.md
+    brief.md                          ← Strategic
+    requirements.md                   ← Strategic or Product
+    feature-list.md                   ← Product (Epic)
+    feature-detail/
+      F-001-user-registration.md      ← Product (Feature, one file per feature)
+      F-002-email-verification.md
+    der.md                            ← Product
     adr/
       index.md
       001-decision-title.md
@@ -379,6 +460,10 @@ output/
       c4-context.md
       process-flow.md
       sequence-login.md
+    user-stories/
+      F-001-US-001-cadastrar-usuario.md    ← Tactical (one file per story)
+      F-001-US-002-validar-email.md
+      F-002-US-001-verificar-conta.md
 ```
 
 `output/index.md` and `output/log.md` are updated automatically after each artifact is generated.
@@ -400,7 +485,13 @@ Yes, but be careful: the next regeneration will overwrite your edits. If you hav
 The parent work item hasn't had `/artifact` run yet. Switch to the parent with `/workitem`, generate its artifacts, then switch back and regenerate.
 
 **Can I generate a `user-story` without a `feature-list`?**
-Not recommended. The feature list is a hard dependency — it provides the scope frame that makes the story precise. Without it, Claude will warn you and ask if you want to proceed anyway.
+No. The `feature-list` in the parent Product work item is a hard dependency — Claude will stop and tell you to generate it first.
+
+**Can I generate a `user-story` without a `feature-detail`?**
+Yes. `feature-detail` is optional but recommended. When it exists for the selected feature, Claude uses it as the primary source and produces richer stories with less re-reading of the wiki. Without it, Claude reads the wiki directly and suggests creating a `feature-detail` first.
+
+**Can I generate a `feature-detail` without a `feature-list`?**
+No. `feature-detail` reads the feature list from the parent Epic's `output/artifacts/` to know which features exist. Generate `feature-list` on the Epic first.
 
 ---
 

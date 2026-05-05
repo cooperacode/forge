@@ -38,20 +38,13 @@ You don't need to fill all three levels at once. Start where your current work i
 
 ## Before you start
 
-Make sure you have the repository open in one of the supported editors:
-
-```bash
-# Claude Code
-claude --plugin .
-
-# VS Code — open the folder; the plugin loads automatically
-```
+Make sure the repository is open and manifast is active in your environment. The commands below work through any AI assistant that has manifast configured — no specific editor or tool is required.
 
 ---
 
 ## Running `/workitem` for the first time
 
-Type the command in the chat:
+Run:
 
 ```
 /workitem
@@ -139,8 +132,10 @@ For a root-level item with no parent, choose **None**. If this initiative belong
 | Work item level | Valid parent |
 |---|---|
 | Strategic | Strategic (Theme as parent of Initiative) |
-| Product | Strategic |
+| Product | Strategic or Product (Feature as child of Epic) |
 | Tactical | Product |
+
+> **Epic → Feature:** within the Product level, an Epic can be the parent of a Feature. This matters for artifact generation: `feature-list` is generated on the Epic; `feature-detail` is generated on the Feature and reads the parent Epic's `feature-list` as its source. User stories then read `feature-detail` from the parent Feature.
 
 ---
 
@@ -171,8 +166,7 @@ docs/
     initiatives/
       20260503-redesign-the-onboarding-process/
         input/     ← place your source documents here
-        output/    ← wiki pages will be generated here
-        context/   ← upstream artifacts from parent items
+        output/    ← wiki pages and artifacts will be generated here
 ```
 
 And appends the item to `docs/manifast.yaml`:
@@ -194,6 +188,7 @@ The `.env` file is also updated so every subsequent command (`/ingest`, `/artifa
 
 ```env
 MWI_TITLE=redesign-the-onboarding-process
+MWI_TAGS=[onboarding, ux, strategic]
 MWI_LEVEL=Strategic
 MWI_TYPE=Initiative
 MWI_PATH=docs/strategic/initiatives/20260503-redesign-the-onboarding-process/

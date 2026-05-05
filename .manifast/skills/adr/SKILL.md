@@ -13,12 +13,17 @@ Follow every step in order.
 
 ---
 
-## Step 1 — Verify wiki has content
+## Step 1 — Verify content sources
 
-Read `{OUTPUT_PATH}index.md`.
+Attempt to read `{OUTPUT_PATH}index.md` and check whether `{CONTEXT_PATH}` is non-empty.
 
-- If the file does not exist or is empty, stop. Tell the user the wiki has no content yet and suggest running `/ingest` first.
-- Note the total number of pages indexed.
+Determine the content situation using the table below:
+
+| `{OUTPUT_PATH}index.md` | `{CONTEXT_PATH}` | Action |
+|-------------------------|------------------|--------|
+| exists and has content  | any              | Set `LOCAL_WIKI = true`. Note the total number of pages indexed (sources, concepts, entities). |
+| missing or empty        | has content      | Set `LOCAL_WIKI = false`. Warn the user: "Local wiki is empty — proceeding with upstream context only." |
+| missing or empty        | empty or absent  | Stop. Tell the user the work item has no wiki content and no upstream context. Suggest running `/ingest` first. |
 
 ---
 
@@ -37,7 +42,7 @@ This scope determines what counts as a decision worth recording. Apply it in Ste
 
 ## Step 3 — Detect decisions in the wiki
 
-Read in this order:
+**If `LOCAL_WIKI = true`**, read in this order:
 
 1. `{OUTPUT_PATH}overview.md`
 2. All `sources/` pages
@@ -245,3 +250,4 @@ Anything you want me to revise?
 - **Never write to source/concept/entity pages.** ADR generation is read-only on the wiki.
 - **Never skip Step 4.** Decisions misidentified here produce misleading ADRs.
 - **Alternatives section uses `> [!gap]`** when none were documented — never invent alternatives from training knowledge.
+- **Source citation format:** use `[[sources/slug]]`, `[[concepts/slug]]`, or `[[entities/slug]]` for local wiki pages. For files read from `{CONTEXT_PATH}`, substitute the actual runtime value and write the full repo-relative path: `[[docs/strategic/initiatives/20260504-foo/output/artifacts/brief.md]]`. Never use short names (`[[brief.md]]`) or computed relative paths (`[[../../...]]`) for cross-work-item references — they resolve to the wrong location.

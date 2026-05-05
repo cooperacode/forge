@@ -30,7 +30,7 @@ flowchart LR
      - See [How To: Ingest a Source](HOW_TO_WIKI.md#ingest--adding-a-source) for a walkthrough of the ingestion process and how to guide the AI's understanding.
 4. **Query** — ask questions; every answer cites a wiki page, which traces back to a source file.
     - See [How To: Answer Questions](HOW_TO_WIKI.md#query--answering-questions) for tips on crafting effective queries and interpreting citations.
-5. **Generate artifacts** — produce briefs, quality attributes & constraints, ADRs, feature lists, diagrams, and user stories directly from the wiki. Each artifact enriches the next.
+5. **Generate artifacts** — produce briefs, quality attributes & constraints, ADRs, feature lists, feature details, diagrams, and user stories directly from the wiki. Each artifact enriches the next: the Epic's `feature-list` feeds the Feature's `feature-detail`, which feeds individual `user-story` files at Tactical level.
      - See [How To: Generate Artifacts](HOW_TO_ARTIFACTS.md) for a step-by-step guide to generating each artifact type and how they build on each other.
 6. **Lint** — periodic health check that finds orphan pages, broken links, contradictions, and stale content.
 

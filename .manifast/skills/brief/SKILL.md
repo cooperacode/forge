@@ -15,21 +15,21 @@ Follow every step in order.
 
 ## Step 1 — Verify wiki has content
 
-Read `{OUTPUT_PATH}index.md`.
+Read `{OUTPUT_PATH}index.md` (the local wiki index for this work item).
 
-- If the file does not exist or is empty, tell the user the wiki has no ingested content yet and stop. Suggest running `/ingest` first before generating a brief.
-- If it exists, note the total number of pages (sources, concepts, entities) indexed.
+- If the file does not exist or has no entries under Sources, Concepts, or Entities, tell the user no sources have been ingested for this work item and stop. Suggest running `/ingest` first.
+- If it exists, note the total number of pages listed (sources, concepts, entities).
 
 ---
 
 ## Step 2 — Load all referenced wiki pages
 
-From `{OUTPUT_PATH}index.md`, collect every page reference listed. Then read each one in this order:
+From `{OUTPUT_PATH}index.md`, collect every page link listed. Each link points to a file in `docs/wiki/`. Load them in this order:
 
-1. `{OUTPUT_PATH}overview.md` — the synthesis layer; read this first.
-2. All `sources/` pages listed in the index.
-3. All `concepts/` pages listed in the index.
-4. All `entities/` pages listed in the index.
+1. `docs/wiki/overview.md` — the synthesis layer; read this first. (Read directly — it is always the global synthesis.)
+2. All `sources/` pages listed in the local index — follow each link to load from `docs/wiki/`.
+3. All `concepts/` pages listed in the local index.
+4. All `entities/` pages listed in the local index.
 
 **If `{CONTEXT_PATH}` is non-empty**, read all files present in `{CONTEXT_PATH}` after completing the list above. These are upstream artifacts from the parent work item. Treat them as authoritative constraints that take precedence over inferences from the local wiki when there is a conflict. Note each upstream source explicitly when you carry a fact forward (e.g., "per upstream `requirements.md`").
 
@@ -70,113 +70,11 @@ Wait for a response. Adjust your understanding if the user provides corrections.
 
 Create the file `{OUTPUT_PATH}artifacts/brief.md`.
 
-Use this exact structure:
+Use the template from `template.md` in this same skill directory. Fill all placeholders and preserve the section order.
 
-```markdown
----
-title: "Strategic Brief — {WORK_ITEM_TITLE}"
-type: artifact
-subtype: brief
-work_item_type: {WORK_ITEM_TYPE}
-hierarchy_level: Strategic
-generated: YYYY-MM-DD
-sources_read: N
----
+Optional quality check: run `scripts/validate.sh {OUTPUT_PATH}artifacts/brief.md`.
 
-# Strategic Brief: {WORK_ITEM_TITLE}
-
-## Executive Summary
-
-2–3 sentences. What is this initiative about, why does it matter, and what outcome is expected?
-Write for a decision-maker who has 30 seconds.
-
----
-
-## Business Context
-
-What problem or opportunity is this initiative addressing?
-Reference wiki pages that establish the context using [[wikilinks]].
-
----
-
-## Goals & Objectives
-
-| # | Objective | Expected Outcome |
-|---|-----------|-----------------|
-| 1 | ...       | ...             |
-| 2 | ...       | ...             |
-
-If goals were not explicitly defined in the wiki, flag this gap:
-> [!gap] Goals were not explicitly defined in the ingested sources. Consider clarifying with stakeholders.
-
----
-
-## Scope
-
-### In scope
-- ...
-
-### Out of scope
-- ...
-
-If scope boundaries were not clearly defined in the wiki, state so.
-
----
-
-## Key Stakeholders
-
-| Stakeholder | Role / Interest |
-|------------|----------------|
-| ...        | ...            |
-
----
-
-## Success Metrics
-
-| Metric | Target | Source |
-|--------|--------|--------|
-| ...    | ...    | [[sources/slug]] |
-
-If no metrics were defined in the wiki, flag the gap.
-
----
-
-## Timeline & Milestones
-
-| Milestone | Target Date | Notes |
-|-----------|-------------|-------|
-| ...       | ...         | ...   |
-
-If no timeline information was found in the wiki, state so.
-
----
-
-## Risks & Dependencies
-
-| # | Risk / Dependency | Likelihood | Impact | Mitigation |
-|---|-------------------|-----------|--------|-----------|
-| 1 | ...               | ...       | ...    | ...       |
-
----
-
-## Open Questions
-
-Questions that remain unresolved in the wiki, pulled from `[!contradiction]` callouts and `## Open questions` sections across pages:
-
-- [ ] ...
-- [ ] ...
-
----
-
-## Sources
-
-Pages read to generate this brief:
-
-- [[overview]]
-- [[sources/...]]
-- [[concepts/...]]
-- [[entities/...]]
-```
+Reference output format example: `examples/sample.md`.
 
 Rules while writing:
 - Every factual claim must cite a wiki page with `[[wikilinks]]`.
@@ -185,17 +83,18 @@ Rules while writing:
 - Write in plain, direct language. No filler. No passive voice where avoidable.
 
 ---
-
 ## Step 5 — Update navigation files
 
 After writing the brief, update:
 
-**`{OUTPUT_PATH}index.md`** — add an `## Artifacts` section if it does not exist, and link the brief:
+**`{OUTPUT_PATH}artifacts/index.md`** — create if it does not exist, then add or update the brief entry:
 
 ```markdown
-## Artifacts
+# Artifacts — {WORK_ITEM_TITLE}
 
-- [[artifacts/brief]] — Strategic Brief (generated YYYY-MM-DD)
+## Strategic
+
+- [[brief]] — Strategic Brief (generated YYYY-MM-DD)
 ```
 
 **`{OUTPUT_PATH}log.md`** — append one entry at the top:
@@ -231,7 +130,7 @@ Anything you want me to revise before we continue?
 
 - **Write all content in `{LANGUAGE}`.** If `LANGUAGE` is `pt-BR`, write in Brazilian Portuguese. If `LANGUAGE` is `en`, write in English. Apply this to artifact content, section headings, and all messages shown to the user. If `LANGUAGE` is not set, default to English.
 - **Never write content not supported by the wiki.** Use `> [!gap]` for any section the wiki does not cover. Do not fill gaps with your training knowledge.
-- **Never modify source or concept pages.** Brief generation is read-only on the wiki. The only files you write are `artifacts/brief.md`, `index.md`, and `log.md`.
+- **Never modify source or concept pages.** Brief generation is read-only on the wiki (`docs/wiki/`). The only files you write are `artifacts/brief.md`, `artifacts/index.md`, and `log.md` — all inside `{OUTPUT_PATH}`.
 - **Never skip Step 3.** The user must confirm scope before you write 400+ words. This keeps the brief aligned with intent.
 - **If `overview.md` does not exist**, proceed using source and concept pages only — note in the brief that the overview is absent.
 - **If the wiki has fewer than 3 pages**, warn the user that the brief will have significant gaps and ask if they want to proceed or ingest more sources first.

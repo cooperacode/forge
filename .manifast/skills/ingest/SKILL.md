@@ -7,7 +7,12 @@ description: "Add new sources to the wiki, creating and updating pages as needed
 
 You were invoked by the orchestrator because the user wants to add a new source to the wiki. Follow every step in order. Do not skip steps. Do not proceed to the next step without completing the current one.
 
-The orchestrator passed `INPUT_PATH` and `OUTPUT_PATH` at the top of this prompt — use those values for all file operations.
+The orchestrator passed `INPUT_PATH`, `WIKI_PATH`, and `WORK_ITEM_PATH` at the top of this prompt — use those values for all file operations.
+
+If these variables are not explicitly set, derive them from `.env`:
+- `INPUT_PATH = {MWI_PATH}/input/`
+- `WIKI_PATH = docs/wiki/`
+- `WORK_ITEM_PATH = {MWI_PATH}`
 
 ---
 
@@ -37,7 +42,7 @@ This step exists because the human curates, the LLM executes. Do not skip it eve
 
 ## Step 3 — Create the source summary page
 
-Create `{OUTPUT_PATH}sources/<slug>.md` where `<slug>` is a lowercase hyphenated version of the source title.
+Create `{WIKI_PATH}sources/<slug>.md` where `<slug>` is a lowercase hyphenated version of the source title.
 
 Use this exact frontmatter:
 
@@ -48,6 +53,7 @@ slug: source-slug
 type: source
 date_ingested: YYYY-MM-DD
 original_file: {INPUT_PATH}filename.ext
+source_workitem: {WORK_ITEM_PATH}
 authors: []
 tags: []
 related_concepts: []
@@ -90,13 +96,13 @@ What does this source leave unanswered? What would be worth investigating next?
 
 ## Step 4 — Identify pages to update
 
-Before writing anything, scan `{OUTPUT_PATH}index.md` and list every page that this source touches. Think across three categories:
+Before writing anything, scan `{WIKI_PATH}index.md` and list every page that this source touches. Think across three categories:
 
 **Entities** — people, organizations, products, datasets, models named in the source. Check if a page already exists. If yes, update it. If no, create it.
 
 **Concepts** — themes, techniques, theories, arguments the source engages with. Same rule: update if exists, create if not.
 
-**Overview** — `{OUTPUT_PATH}overview.md` always gets updated when a new source is ingested.
+**Overview** — `{WIKI_PATH}overview.md` always gets updated when a new source is ingested.
 
 Write this list out before proceeding:
 
@@ -136,6 +142,7 @@ title: "Entity Name"
 slug: entity-slug
 type: entity
 subtype: person | organization | model | dataset | product
+source_workitem: {WORK_ITEM_PATH}
 tags: []
 related_sources: [sources/slug]
 related_concepts: []
@@ -153,6 +160,7 @@ Frontmatter:
 title: "Concept Name"
 slug: concept-slug
 type: concept
+source_workitem: {WORK_ITEM_PATH}
 tags: []
 related_sources: [sources/slug]
 related_entities: []
@@ -184,7 +192,7 @@ Links to related concepts and entities.
 
 ### Updating overview
 
-`{OUTPUT_PATH}overview.md` is the synthesis layer. After every ingest:
+`{WIKI_PATH}overview.md` is the synthesis layer. After every ingest:
 
 - Add a one-paragraph summary of what this source contributes to the overall picture.
 - Update the "Current state of knowledge" section if the source meaningfully changes the thesis.
@@ -194,11 +202,11 @@ Links to related concepts and entities.
 
 ## Step 6 — Update navigation files
 
-After all pages are written, update the two navigation files. These are owned by the orchestrator but you write the entries during ingest.
+After all pages are written, update four navigation files — two global, two local.
 
-**`{OUTPUT_PATH}index.md`** — add new pages in the correct category. For updated pages, do not add a duplicate entry.
+**`{WIKI_PATH}index.md`** (global) — add new pages in the correct category. For updated pages, do not add a duplicate entry. Entries use paths relative to `docs/wiki/` (e.g., `sources/slug.md`).
 
-**`{OUTPUT_PATH}log.md`** — append one entry at the top of the log (most recent first):
+**`{WIKI_PATH}log.md`** (global) — append one entry at the top (most recent first):
 
 ```markdown
 ## [YYYY-MM-DD] ingest | Title of source
@@ -206,7 +214,37 @@ After all pages are written, update the two navigation files. These are owned by
 Pages touched: sources/slug, entities/x, concepts/y, overview (N total)
 New pages created: concepts/cross-attention
 Contradictions flagged: 1 (see sources/slug)
+Work item: {WORK_ITEM_PATH}
 ```
+
+**`{OUTPUT_PATH}index.md`** (local) — add new pages created or updated in this ingest. This is a subset view of the global wiki scoped to this work item. Entries use repo-root paths (e.g., `docs/wiki/sources/slug.md`). Create the file if it does not exist, using this frontmatter:
+
+```yaml
+---
+title: "Local Index — {WORK_ITEM_TITLE}"
+type: local-index
+work_item: {WORK_ITEM_PATH}
+last_updated: YYYY-MM-DD
+---
+```
+
+For each new or updated page, add an entry under the correct category (`## Sources`, `## Entities`, `## Concepts`). Do not duplicate entries that already exist in the local index.
+
+```markdown
+## Sources
+
+- [slug](docs/wiki/sources/slug.md) — one-line description
+
+## Entities
+
+- [slug](docs/wiki/entities/slug.md) — one-line description
+
+## Concepts
+
+- [slug](docs/wiki/concepts/slug.md) — one-line description
+```
+
+**`{OUTPUT_PATH}log.md`** (local) — append one entry at the top, same format as the global log entry above. Create the file if it does not exist.
 
 ---
 
@@ -237,3 +275,4 @@ Write all wiki pages and messages to the user in `{LANGUAGE}`. If `LANGUAGE` is 
 - Never answer questions during ingest. If the user asks something mid-flow, note it and say you will answer after the ingest is complete.
 - If a step produces more than ~20 file changes, pause and ask the user if they want to continue or scope down.
 - Prefer updating existing pages over creating new ones. Fragmentation is the enemy of a useful wiki.
+- All wiki pages go to `{WIKI_PATH}` — never write wiki files inside the work item's `output/` folder.

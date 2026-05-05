@@ -17,15 +17,15 @@ Follow every step in order.
 
 ## Step 1 — Verify content sources
 
-Attempt to read `{OUTPUT_PATH}index.md` and check whether `{CONTEXT_PATH}` is non-empty.
+Attempt to read `{OUTPUT_PATH}index.md` (the local wiki index for this work item) and check whether `{CONTEXT_PATH}` is non-empty.
 
 Determine the content situation using the table below:
 
 | `{OUTPUT_PATH}index.md` | `{CONTEXT_PATH}` | Action |
-|-------------------------|------------------|--------|
-| exists and has content  | any              | Set `LOCAL_WIKI = true`. Note the total number of pages indexed (sources, concepts, entities). |
-| missing or empty        | has content      | Set `LOCAL_WIKI = false`. Warn the user: "Local wiki is empty — proceeding with upstream context only." |
-| missing or empty        | empty or absent  | Stop. Tell the user the work item has no wiki content and no upstream context. Suggest running `/ingest` first. |
+|--------------------------|------------------|--------|
+| exists and has entries   | any              | Set `LOCAL_WIKI = true`. Note the total number of pages listed. |
+| missing or no entries    | has content      | Set `LOCAL_WIKI = false`. Warn the user: "No sources ingested for this work item — proceeding with upstream context only." |
+| missing or no entries    | empty or absent  | Stop. Tell the user no sources have been ingested and there is no upstream context. Suggest running `/ingest` first. |
 
 ---
 
@@ -33,8 +33,8 @@ Determine the content situation using the table below:
 
 **If `LOCAL_WIKI = true`**, read in this order:
 
-1. `{OUTPUT_PATH}overview.md`
-2. All `sources/` pages listed in `{OUTPUT_PATH}index.md`
+1. `docs/wiki/overview.md` — global synthesis (read directly)
+2. All `sources/` pages listed in `{OUTPUT_PATH}index.md` — follow each link to load from `docs/wiki/`
 3. All `concepts/` pages listed in `{OUTPUT_PATH}index.md`
 4. All `entities/` pages listed in `{OUTPUT_PATH}index.md`
 
@@ -86,103 +86,21 @@ Wait for a response. If the user says "go ahead", proceed.
 
 ## Step 4 — Write the feature list artifact
 
-Create `{OUTPUT_PATH}artifacts/feature-list.md`:
+Create `{OUTPUT_PATH}artifacts/feature-list.md`.
 
-```markdown
----
-title: "Feature List — {WORK_ITEM_TITLE}"
-type: artifact
-subtype: feature-list
-work_item_type: {WORK_ITEM_TYPE}
-hierarchy_level: Product
-generated: YYYY-MM-DD
-sources_read: N
-total_features: N
----
+Use the template from `template.md` in this same skill directory. Fill all placeholders and preserve the section order.
 
-# Feature List: {WORK_ITEM_TITLE}
+Optional quality check: run `scripts/validate.sh {OUTPUT_PATH}artifacts/feature-list.md`.
 
-## Summary
-
-One paragraph: scope of this list, how many features were found, and any significant gaps.
+Reference output format example: `examples/sample.md`.
 
 ---
-
-## Features
-
-| ID | Feature | Description | Beneficiary | Priority | Dependencies | Source |
-|----|---------|------------|-------------|----------|-------------|--------|
-| F-001 | {name} | {what it does} | {user / system} | MVP / Post-MVP / Unclassified | F-00X, F-00Y | [[sources/slug]] |
-| F-002 | ... | ... | ... | ... | — | [[sources/slug]] |
-
-**Priority values:**
-- **MVP** — required for the first viable release (stated in the wiki)
-- **Post-MVP** — confirmed desirable but explicitly deferred
-- **Unclassified** — wiki did not assign priority; requires team decision
-
----
-
-## Out of Scope
-
-Features explicitly excluded in the wiki:
-
-| Feature | Reason for exclusion | Source |
-|---------|---------------------|--------|
-| {name} | {reason} | [[sources/slug]] |
-
----
-
-## Gaps
-
-Areas where the wiki described a need but without enough detail to define a feature:
-
-> [!gap] {Description of what is unclear and what type of source would resolve it}
-
----
-
-## Dependency Map
-
-Features that depend on other features being delivered first:
-
-```
-F-003 depends on → F-001, F-002
-F-005 depends on → F-003
-```
-
-If no dependencies were identified, state: "No dependencies detected in the wiki."
-
----
-
-## Open Questions
-
-Questions that affect feature scope but remain unresolved:
-
-- [ ] ...
-
----
-
-## Sources
-
-Local wiki pages read:
-- [[overview]]
-- [[sources/...]]
-- [[concepts/...]]
-
-Upstream context read (if `{CONTEXT_PATH}` is non-empty — substitute actual path):
-- [[{CONTEXT_PATH}brief.md]]
-- [[{CONTEXT_PATH}requirements.md]]
-```
-
----
-
 ## Step 5 — Update navigation files
 
-**`{OUTPUT_PATH}index.md`** — add or update the `## Artifacts` section:
+**`{OUTPUT_PATH}artifacts/index.md`** — create if it does not exist, then add or update the feature-list entry:
 
 ```markdown
-## Artifacts
-
-- [[artifacts/feature-list]] — Feature List ({N} features, generated YYYY-MM-DD)
+- [[feature-list]] — Feature List ({N} features, generated YYYY-MM-DD)
 ```
 
 **`{OUTPUT_PATH}log.md`** — append one entry at the top:

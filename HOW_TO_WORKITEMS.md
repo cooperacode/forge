@@ -162,12 +162,23 @@ manifast creates the following structure on disk:
 
 ```
 docs/
+  wiki/                ← centralized wiki, shared across all work items
+    sources/
+    concepts/
+    entities/
+    overview.md
+    index.md
+    log.md
   strategic/
     initiatives/
       20260503-redesign-the-onboarding-process/
-        input/     ← place your source documents here
-        output/    ← wiki pages and artifacts will be generated here
+        input/         ← place your source documents here
+        output/
+          artifacts/   ← generated artifacts (brief, requirements, ADRs, etc.)
+          log.md       ← artifact generation history for this work item
 ```
+
+> **Wiki vs. artifacts:** source documents go to `input/`, wiki pages go to `docs/wiki/` (shared), and generated artifacts go to `output/artifacts/` (per work item).
 
 And appends the item to `docs/manifast.yaml`:
 
@@ -228,11 +239,13 @@ With a work item active, the typical next steps are:
    (specs, meeting notes, PDFs, emails, research)
 
 2. /ingest
-   Claude reads each source and writes structured wiki pages.
+   Claude reads each source and writes structured wiki pages
+   to the centralized docs/wiki/ folder.
 
 3. /artifact
    Generate briefs, quality attributes, ADRs, feature lists,
-   diagrams, and user stories from the wiki.
+   diagrams, and user stories — written to this work item's
+   output/artifacts/ folder.
 ```
 
 See [HOW_TO.md](HOW_TO.md) for the full end-to-end sequence.

@@ -102,78 +102,11 @@ Create a numbered ADR file for each confirmed decision at:
 
 Number sequentially starting at `001`. If ADR files already exist in that folder, continue from the highest existing number.
 
-Use this exact structure for each file:
+Use the template from `template.md` in this same skill directory. Fill all placeholders and preserve the section order.
 
-```markdown
----
-title: "ADR-NNN: {Decision title}"
-type: artifact
-subtype: adr
-adr_number: NNN
-status: accepted
-work_item_type: {WORK_ITEM_TYPE}
-hierarchy_level: {Strategic | Product}
-generated: YYYY-MM-DD
----
+Optional quality check: run `scripts/validate.sh <generated-adr-file.md>` for each generated ADR.
 
-# ADR-NNN: {Decision title}
-
-## Status
-
-accepted
-
-(Valid values: proposed | accepted | deprecated | superseded by [[artifacts/adr/NNN-other]])
-
----
-
-## Context
-
-What situation, constraint, or question prompted this decision?
-Write in past tense — this is the context that existed when the decision was made.
-2–4 sentences. Cite the wiki pages that establish this context using [[wikilinks]].
-
----
-
-## Decision
-
-**We will {chosen option}.**
-
-One clear sentence stating the decision. Then 1–2 sentences of elaboration if needed.
-
----
-
-## Alternatives Considered
-
-| Alternative | Why rejected |
-|-------------|-------------|
-| {Option A} | {Reason — cite [[source]] if available} |
-| {Option B} | {Reason} |
-
-If no alternatives were documented in the wiki:
-> [!gap] No alternatives were documented in the ingested sources for this decision.
-
----
-
-## Consequences
-
-### Positive
-- ...
-
-### Negative / Trade-offs
-- ...
-
-### Neutral
-- ...
-
----
-
-## Sources
-
-Wiki pages that informed this ADR:
-
-- [[sources/slug]]
-- [[concepts/slug]]
-```
+Reference output format example: `examples/sample.md`.
 
 ---
 

@@ -17,17 +17,17 @@ Follow every step in order.
 
 ## Step 1 — Verify content sources
 
-Attempt to read `{OUTPUT_PATH}index.md` and check whether `{CONTEXT_PATH}` is non-empty.
+Attempt to read `{OUTPUT_PATH}index.md` (the local wiki index for this work item) and check whether `{CONTEXT_PATH}` is non-empty.
 
 Determine the content situation using the table below:
 
 | `{OUTPUT_PATH}index.md` | `{CONTEXT_PATH}` | Action |
-|-------------------------|------------------|--------|
-| exists and has content  | any              | Set `LOCAL_WIKI = true`. Note the total number of pages indexed (sources, concepts, entities). |
-| missing or empty        | has content      | Set `LOCAL_WIKI = false`. Warn the user: "Local wiki is empty — proceeding with upstream context only." |
-| missing or empty        | empty or absent  | Stop. Tell the user the work item has no wiki content and no upstream context. Suggest running `/ingest` first. |
+|--------------------------|------------------|--------|
+| exists and has entries   | any              | Set `LOCAL_WIKI = true`. Note the total number of pages listed. |
+| missing or no entries    | has content      | Set `LOCAL_WIKI = false`. Warn the user: "No sources ingested for this work item — proceeding with upstream context only." |
+| missing or no entries    | empty or absent  | Stop. Tell the user no sources have been ingested and there is no upstream context. Suggest running `/ingest` first. |
 
-**If `LOCAL_WIKI = true`**, also check whether `{OUTPUT_PATH}entities/` has any pages. If the entities folder is empty, warn the user: "No entity pages found in the wiki — the DER may be sparse. Consider running `/ingest` on domain model documentation first." Then ask if they want to proceed anyway.
+**If `LOCAL_WIKI = true`**, also check whether the local index has any entries under `## Entities`. If the entities folder is empty, warn the user: "No entity pages found in the wiki — the DER may be sparse. Consider running `/ingest` on domain model documentation first." Then ask if they want to proceed anyway.
 
 ---
 
@@ -35,10 +35,10 @@ Determine the content situation using the table below:
 
 **If `LOCAL_WIKI = true`**, read in this order (entities are primary; concepts and sources provide relationship context):
 
-1. All `entities/` pages listed in `{OUTPUT_PATH}index.md`
-2. All `concepts/` pages listed in `{OUTPUT_PATH}index.md`
-3. `{OUTPUT_PATH}overview.md`
-4. All `sources/` pages (skim for data structure descriptions, not full read)
+1. `docs/wiki/overview.md` — global synthesis (read directly)
+2. All `entities/` pages listed in `{OUTPUT_PATH}index.md` — follow each link to load from `docs/wiki/`
+3. All `concepts/` pages listed in `{OUTPUT_PATH}index.md`
+4. All `sources/` pages listed in `{OUTPUT_PATH}index.md` (skim for data structure descriptions)
 
 **If `{CONTEXT_PATH}` is non-empty**, read all files present in `{CONTEXT_PATH}` after completing the list above. These are upstream artifacts from the parent work item:
 - Upstream `der.md` from a sibling or parent item may define entities already modeled — do not redefine them, extend them.
@@ -89,95 +89,15 @@ Wait for a response. If the user says "go ahead", proceed.
 
 ## Step 4 — Write the DER artifact
 
-Create `{OUTPUT_PATH}artifacts/der.md`:
+Create `{OUTPUT_PATH}artifacts/der.md`.
 
-````markdown
----
-title: "DER — {WORK_ITEM_TITLE}"
-type: artifact
-subtype: der
-work_item_type: {WORK_ITEM_TYPE}
-hierarchy_level: Product
-generated: YYYY-MM-DD
-entities_count: N
-relationships_confirmed: N
-relationships_inferred: N
----
+Use the template from `template.md` in this same skill directory. Fill all placeholders and preserve the section order.
 
-# DER: {WORK_ITEM_TITLE}
+Optional quality check: run `scripts/validate.sh {OUTPUT_PATH}artifacts/der.md`.
 
-## Diagrama
+Reference output format example: `examples/sample.md`.
 
-```mermaid
-erDiagram
-    ENTITY_A {
-        type attribute_name "description"
-    }
-    ENTITY_B {
-        type attribute_name "description"
-    }
-    ENTITY_A ||--o{ ENTITY_B : "relationship label"
-    ENTITY_B }o--|| ENTITY_C : "relationship label"
-```
-
-> Dashed lines (if present) indicate inferred relationships not yet confirmed by the wiki.
-
----
-
-## Entity Glossary
-
-| Entity | Description | Attributes documented | Source |
-|--------|------------|----------------------|--------|
-| {EntityA} | {what it represents} | {attribute1, attribute2} | [[entities/entity-a]] |
-| {EntityB} | ... | ... | [[entities/entity-b]] |
-
----
-
-## Confirmed Relationships
-
-Relationships explicitly stated in wiki pages:
-
-| Relationship | Cardinality | Label | Source |
-|-------------|-------------|-------|--------|
-| EntityA → EntityB | one-to-many | has many | [[entities/entity-a]] |
-
----
-
-## Inferred Relationships
-
-Relationships implied by context but not explicitly stated — **require team validation before use in design:**
-
-| Relationship | Cardinality | Evidence | Source |
-|-------------|-------------|----------|--------|
-| EntityA → EntityD | one-to-many | "may contain" in source text | [[sources/slug]] |
-
-> [!warning] Inferred relationships are hypotheses, not facts. Validate with the team before using these in implementation.
-
----
-
-## Gaps
-
-Entities or attributes the wiki does not fully describe:
-
-> [!gap] {Entity name}: attributes not documented in the wiki. Ingest domain model documentation to fill this gap.
-
----
-
-## Open Questions
-
-- [ ] ...
-
----
-
-## Sources
-
-- [[overview]]
-- [[entities/...]]
-- [[concepts/...]]
-- [[sources/...]]
-````
-
-**Mermaid ER rules to follow:**
+Mermaid ER rules to follow:
 - Entity names in `UPPER_SNAKE_CASE` in the diagram, natural language in the glossary
 - Attribute type must be one of: `string`, `int`, `float`, `boolean`, `date`, `datetime`, `uuid`, `json`
 - Use `"description"` (quoted string) as the third token for attribute comments
@@ -185,15 +105,12 @@ Entities or attributes the wiki does not fully describe:
 - If an entity has no documented attributes, render it with an empty block `ENTITY_NAME { }`
 
 ---
-
 ## Step 5 — Update navigation files
 
-**`{OUTPUT_PATH}index.md`** — add or update the `## Artifacts` section:
+**`{OUTPUT_PATH}artifacts/index.md`** — create if it does not exist, then add or update the DER entry:
 
 ```markdown
-## Artifacts
-
-- [[artifacts/der]] — DER ({N} entities, {N} relationships, generated YYYY-MM-DD)
+- [[der]] — DER ({N} entities, {N} relationships, generated YYYY-MM-DD)
 ```
 
 **`{OUTPUT_PATH}log.md`** — append one entry at the top:

@@ -20,9 +20,9 @@ Follow every step in order.
 Attempt to read `{OUTPUT_PATH}index.md` and set `LOCAL_WIKI`:
 
 | `{OUTPUT_PATH}index.md` | Action |
-|-------------------------|--------|
-| exists and has content  | Set `LOCAL_WIKI = true`. Note the total number of pages indexed. |
-| missing or empty        | Set `LOCAL_WIKI = false`. The skill will rely on the parent's artifacts as the sole local source. |
+|--------------------------|--------|
+| exists and has content   | Set `LOCAL_WIKI = true`. Note the total number of pages indexed. |
+| missing or empty         | Set `LOCAL_WIKI = false`. The skill will rely on the parent's artifacts as the sole local source. |
 
 `{CONTEXT_PATH}` points to the **direct parent** work item's `output/artifacts/`. What is available there determines the parent mode. Check `{CONTEXT_PATH}`:
 
@@ -119,8 +119,8 @@ Read in this order:
 
 **If `LOCAL_WIKI = true`**, also read:
 
-2. `{OUTPUT_PATH}overview.md`
-3. All `sources/` pages listed in `{OUTPUT_PATH}index.md`
+2. `docs/wiki/overview.md` — global synthesis (read directly)
+3. All `sources/` pages listed in `{OUTPUT_PATH}index.md` — follow each link to load from `docs/wiki/`
 
 4. Any other files present in `{CONTEXT_PATH}`:
    - `requirements.md` — acceptance criteria candidates; carry them forward.
@@ -142,8 +142,8 @@ Read in this order:
 
 **If `LOCAL_WIKI = true`**, also read:
 
-2. `{OUTPUT_PATH}overview.md`
-3. All `sources/` pages listed in `{OUTPUT_PATH}index.md`
+2. `docs/wiki/overview.md` — global synthesis (read directly)
+3. All `sources/` pages listed in `{OUTPUT_PATH}index.md` — follow each link to load from `docs/wiki/`
 4. All `concepts/` pages listed in `{OUTPUT_PATH}index.md`
 5. All `entities/` pages listed in `{OUTPUT_PATH}index.md`
 
@@ -205,143 +205,22 @@ For each story in `STORIES`, create the file:
 
 Example path: `output/artifacts/user-stories/F-001-US-001-cadastrar-produto-catalogo.md`
 
-Use the template below for each file:
+Use the template from `template.md` in this same skill directory. Fill all placeholders and preserve the section order.
 
-```markdown
----
-title: "{SELECTED_FEATURE_ID} · {story.id} — {WORK_ITEM_TITLE}"
-type: artifact
-subtype: user-story
-feature_id: {SELECTED_FEATURE_ID}
-story_id: {story.id}
-work_item_type: {WORK_ITEM_TYPE}
-hierarchy_level: Tactical
-persona: {story.persona}
-generated: YYYY-MM-DD
-sources_read: N
----
+Optional quality check: run `scripts/validate.sh <generated-story-file.md>` for each generated story file.
 
-# User Story: {story.action short title}
-
-> As a **{story.persona}**,
-> I want **{story.action}**,
-> so that **{story.benefit}**.
-
-**Feature:** [{SELECTED_FEATURE_ID} — {SELECTED_FEATURE_NAME}](../feature-list.md)
-
----
-
-## Business Context
-
-1–2 paragraphs: why this story matters, what problem it solves for the persona, and how it connects to the feature and broader initiative.
-Cite wiki pages using [[wikilinks]].
-
----
-
-## Acceptance Criteria
-
-| # | Criterion | Source |
-|---|-----------|--------|
-| AC-1 | {Specific, testable condition} | [[sources/slug]] |
-| AC-2 | ... | [[concepts/slug]] |
-
-If acceptance criteria were not defined in the wiki:
-> [!gap] Acceptance criteria are not documented in the ingested sources. Define with the product owner before sprint planning.
-
----
-
-## Gherkin Scenarios
-
-```gherkin
-Feature: {story.action short title}
-
-  Background:
-    Given {shared precondition from wiki}
-
-  Scenario: {happy path — AC-1}
-    Given {initial state}
-    When {action taken by persona}
-    Then {expected outcome}
-    And {additional assertion if needed}
-
-  Scenario: {edge case or failure}
-    Given {initial state}
-    When {action that triggers the edge case}
-    Then {expected system behavior}
-```
-
-Write only scenarios supported by wiki content. For uncovered scenarios use:
-> [!gap] Scenario for {AC-N} could not be written — the wiki does not describe the expected behavior in sufficient detail.
-
----
-
-## Business Rules
-
-| # | Rule | Source |
-|---|------|--------|
-| BR-1 | {Rule statement} | [[sources/slug]] |
-
----
-
-## Definition of Done
-
-- [ ] All acceptance criteria verified
-- [ ] All Gherkin scenarios pass
-- [ ] Code reviewed
-- [ ] Tests written for each scenario
-- [ ] No regression in related features
-{Add any DoD items explicitly stated in the wiki sources below:}
-- [ ] {wiki-stated requirement}
-
----
-
-## Dependencies & Blockers
-
-| Type | Item | Status | Source |
-|------|------|--------|--------|
-| Feature dependency | [[artifacts/feature-list]] {SELECTED_FEATURE_ID} | required | [[sources/slug]] |
-| Story dependency | {SELECTED_FEATURE_ID}-US-00X | {required before / parallel} | [[sources/slug]] |
-| External dependency | {system or team} | {known / unknown} | [[sources/slug]] |
-
-If no dependencies were detected: "No dependencies identified in the wiki."
-
----
-
-## Out of Scope
-
-Behaviors explicitly excluded or deferred in the wiki:
-
-- {behavior} — {reason from wiki} [[sources/slug]]
-
----
-
-## Open Questions
-
-- [ ] {Question} — needs input from {stakeholder type}
-
----
-
-## Sources
-
-- [[overview]]
-- [[sources/...]]
-- [[concepts/...]]
-- [[entities/...]]
-```
+Reference output format example: `examples/sample.md`.
 
 Write all stories before moving to Step 6. If a story has a `> [!gap]` confirmed by the user as acceptable, write the file with the gap note included.
 
 ---
-
 ## Step 6 — Update navigation files
 
-**`{OUTPUT_PATH}index.md`** — add or update the `## Artifacts` section, listing every generated file:
+**`{OUTPUT_PATH}artifacts/index.md`** — create if it does not exist, then add or update user stories entries:
 
 ```markdown
-## Artifacts
-
-- [[artifacts/user-stories/{SELECTED_FEATURE_ID}-US-001-{slug}]] — {story.action short title} (generated YYYY-MM-DD)
-- [[artifacts/user-stories/{SELECTED_FEATURE_ID}-US-002-{slug}]] — ...
+- [[user-stories/{SELECTED_FEATURE_ID}-US-001-{slug}]] — {story.action short title} (generated YYYY-MM-DD)
+- [[user-stories/{SELECTED_FEATURE_ID}-US-002-{slug}]] — ...
 ```
 
 **`{OUTPUT_PATH}log.md`** — append one entry at the top:

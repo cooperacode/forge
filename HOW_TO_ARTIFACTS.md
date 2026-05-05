@@ -9,8 +9,8 @@ This guide explains how to generate software engineering artifacts from your wik
 An artifact is a structured document generated from the knowledge in your wiki — briefs, requirement lists, architecture decision records, diagrams, and user stories. Artifacts do not come from Claude's training knowledge. Every claim in an artifact traces back to a wiki page, which in turn traces back to a source document you ingested.
 
 ```
-Source document  →  wiki page  →  artifact
-     (input/)         (output/)      (output/artifacts/)
+Source document  →  wiki page     →  artifact
+     (input/)         (docs/wiki/)      (output/artifacts/)
 ```
 
 You do not write artifacts by hand. You ingest sources, then run `/artifact` to generate them.
@@ -98,7 +98,7 @@ Tactical level (User Story/Task)
 
 Every artifact follows the same three-phase pattern:
 
-1. **Claude reads the wiki** — all sources, concepts, entities, and any upstream context from a parent work item.
+1. **Claude reads the wiki** — all sources, concepts, entities from `docs/wiki/`, and any upstream context from a parent work item.
 2. **Claude confirms scope with you** — surfaces what it found and asks if anything should change before writing.
 3. **Claude writes the file** — to `output/artifacts/`, then updates `index.md` and `log.md`.
 
@@ -222,7 +222,7 @@ output/artifacts/requirements.md
 
 Sections: Functional Requirements · Integration Requirements · Data Requirements · Exclusions · Gaps · Open Questions.
 
-> If the parent Strategic work item has a `requirements.md` in its `output/artifacts/` folder, Claude reads it and ensures no functional requirement violates an established constraint.
+> If the parent Strategic work item has a `requirements.md` in its `output/artifacts/` folder, Claude reads it and ensures no functional requirement violates an established constraint. The wiki itself (`docs/wiki/`) is always shared — artifacts are per work item.
 
 ---
 
@@ -466,7 +466,7 @@ output/
       F-002-US-001-verificar-conta.md
 ```
 
-`output/index.md` and `output/log.md` are updated automatically after each artifact is generated.
+`output/artifacts/index.md` and `output/log.md` are updated automatically after each artifact is generated.
 
 ---
 

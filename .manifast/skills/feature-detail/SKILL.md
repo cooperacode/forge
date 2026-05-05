@@ -20,9 +20,9 @@ Follow every step in order.
 Attempt to read `{OUTPUT_PATH}index.md` and set `LOCAL_WIKI`:
 
 | `{OUTPUT_PATH}index.md` | Action |
-|-------------------------|--------|
-| exists and has content  | Set `LOCAL_WIKI = true`. Note the total number of pages indexed. |
-| missing or empty        | Set `LOCAL_WIKI = false`. Warn the user: "Local wiki is empty — the feature detail will rely on the parent's artifacts only." |
+|--------------------------|--------|
+| exists and has content   | Set `LOCAL_WIKI = true`. Note the total number of pages indexed. |
+| missing or empty         | Set `LOCAL_WIKI = false`. Warn the user: "No sources ingested for this work item — the feature detail will rely on the parent's artifacts only." |
 
 The `feature-list.md` is an **Epic-level artifact** and lives in the parent work item's output. Check `{CONTEXT_PATH}`:
 
@@ -81,8 +81,8 @@ Read in this order:
 
 **If `LOCAL_WIKI = true`**, also read:
 
-2. `{OUTPUT_PATH}overview.md`
-3. All `sources/` pages listed in `{OUTPUT_PATH}index.md`
+2. `docs/wiki/overview.md` — global synthesis (read directly)
+3. All `sources/` pages listed in `{OUTPUT_PATH}index.md` — follow each link to load from `docs/wiki/`
 4. All `concepts/` pages listed in `{OUTPUT_PATH}index.md`
 5. All `entities/` pages listed in `{OUTPUT_PATH}index.md`
 
@@ -143,154 +143,23 @@ Wait for confirmation or corrections. Do not write any file until the user appro
 
 ## Step 5 — Write the feature detail artifact
 
-Create `{OUTPUT_PATH}artifacts/feature-detail/{SELECTED_FEATURE_ID}-{SELECTED_FEATURE_SLUG}.md`:
+Create `{OUTPUT_PATH}artifacts/feature-detail/{SELECTED_FEATURE_ID}-{SELECTED_FEATURE_SLUG}.md`.
 
-```markdown
----
-title: "Feature Detail — {SELECTED_FEATURE_ID}: {SELECTED_FEATURE_NAME}"
-type: artifact
-subtype: feature-detail
-feature_id: {SELECTED_FEATURE_ID}
-work_item_type: {WORK_ITEM_TYPE}
-hierarchy_level: Product
-generated: YYYY-MM-DD
-sources_read: N
-total_stories: N
----
+Use the template from `template.md` in this same skill directory. Fill all placeholders and preserve the section order.
 
-# Feature Detail: {SELECTED_FEATURE_ID} — {SELECTED_FEATURE_NAME}
+Keep the INVEST guidance applied in the `Proposed User Story Breakdown` section.
 
-> **Feature list entry:** [{SELECTED_FEATURE_ID}](../feature-list.md) · {priority} · {beneficiary}
+Optional quality check: run `scripts/validate.sh {OUTPUT_PATH}artifacts/feature-detail/{SELECTED_FEATURE_ID}-{SELECTED_FEATURE_SLUG}.md`.
 
-## Feature Statement
-
-1–2 paragraphs: what this feature is, who it's for, and why it matters. Cite wiki pages using [[wikilinks]].
+Reference output format example: `examples/sample.md`.
 
 ---
-
-## Goal
-
-What success looks like when this feature is fully implemented. Tie to strategic goals if upstream `brief.md` was available.
-
----
-
-## Personas
-
-| Persona | Role | Interaction with this feature | Source |
-|---------|------|-------------------------------|--------|
-| {name} | {role} | {how they use or are affected by this feature} | [[entities/slug]] |
-
----
-
-## Functional Scope
-
-Detailed description of what this feature does. Organized by behavior area if needed.
-
-### In scope
-
-- {behavior}: {description} [[sources/slug]]
-
-### Out of scope
-
-- {behavior} — {reason from wiki} [[sources/slug]]
-
----
-
-## Business Rules
-
-Rules and constraints that govern this feature's behavior, extracted from the wiki:
-
-| # | Rule | Source |
-|---|------|--------|
-| BR-1 | {Rule statement} | [[sources/slug]] |
-
----
-
-## Entity & Data Interactions
-
-Entities created, read, updated, or deleted by this feature:
-
-| Entity | Operation | Notes | Source |
-|--------|-----------|-------|--------|
-| {EntityName} | Create / Read / Update / Delete | {context} | [[entities/slug]] |
-
----
-
-## Feature-Level Acceptance Criteria
-
-High-level conditions for this feature to be considered complete:
-
-| # | Criterion | Source |
-|---|-----------|--------|
-| FAC-1 | {Specific, testable condition at feature scope} | [[sources/slug]] |
-
----
-
-## Proposed User Story Breakdown
-
-Stories required to fully deliver this feature, shaped by the **INVEST** principle. Each row maps to a file that will be generated at the Tactical level.
-
-| Story ID | Story | Persona | Priority | INVEST Notes | Depends On |
-|----------|-------|---------|----------|-------------|------------|
-| US-001 | As a {persona}, I want {action}, so that {benefit}. | {persona} | MVP / Post-MVP | — | — |
-| US-002 | ... | ... | ... | {e.g., "S: split from US-001 — too large for one sprint"} | US-001 |
-
-**INVEST criteria applied to each story:**
-- **I**ndependent — minimize coupling; dependencies on other stories are explicit in the table.
-- **N**egotiable — this breakdown is guidance, not a locked contract; stories can be merged or split.
-- **V**aluable — every story delivers observable value to a named persona; no purely technical tasks.
-- **E**stimable — stories the team cannot size due to missing information are flagged with `> [!gap]`.
-- **S**mall — stories that span multiple sub-flows or sessions are split into smaller, completable units.
-- **T**estable — each story must map to at least one verifiable acceptance criterion; untestable behaviors are flagged.
-
-**Story naming convention when generating at Tactical level:**
-`{SELECTED_FEATURE_ID}-US-001-{slug}.md` inside `artifacts/user-stories/`.
-
----
-
-## Dependencies
-
-| Type | Item | Direction | Source |
-|------|------|-----------|--------|
-| Feature dependency | [[artifacts/feature-list]] F-00X | requires / enables | [[sources/slug]] |
-| External dependency | {system or team} | {known / unknown} | [[sources/slug]] |
-
----
-
-## Gaps
-
-Areas where the wiki described a need but without enough detail to specify behavior:
-
-> [!gap] {Description of what is unclear and what type of source would resolve it}
-
----
-
-## Open Questions
-
-Questions that affect this feature's scope or design but remain unresolved:
-
-- [ ] {Question} — needs input from {stakeholder type}
-
----
-
-## Sources
-
-- [[overview]]
-- [[sources/...]]
-- [[concepts/...]]
-- [[entities/...]]
-```
-
----
-
 ## Step 6 — Update navigation files
 
-**`{OUTPUT_PATH}index.md`** — add or update the `## Artifacts` section:
+**`{OUTPUT_PATH}artifacts/index.md`** — create if it does not exist, then add or update the feature-detail entry:
 
 ```markdown
-## Artifacts
-
-- [[artifacts/feature-detail/{SELECTED_FEATURE_ID}-{SELECTED_FEATURE_SLUG}]] — Feature Detail: {SELECTED_FEATURE_NAME} (generated YYYY-MM-DD)
+- [[feature-detail/{SELECTED_FEATURE_ID}-{SELECTED_FEATURE_SLUG}]] — Feature Detail: {SELECTED_FEATURE_NAME} (generated YYYY-MM-DD)
 ```
 
 **`{OUTPUT_PATH}log.md`** — append one entry at the top:

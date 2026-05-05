@@ -155,7 +155,8 @@ Based on the `{{hierarchyLevel}}` and `{{workItemType}}` provided, create a new 
 
 The `{{workItemPath}}` shold be created following the structure: `docs/{{hierarchyLevel}}/{{workItemType}}s/{{yyyymmdd}}-{{slug workItemTitle}}/`. Make sure to replace `{{hierarchyLevel}}`, `{{workItemType}}`, `{{yyyymmdd}}`, and `{{slug workItemTitle}}` with the appropriate values based on the user's input and the current date.
 
-The `{{workItemPath}}` should have two subfolders: `input` and `output`, which will be used to store any relevant files or documentation related to the work item.
+The `{{workItemPath}}` should have two subfolders: `input` and `output`, which will be used to store source documents and generated artifacts respectively. Wiki pages are NOT stored inside the work item folder — they go to the centralized `docs/wiki/` folder.
+
 The final folder structure for the new work item should look like this:
 
 ```
@@ -163,8 +164,39 @@ docs/
   {{hierarchyLevel}}/
     {{workItemType}}s/
       {{yyyymmdd}}-{{slug workItemTitle}}/
-        input/.gitkeep
-        output/.gitkeep
+        input/.gitkeep         ← place source documents here
+        output/index.md        ← local wiki index (subset view of docs/wiki/)
+        output/log.md          ← artifact generation log
+        output/artifacts/      ← generated artifacts go here
+```
+
+Create `output/index.md` with this content:
+
+```markdown
+---
+title: "Local Index — {{workItemTitle}}"
+type: local-index
+work_item: {{workItemPath}}
+last_updated: {{yyyymmdd}}
+---
+
+# Local Index: {{workItemTitle}}
+
+Pages ingested for this work item. Run `/ingest` to populate.
+
+## Sources
+
+## Concepts
+
+## Entities
+```
+
+Create `output/log.md` with this content:
+
+```markdown
+# Log: {{workItemTitle}}
+
+Activity log for this work item. Entries are prepended by `/ingest` and `/artifact`.
 ```
 
 #### step 1.5: Create/Edit the manifast.yaml file

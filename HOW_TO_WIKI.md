@@ -9,20 +9,66 @@ This guide covers the three operations that build and maintain your knowledge ba
 The wiki is the layer between your raw source documents and your generated artifacts. Every time you ingest a source, Claude reads it and writes structured wiki pages — summaries, concept definitions, entity profiles, and a synthesis overview. Artifacts are then generated from the wiki, not from the raw files.
 
 ```
-input/          →    /ingest    →    output/wiki    →    /artifact    →    output/artifacts/
+input/          →    /ingest    →    docs/wiki/     →    /artifact    →    output/artifacts/
 (raw sources)                       (structured)                           (briefs, ADRs, etc.)
 ```
 
-The wiki lives entirely inside `output/` and is made of plain Markdown files organized into four folders:
+The wiki lives in a single centralized folder at `docs/wiki/`, shared across all work items. It is made of plain Markdown files organized into four folders:
 
 ```
-output/
-  sources/      ← one page per ingested document
-  concepts/     ← themes, patterns, techniques extracted from sources
-  entities/     ← people, organizations, systems, datasets named in sources
-  overview.md   ← running synthesis of everything ingested so far
-  index.md      ← navigation index: all pages listed by category
-  log.md        ← audit trail: every ingest, query, and lint recorded
+docs/
+  wiki/
+    sources/      ← one page per ingested document
+    concepts/     ← themes, patterns, techniques extracted from sources
+    entities/     ← people, organizations, systems, datasets named in sources
+    overview.md   ← running synthesis of everything ingested so far
+    index.md      ← navigation index: all pages listed by category
+    log.md        ← audit trail: every ingest, query, and lint recorded
+    SCHEMA.md     ← frontmatter schema and conventions
+```
+
+Each wiki page carries a `source_workitem` field in its frontmatter that records which work item originated it. This enables `/lint` to detect orphaned pages when work items are removed.
+
+---
+
+## Two indexes: global and local
+
+The wiki uses two complementary navigation indexes:
+
+**Global index** — `docs/wiki/index.md`
+Lists every page in the wiki, from all work items. Used by `/query` and `/lint` for cross-cutting operations. Entries use paths relative to `docs/wiki/`.
+
+**Local index** — `{workitem}/output/index.md`
+A scoped view that lists only the pages contributed by this specific work item. Entries use repo-root paths pointing into `docs/wiki/`. Artifact skills read this index to know exactly which pages are relevant — this prevents artifacts from being informed by unrelated work items' sources.
+
+```
+docs/wiki/index.md         ← global: all pages, all work items
+output/index.md            ← local: only pages from this work item
+```
+
+The local index is created as an empty stub when you run `/workitem` and populated automatically each time you run `/ingest`. You never need to edit it manually.
+
+### Local index format
+
+```markdown
+---
+title: "Local Index — My Work Item"
+type: local-index
+work_item: docs/strategic/initiatives/20260503-my-work-item/
+last_updated: 2026-05-03
+---
+
+## Sources
+
+- [business-analyst-notes](docs/wiki/sources/business-analyst-notes.md) — description
+
+## Concepts
+
+- [mvp-scope](docs/wiki/concepts/mvp-scope.md) — description
+
+## Entities
+
+- [client-coordinator](docs/wiki/entities/client-coordinator.md) — description
 ```
 
 ---
@@ -50,6 +96,8 @@ docs/strategic/initiatives/20260503-redesign-the-onboarding-process/
     stakeholder-meeting-notes.md
     client-email.txt
 ```
+
+The wiki pages created from this ingest will go to `docs/wiki/` — not inside the work item folder.
 
 Supported formats: **Markdown**, **plain text**, **PDF**, **images** (charts, screenshots, diagrams).
 
@@ -88,7 +136,7 @@ This is your chance to guide what gets preserved. You can:
 
 ### Step 4 — Confirm the pages to update
 
-Claude identifies which wiki pages will be created or updated:
+Claude identifies which wiki pages will be created or updated, all inside `docs/wiki/`:
 
 ```
 Pages to update:
@@ -113,6 +161,10 @@ Updated: concepts/mvp-scope, overview
 Flagged: 1 contradiction — sources/stakeholder-meeting-notes disputes concepts/mvp-scope
          on whether appeals belong in MVP.
 
+Navigation updated:
+- docs/wiki/index.md (global)
+- output/index.md (local — this work item's scoped view)
+
 Anything you want me to revisit before we continue?
 ```
 
@@ -122,7 +174,7 @@ Contradictions are flagged but never silently resolved. Claude marks them with a
 
 ### What a source page looks like
 
-Every ingested document gets its own page at `output/sources/<slug>.md`:
+Every ingested document gets its own page at `docs/wiki/sources/<slug>.md`:
 
 ```markdown
 ---
@@ -131,6 +183,7 @@ slug: stakeholder-meeting-notes
 type: source
 date_ingested: 2026-05-03
 original_file: input/stakeholder-meeting-notes.md
+source_workitem: docs/strategic/initiatives/20260503-redesign-the-onboarding-process/
 ---
 
 ## Summary
@@ -206,7 +259,7 @@ After answering, Claude offers to save the result:
 Want me to save this as a wiki page?
 ```
 
-If you say yes, the answer is filed under `output/concepts/<slug>.md` with all citations intact — and the query is logged in `log.md`. This is useful for synthesis questions where the answer itself becomes reusable knowledge.
+If you say yes, the answer is filed under `docs/wiki/concepts/<slug>.md` with all citations intact — and the query is logged in `log.md`. This is useful for synthesis questions where the answer itself becomes reusable knowledge.
 
 ---
 

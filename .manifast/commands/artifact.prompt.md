@@ -43,7 +43,9 @@ INPUT_PATH  = {MWI_PATH}/input/
 OUTPUT_PATH = {MWI_PATH}/output/
 ```
 
-Verify that `OUTPUT_PATH` exists. If it does not, stop and tell the user to run `/ingest` first.
+Verify that `OUTPUT_PATH` exists. If it does not, stop and tell the user to run `/workitem` first.
+
+Verify that `{OUTPUT_PATH}index.md` exists and has content (Sources, Entities, or Concepts sections with at least one entry). If not, stop and tell the user to run `/ingest` first — no sources have been ingested for this work item.
 
 ---
 

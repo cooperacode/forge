@@ -34,26 +34,35 @@ If the user invoked the skill with `-buddy` (e.g. `/ingest -buddy`), activate **
 
 ## Step 1 — Select the source
 
-**Default mode:** List all files in `{INPUT_PATH}`, announce that all will be processed sequentially without confirmation, and display the full queue:
+**Default mode:**
+
+1. List all files in `{INPUT_PATH}`. If the folder does not exist or is empty, tell the user and stop.
+
+2. Read `{OUTPUT_PATH}index.md` (if it exists) and extract every entry under `## Sources`. Each entry slug corresponds to an already-ingested file. Compute the expected slug for each file in `{INPUT_PATH}` as the lowercase hyphen-separated filename without extension (e.g. `meeting-notes.pdf` → `meeting-notes`). Filter out any file whose slug already appears in the Sources section — those have been ingested in a previous call.
+
+3. From the remaining unprocessed files, take the first batch of **up to 5**. Display the batch before starting:
 
 ```
-Files queued for ingest:
-1. filename-a.pdf
-2. filename-b.md
-3. filename-c.docx
+Files in input/: 12 total — 7 already ingested, 5 to process now.
 
-Starting with: filename-a.pdf (1 of 3)
+Batch (5 of 5 remaining):
+[1/5] filename-a.pdf
+[2/5] filename-b.md
+[3/5] filename-c.docx
+[4/5] filename-d.pdf
+[5/5] filename-e.txt
+
+Starting with: filename-a.pdf
 ```
 
-Do not wait for user input. For each file, announce it before reading:
+4. Do not wait for user input. For each file in the batch, announce it before reading:
 
 ```
-[1/3] Processing: filename-a.pdf
+[1/5] Processing: filename-a.pdf
 ```
 
-Read each file in full and process it through Steps 2–7 before moving to the next.
+Read each file in full and process it through Steps 2–7 before moving to the next file in the batch.
 
-- If `{INPUT_PATH}` does not exist or is empty, tell the user and stop. Do not proceed.
 - If a file is a PDF or image, extract all readable text first.
 - If a file has images with relevant content (charts, diagrams, screenshots), note them explicitly — you will reference them in the summary page.
 
@@ -306,14 +315,30 @@ Updated: concepts/self-attention, concepts/transformer, entities/vaswani-ashish
 Flagged: 1 contradiction with concepts/positional-encoding
 ```
 
-**Default mode:** Print the summary. If more files remain in the queue, announce the transition before continuing:
+**Default mode:** Print the per-file summary. Announce the transition to the next file in the batch before continuing:
 
 ```
-[1/3] Done: filename-a.pdf
-[2/3] Next: filename-b.md — starting now.
+[1/5] Done: filename-a.pdf
+[2/5] Next: filename-b.md — starting now.
 ```
 
-Then proceed immediately to Step 1 for the next file. If this was the last file, print a consolidated summary of everything processed across all files and stop.
+After all files in the current batch are processed, print a consolidated summary:
+
+```
+Batch complete. Processed 5 files.
+
+Created: sources/filename-a, sources/filename-b, concepts/x, entities/y (N total)
+Updated: concepts/z, overview
+Flagged: 1 contradiction (see sources/filename-a)
+```
+
+If unprocessed files still remain in `{INPUT_PATH}`, append:
+
+```
+N files still pending in input/. Run /ingest again to process the next batch.
+```
+
+Then stop. Do not process beyond the 5-file batch limit per call.
 
 **Buddy mode:** Append "Anything you want me to revisit before we continue?" and wait for a response before moving on or closing.
 

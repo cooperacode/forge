@@ -66,7 +66,28 @@ Wait for a response. Adjust your understanding if the user provides corrections.
 
 ---
 
-## Step 4 — Write the strategic brief
+## Step 4 — Lock the output language
+
+Before writing any file, resolve and declare the language that will be used throughout:
+
+1. Read `{LANGUAGE}` from the parameters passed by the orchestrator.
+2. Map to the expected locale:
+   - `pt-BR` → Brazilian Portuguese
+   - `en` → English
+   - anything else → English (and warn the user)
+3. If `{LANGUAGE}` is not set or is empty, default to `en` and warn: "LANGUAGE was not set — defaulting to English."
+4. State the resolved language explicitly before proceeding:
+
+```
+Output language locked: {resolved language} ({LANGUAGE})
+All artifact content, headings, and messages will be written in this language.
+```
+
+**Do not begin writing any file until this step is complete.** This prevents language drift across multiple generated files.
+
+---
+
+## Step 5 — Write the strategic brief
 
 Create the file `{OUTPUT_PATH}artifacts/brief.md`.
 
@@ -74,7 +95,6 @@ Use the template from `template.md` in this same skill directory. Fill all place
 
 Optional quality check: run `scripts/validate.sh {OUTPUT_PATH}artifacts/brief.md`.
 
-Reference output format example: `examples/sample.md`.
 
 Rules while writing:
 - Every factual claim must cite a wiki page with `[[wikilinks]]`.
@@ -83,7 +103,7 @@ Rules while writing:
 - Write in plain, direct language. No filler. No passive voice where avoidable.
 
 ---
-## Step 5 — Update navigation files
+## Step 6 — Update navigation files
 
 After writing the brief, update:
 
@@ -110,7 +130,7 @@ Open questions: N
 
 ---
 
-## Step 6 — Close the loop
+## Step 7 — Close the loop
 
 Tell the user what was done:
 
@@ -132,5 +152,6 @@ Anything you want me to revise before we continue?
 - **Never write content not supported by the wiki.** Use `> [!gap]` for any section the wiki does not cover. Do not fill gaps with your training knowledge.
 - **Never modify source or concept pages.** Brief generation is read-only on the wiki (`docs/wiki/`). The only files you write are `artifacts/brief.md`, `artifacts/index.md`, and `log.md` — all inside `{OUTPUT_PATH}`.
 - **Never skip Step 3.** The user must confirm scope before you write 400+ words. This keeps the brief aligned with intent.
+- **Never skip Step 4.** Language must be locked before any file is written — never assume or infer the language mid-generation.
 - **If `overview.md` does not exist**, proceed using source and concept pages only — note in the brief that the overview is absent.
 - **If the wiki has fewer than 3 pages**, warn the user that the brief will have significant gaps and ask if they want to proceed or ingest more sources first.

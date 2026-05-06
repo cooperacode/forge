@@ -5,56 +5,57 @@ tools: [vscode/askQuestions, read, edit, search, todo, vscode/memory]
 argument-hint: "Provide a title for the work item, a detailed description, and any relevant tags or labels."
 ---
 
-You are helping create a new work item for the project backlog.
+You are helping create a new work item for the project backlog. Follow the workflow below without unnecessary questions outside the defined steps.
 
-> DON'T ASK NOTHING. JUST FOLLOW THE INSTRUCTIONS BELOW TO CREATE A NEW WORK ITEM AND STORE IT IN THE `manifast.yaml` FILE LOCATED IN THE `docs` FOLDER OF THE PROJECT REPOSITORY.
+## Preamble: Resolve Global Variables
 
-## Language
+Before doing anything else, attempt to read `docs/manifast.yaml` **once** — this single read serves both the language detection and the existence check used in step 0.
 
-Before doing anything else, read `docs/manifast.yaml` and extract the `language` field. Store it as `{{language}}`. If the field is absent, default to `en`.
+- If the file **exists**: extract the `language` field and set `{{language}}`. Note whether any items are present.
+- If the file **does not exist**: set `{{language}} = "en"`. Treat the item list as empty.
 
-Use `{{language}}` for **all messages you display to the user** and **all artifact content** you write throughout this command. If `{{language}}` is `pt-BR`, communicate in Brazilian Portuguese. If `{{language}}` is `en`, communicate in English.
+Use `{{language}}` for **all messages displayed to the user** and **all artifact content** written throughout this command. If `{{language}}` is `pt-BR`, communicate in Brazilian Portuguese. If `{{language}}` is `en`, communicate in English.
 
 ## Context
 
-Here is the most widely accepted division and {{hierarchyLevel}} in the agile model, organized from the most strategic (macro) to the most tactical and technical (micro) level:
+Here is the most widely accepted hierarchy in the agile model, organized from the most strategic (macro) to the most tactical and technical (micro) level:
 
 ```yaml
 hierarchy:
   - strategic:
     - Theme:
-        description: A collection of related work that supports a common goal or area of focus. 
+        description: A collection of related work that supports a common goal or area of focus.
         composition: Themes help organize and prioritize work across multiple epics and initiatives.
         sample: "Improve User Experience"
     - Initiative:
-        description: A high-level effort that drives significant business value and aligns with strategic goals. 
+        description: A high-level effort that drives significant business value and aligns with strategic goals.
         composition: It often encompasses multiple epics and is focused on achieving a specific outcome or objective.
         sample: "Redesign the onboarding process"
   - product:
     - Epic:
-        description: A large body of work that can be broken down into smaller tasks or user stories. 
+        description: A large body of work that can be broken down into smaller tasks or user stories.
         composition: Epics are typically focused on a specific feature or functionality and may span multiple sprints.
         sample: "User Authentication System"
     - Feature:
-        description: A distinct piece of functionality that delivers value to the user. 
+        description: A distinct piece of functionality that delivers value to the user.
         composition: Features are often derived from epics and can be completed within a single sprint.
         sample: "Implement social media login"
   - tactical:
     - User Story:
-        description: A short, simple description of a feature or functionality from the perspective of the end user. 
+        description: A short, simple description of a feature or functionality from the perspective of the end user.
         composition: User stories are typically written in the format "As a [user], I want [feature] so that [benefit]."
         sample: "As a user, I want to reset my password so that I can regain access to my account."
     - Task:
-        description: A specific piece of work that needs to be completed. 
+        description: A specific piece of work that needs to be completed.
         composition: Tasks are often derived from user stories and represent the individual steps required to implement a feature or functionality.
         sample: "Design the password reset page"
     - Bug:
-        description: An issue or defect in the software that needs to be fixed. 
+        description: An issue or defect in the software that needs to be fixed.
         composition: Bugs are typically reported by users or testers and require investigation and resolution.
-        sample: "Fix the login page error when using special characters in the password"      
+        sample: "Fix the login page error when using special characters in the password"
 ```
 
-All work items should be stored in a `manifast.yaml` file located in the `docs` folder of the project repository. Each work item should include the following details:
+All work items are stored in `docs/manifast.yaml`. Each work item includes:
 
 ```yaml
 items:
@@ -65,45 +66,49 @@ items:
     workItemType: The specific type of work item (e.g., Theme, Initiative, Epic, Feature, User Story, Task, Bug)
     createdAt: The date and time when the work item was created
     updatedAt: The date and time when the work item was last updated
+    path: The path to the work item folder in the repository
+    parent: The path to the parent work item folder, or "" for root-level items
 ```
-
-The `.env` file should be used to store environment variables related to the currently selected work item, such as its title, tags, hierarchy level, type, and path in the repository.
 
 ## Instructions
 
-> FOLLOW THE INSTRUCTIONS BELOW TO CREATE A NEW WORK ITEM AND STORE IT IN THE `manifast.yaml` FILE LOCATED IN THE `docs` FOLDER OF THE PROJECT REPOSITORY.
-
 ### step 0: Choose the action to perform
 
-If the `manifast.yaml` file does not exist in the `docs` folder, go to **step 1**. If it already exists, Use #tool:vscode/askQuestions to ask:
+If `docs/manifast.yaml` **does not exist** (resolved in Preamble), go directly to **step 1**.
+
+If it **already exists**, use #tool:vscode/askQuestions to ask:
 > Q: What action would you like to perform?
 
-The user should choose one of the following actions:
-- **Create a new work item**: This will guide you through the process of creating a new work item for the project backlog.
-- **Select an existing work item**: This will allow you to view and edit the details of an existing work item in the project backlog.
+Options:
+- **Create a new work item**: Guide through creating a new work item for the project backlog.
+- **Select an existing work item**: View and select an existing work item from the project backlog.
 
-If the user chooses "Create a new work item", go to **step 1**. If the user chooses "Select an existing work item", go to **step 2**.
+If the user chooses "Create a new work item", go to **step 1**. If "Select an existing work item", go to **step 2**.
 
 ### step 1: Create a new work item
 
-#### step 1.1: Choose the hierarchy level 
+#### step 1.1: Choose the hierarchy level
 
 Use #tool:vscode/askQuestions to ask:
 > Q: What hierarchy level should this work item be?
 
-The user to choose the `{{hierarchyLevel}}` level for the new work item. The options should include:
+Options:
 - **Strategic**: Theme, Initiative
 - **Product**: Epic, Feature
 - **Tactical**: User Story, Task, Bug
 
+Store the answer as `{{hierarchyLevel}}`.
+
 #### step 1.2: Gather work item type
 
-Verify the `{{hierarchyLevel}}` chosen in step 1.1 and then ask the user to specify the `{{workItemType}}` within that hierarchy level. For example, if the user chose "Product", ask:
-> Q: What type of work item is this? (e.g., Epic, Feature).
+Based on `{{hierarchyLevel}}` from step 1.1, ask:
+> Q: What type of work item is this? (options depend on the chosen level)
+
+Store the answer as `{{workItemType}}`.
 
 #### step 1.3: Gather work item details
 
-Ask the user to provide the following details for the new `{{workItemType}}`:
+Ask the user to provide:
 
 ```yaml
 arguments:
@@ -122,52 +127,60 @@ arguments:
 
 #### step 1.3b: Select parent work item
 
-After gathering the details above, read `docs/manifast.yaml` (if it exists).
+Using `docs/manifast.yaml` already read in the Preamble, filter existing items to show only **valid parents** for `{{hierarchyLevel}}`:
 
-Filter the existing items to show only **valid parents** for the chosen `{{hierarchyLevel}}`:
+| Child level | Valid parent types                              |
+|-------------|--------------------------------------------------|
+| Strategic   | *(none — Strategic items are always root-level)* |
+| Product     | Strategic (Theme, Initiative)                    |
+| Tactical    | Product (Epic, Feature)                          |
 
-| Child level | Valid parent levels |
-|-------------|-------------------|
-| Strategic   | Strategic          |
-| Product     | Strategic          |
-| Tactical    | Product            |
+**If `{{hierarchyLevel}}` is Strategic**, skip this question silently and set `{{parentPath}} = ""`.
 
-**If valid parent candidates exist**, use #tool:vscode/askQuestions to ask:
+**If valid parent candidates exist** for other levels, use #tool:vscode/askQuestions to ask:
 > Q: Select the parent work item (or "None" for a root-level item):
 
 Present each candidate as:
 ```
 {title} ({workItemType} · {hierarchyLevel}) — {path}
 ```
-Plus a **"None — root-level item"** option at the bottom of the list.
+Plus a **"None — root-level item"** option at the bottom.
 
-Set `{{parentPath}}` to the selected item's `path`, or `""` if the user chose "None".
+Set `{{parentPath}}` to the selected item's `path`, or `""` if "None".
 
-**If no valid parent candidates exist** (file absent or no items at the valid levels), skip this question silently and set `{{parentPath}} = ""`.
+**If no valid parent candidates exist**, skip silently and set `{{parentPath}} = ""`.
 
 #### step 1.4: Create the work item folder
 
-Based on the `{{hierarchyLevel}}` and `{{workItemType}}` provided, create a new folder (`{{workItemPath}}`) in the appropriate directory structure. For example:
+Use the following mapping to determine the folder name for `{{workItemType}}`:
 
-- For a "Feature" under "Product", use #tool:edit/createDirectory to create a folder at `docs/product/features/{{yyyymmdd}}-{{slug workItemTitle}}/`.
-- For a "User Story" under "Tactical", use #tool:edit/createDirectory to create a folder at `docs/tactical/user-stories/{{yyyymmdd}}-{{slug workItemTitle}}/`.
-...
+| workItemType | folderName   |
+|--------------|--------------|
+| Theme        | themes       |
+| Initiative   | initiatives  |
+| Epic         | epics        |
+| Feature      | features     |
+| User Story   | user-stories |
+| Task         | tasks        |
+| Bug          | bugs         |
 
-The `{{workItemPath}}` shold be created following the structure: `docs/{{hierarchyLevel}}/{{workItemType}}s/{{yyyymmdd}}-{{slug workItemTitle}}/`. Make sure to replace `{{hierarchyLevel}}`, `{{workItemType}}`, `{{yyyymmdd}}`, and `{{slug workItemTitle}}` with the appropriate values based on the user's input and the current date.
+Build `{{workItemPath}}` as:
+```
+docs/{{hierarchyLevel}}/{{folderName}}/{{yyyymmdd}}-{{slug workItemTitle}}/
+```
+Where `{{yyyymmdd}}` is the current date and `{{slug workItemTitle}}` is the lowercase, hyphen-separated version of the title.
 
-The `{{workItemPath}}` should have two subfolders: `input` and `output`, which will be used to store source documents and generated artifacts respectively. Wiki pages are NOT stored inside the work item folder — they go to the centralized `docs/wiki/` folder.
-
-The final folder structure for the new work item should look like this:
+Create the following structure using #tool:edit/createDirectory:
 
 ```
 docs/
   {{hierarchyLevel}}/
-    {{workItemType}}s/
+    {{folderName}}/
       {{yyyymmdd}}-{{slug workItemTitle}}/
-        input/.gitkeep         ← place source documents here
-        output/index.md        ← local wiki index (subset view of docs/wiki/)
-        output/log.md          ← artifact generation log
-        output/artifacts/      ← generated artifacts go here
+        input/.gitkeep             ← place source documents here
+        output/index.md            ← local wiki index (subset view of docs/wiki/)
+        output/log.md              ← artifact generation log
+        output/artifacts/.gitkeep  ← generated artifacts go here
 ```
 
 Create `output/index.md` with this content:
@@ -201,15 +214,27 @@ Activity log for this work item. Entries are prepended by `/ingest` and `/artifa
 
 #### step 1.5: Create/Edit the manifast.yaml file
 
-If the `manifast.yaml` file does not exist in the `docs` folder, use #tool:edit/createFile to create it. 
-If it already exists, read its content and append the new work item details to the existing list of items.
-Inside the `docs` folder, create a `manifast.yaml` file that includes the following structure:
+**If `docs/manifast.yaml` does not exist**, create it with the full structure:
 
 ```yaml
 language: {{language}}
 
 items:
-  - title: {{slug workItemTitle}}
+  - title: {{workItemTitle}}
+    description: {{workItemDescription}}
+    tags: [{{workItemTags}}]
+    hierarchyLevel: {{hierarchyLevel}}
+    workItemType: {{workItemType}}
+    createdAt: {{creationDate}}
+    updatedAt: {{creationDate}}
+    path: {{workItemPath}}
+    parent: {{parentPath}}
+```
+
+**If it already exists**, append only the new item entry under the existing `items:` list — do not duplicate `language:` or any other top-level key:
+
+```yaml
+  - title: {{workItemTitle}}
     description: {{workItemDescription}}
     tags: [{{workItemTags}}]
     hierarchyLevel: {{hierarchyLevel}}
@@ -222,15 +247,14 @@ items:
 
 ### step 2: Select an existing work item
 
-Use #tool:read to read the existing `manifast.yaml` file and use #tool:vscode/askQuestions to display a list of existing work items to the user. The user can then select a work item.
-Once a work item is selected, display its details (title, description, tags, hierarchy level, work item type, creation date, update date) to the user. Go to **step 3** to update the environment variables for the selected work item.
+Using `docs/manifast.yaml` already read in the Preamble, use #tool:vscode/askQuestions to display the list of existing work items. Once selected, display its details (title, description, tags, hierarchy level, work item type, creation date, update date). Go to **step 3**.
 
 ### step 3: Edit environment variables file
 
-If the file `.env` does not exist, use #tool:edit/createFile to create it. If it already exists, use #tool:edit/editFiles and replace or append the existing content with the updated environment variables. The `.env` file should include the following structure:
+If `.env` does not exist, use #tool:edit/createFile to create it. If it already exists, use #tool:edit/editFiles to replace only the `MWI_*` variables, preserving any other variables already present in the file.
 
 ```env
-MWI_TITLE={{slug workItemTitle}}
+MWI_TITLE={{workItemTitle}}
 MWI_TAGS=[{{workItemTags}}]
 MWI_LEVEL={{hierarchyLevel}}
 MWI_TYPE={{workItemType}}
@@ -239,16 +263,13 @@ MWI_PARENT={{parentPath}}
 MWI_LANG={{language}}
 ```
 
-Use the details of the selected work item to populate the environment variables in the `.env` file. Make sure to replace `{{workItemTitle}}`, `{{workItemTags}}`, `{{hierarchyLevel}}`, `{{workItemType}}`, and `{{workItemPath}}` with the appropriate values based on the selected work item.
+### Step 4: Store the .env content in memory
 
-### Step 4: Store the .env file content in memory
+Read the `.env` file using #tool:read/readFile and store its content in memory using #tool:vscode/memory
 
-After successfully creating a new work item or selecting an existing one and updating the environment variables, 
-use #tool:read/readFile to read the `.env` file and store its content in memory using #tool:vscode/memory.
+### Step 5: Finish
 
-### Step 5: Start a new session
-
-After completing step 4, display this exact message and stop — do not continue the conversation:
+Display this exact message and stop — do not continue the conversation:
 
 ```
 ✅ Work item "{{workItemTitle}}" is ready.
@@ -256,25 +277,9 @@ After completing step 4, display this exact message and stop — do not continue
 Run /clear to start a fresh context for this work item.
 ```
 
-Execute `/clear` immediately after displaying this message.
-
-## Summary
-
-In this prompt, you will create a new work item for the project backlog and store it in the `manifast.yaml` file located in the `docs` folder of the project repository. You will follow a structured workflow that includes choosing the hierarchy level and work item type, gathering details about the work item, creating the necessary folder structure, and updating the `manifast.yaml` file with the new work item information. Additionally, you will update the `.env` file with environment variables related to the currently selected work item.
-
-## Algorithmically, the process can be summarized as follows:
-
-1. Check if `manifast.yaml` exists in the `docs` folder.
-2. If it does not exist, prompt the user to create a new work item and go to **step 1**.
-3. If it exists, ask the user if they want to create a new work item or select an existing one.
-4. If the user chooses to create a new work item, follow the steps to gather details, create the folder structure, and update the `manifast.yaml` file.
-5. If the user chooses to select an existing work item, display the list of existing work items and allow them to select one.
-6. Once a work item is selected, display its details and update the environment variables in the `.env` file accordingly.
-
 ## Restrictions
-- Do not create any files or folders outside of the `docs` directory.
-- Ensure that all work items are stored in the `manifast.yaml` file in the correct format.
-- Do not modify or delete existing work items in the `manifast.yaml` file unless explicitly instructed by the user.
-- Ensure that the environment variables in the `.env` file are updated correctly based on the selected work item.
-- Do not ask the user for any information that is not relevant to creating or selecting a work item.
-- JUST FOLLOW THE INSTRUCTIONS AND WORKFLOW OUTLINED IN THIS PROMPT TO ENSURE CONSISTENCY AND ACCURACY IN MANAGING WORK ITEMS FOR THE PROJECT BACKLOG. DO NOT DEVIATE FROM THE STEPS OR REQUIREMENTS SPECIFIED IN THIS PROMPT.
+
+- Do not create files or folders outside of the `docs` directory (the `.env` file at the project root is the only exception).
+- Ensure all work items are stored in `manifast.yaml` in the correct format.
+- Do not modify or delete existing work items unless explicitly instructed by the user.
+- Do not ask the user for information outside the defined question steps.

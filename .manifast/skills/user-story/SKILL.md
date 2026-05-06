@@ -195,7 +195,28 @@ The `slug` is a short kebab-case description (3–5 words, ASCII only, no stopwo
 
 ---
 
-## Step 5 — Write one file per user story
+## Step 5 — Lock the output language
+
+Before writing any file, resolve and declare the language that will be used throughout:
+
+1. Read `{LANGUAGE}` from the parameters passed by the orchestrator.
+2. Map to the expected locale:
+   - `pt-BR` → Brazilian Portuguese
+   - `en` → English
+   - anything else → English (and warn the user)
+3. If `{LANGUAGE}` is not set or is empty, default to `en` and warn: "LANGUAGE was not set — defaulting to English."
+4. State the resolved language explicitly before proceeding:
+
+```
+Output language locked: {resolved language} ({LANGUAGE})
+All artifact content, headings, and messages will be written in this language.
+```
+
+**Do not begin writing any file until this step is complete.** This prevents language drift across multiple generated files.
+
+---
+
+## Step 6 — Write one file per user story
 
 For each story in `STORIES`, create the file:
 
@@ -209,12 +230,11 @@ Use the template from `template.md` in this same skill directory. Fill all place
 
 Optional quality check: run `scripts/validate.sh <generated-story-file.md>` for each generated story file.
 
-Reference output format example: `examples/sample.md`.
 
 Write all stories before moving to Step 6. If a story has a `> [!gap]` confirmed by the user as acceptable, write the file with the gap note included.
 
 ---
-## Step 6 — Update navigation files
+## Step 7 — Update navigation files
 
 **`{OUTPUT_PATH}artifacts/index.md`** — create if it does not exist, then add or update user stories entries:
 
@@ -240,7 +260,7 @@ Sources read: N pages
 
 ---
 
-## Step 7 — Close the loop
+## Step 8 — Close the loop
 
 ```
 Done. {N} user stories generated for feature {SELECTED_FEATURE_ID} — {SELECTED_FEATURE_NAME}.
@@ -265,6 +285,7 @@ Anything you want me to revise?
 - **`PARENT_MODE = FEATURE`:** `feature-detail` is the primary source; feature scope is implicit. Do not ask the user to "select a feature from a list".
 - **`PARENT_MODE = EPIC`:** `feature-list` is required; ask the user to select a feature; no `feature-detail` available in this context. Recommend creating a child Feature work item for richer stories.
 - **Never write files before Step 4 is confirmed.** The decomposition must be approved before any file is created.
+- **Never skip Step 5.** Language must be locked before any file is written — never assume or infer the language mid-generation.
 - **One story per file.** Never merge multiple stories into one file.
 - **File naming is fixed:** `{feature_id}-{story_id}-{slug}.md` inside `artifacts/user-stories/`. Do not deviate.
 - **Never invent acceptance criteria not backed by the wiki.** Use `> [!gap]` for missing criteria.

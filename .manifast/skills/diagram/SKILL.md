@@ -136,7 +136,28 @@ Wait for a response. If the user says "go ahead", proceed.
 
 ---
 
-## Step 5 — Write the diagram artifact
+## Step 5 — Lock the output language
+
+Before writing any file, resolve and declare the language that will be used throughout:
+
+1. Read `{LANGUAGE}` from the parameters passed by the orchestrator.
+2. Map to the expected locale:
+   - `pt-BR` → Brazilian Portuguese
+   - `en` → English
+   - anything else → English (and warn the user)
+3. If `{LANGUAGE}` is not set or is empty, default to `en` and warn: "LANGUAGE was not set — defaulting to English."
+4. State the resolved language explicitly before proceeding:
+
+```
+Output language locked: {resolved language} ({LANGUAGE})
+All artifact content, headings, and messages will be written in this language.
+```
+
+**Do not begin writing any file until this step is complete.** This prevents language drift across multiple generated files.
+
+---
+
+## Step 6 — Write the diagram artifact
 
 Create `{OUTPUT_PATH}artifacts/diagrams/{diagram-type-slug}.md`.
 
@@ -146,10 +167,9 @@ Fill all placeholders and preserve the section order.
 
 Optional quality check: run `scripts/validate.sh {OUTPUT_PATH}artifacts/diagrams/{diagram-type-slug}.md`.
 
-Reference output format example: `examples/sample.md`.
 
 ---
-## Step 6 — Update navigation files
+## Step 7 — Update navigation files
 
 **`{OUTPUT_PATH}index.md`** — add or update the `## Artifacts` section:
 
@@ -173,7 +193,7 @@ Sources read: N pages
 
 ---
 
-## Step 7 — Close the loop
+## Step 8 — Close the loop
 
 ```
 Done. {Diagram type} diagram generated at {OUTPUT_PATH}artifacts/diagrams/{slug}.md.
@@ -197,5 +217,6 @@ Anything you want me to revise?
 - **Never modify source/concept/entity pages.** Diagram generation is read-only on the wiki.
 - **Never skip Step 2.** The diagram type must be explicitly selected — do not guess.
 - **Never skip Step 4.** Wrong elements produce a misleading diagram that will be harder to correct than to prevent.
+- **Never skip Step 5.** Language must be locked before any file is written — never assume or infer the language mid-generation.
 - **Technology labels come only from the wiki.** If the wiki does not state the technology, use `"not stated"` in the diagram element description.
 - **One artifact file per diagram type.** If the user wants both a C4 L1 and a C4 L2, run the skill twice.

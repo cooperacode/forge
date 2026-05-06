@@ -93,7 +93,28 @@ Wait for a response. If the user says "go ahead", proceed.
 
 ---
 
-## Step 5 — Write the requirements artifact
+## Step 5 — Lock the output language
+
+Before writing any file, resolve and declare the language that will be used throughout:
+
+1. Read `{LANGUAGE}` from the parameters passed by the orchestrator.
+2. Map to the expected locale:
+   - `pt-BR` → Brazilian Portuguese
+   - `en` → English
+   - anything else → English (and warn the user)
+3. If `{LANGUAGE}` is not set or is empty, default to `en` and warn: "LANGUAGE was not set — defaulting to English."
+4. State the resolved language explicitly before proceeding:
+
+```
+Output language locked: {resolved language} ({LANGUAGE})
+All artifact content, headings, and messages will be written in this language.
+```
+
+**Do not begin writing any file until this step is complete.** This prevents language drift across multiple generated files.
+
+---
+
+## Step 6 — Write the requirements artifact
 
 Create `{OUTPUT_PATH}artifacts/requirements.md`.
 
@@ -106,10 +127,9 @@ Fill all placeholders and preserve the section order.
 
 Optional quality check: run `scripts/validate.sh {OUTPUT_PATH}artifacts/requirements.md`.
 
-Reference output format example: `examples/sample.md`.
 
 ---
-## Step 6 — Update navigation files
+## Step 7 — Update navigation files
 
 **`{OUTPUT_PATH}artifacts/index.md`** — create if it does not exist, then add or update the requirements entry:
 
@@ -131,7 +151,7 @@ Sources read: N pages
 
 ---
 
-## Step 7 — Close the loop
+## Step 8 — Close the loop
 
 ```
 Done. Requirements artifact generated at {OUTPUT_PATH}artifacts/requirements.md.
@@ -152,6 +172,7 @@ Anything you want me to revise?
 - **Never create a requirement not backed by a wiki page.** Use `> [!gap]` for areas the wiki does not cover.
 - **Never write to wiki pages in `docs/wiki/`.** This skill is read-only on the wiki.
 - **Never skip Step 4.** The user must confirm scope before you write a long structured table.
+- **Never skip Step 5.** Language must be locked before any file is written — never assume or infer the language mid-generation.
 - **Priority values are Must / Should / Could / Won't only.** Do not use numeric scales unless the wiki explicitly states them.
 - **Each requirement gets its own row.** Do not bundle multiple requirements into one row.
 - **Source citation format:** use `[[sources/slug]]`, `[[concepts/slug]]`, or `[[entities/slug]]` for local wiki pages. For files read from `{CONTEXT_PATH}`, substitute the actual runtime value and write the full repo-relative path: `[[docs/strategic/initiatives/20260504-foo/output/artifacts/brief.md]]`. Never use short names (`[[brief.md]]`) or computed relative paths (`[[../../...]]`) for cross-work-item references — they resolve to the wrong location.

@@ -16,7 +16,7 @@ The work item hierarchy mirrors what teams already use in Jira, Azure DevOps, an
 ```mermaid
 flowchart LR
     A([Team]) -->|/workitem| B[Register<br/>work item]
-    B --> C[(workitems.yaml<br/>+ .env)]
+    B --> C[(manifast.yaml<br/>+ .env)]
     C --> D[Drop files<br/>into input/]
     D -->|/ingest| E[Knowledge<br/>wiki]
     E -->|/query| F([Answer<br/>with citations])
@@ -54,6 +54,20 @@ flowchart LR
 - [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) — Andrej Karpathy. The foundational concept behind manifast: instead of re-deriving knowledge on every query (RAG), an LLM incrementally maintains a persistent wiki that accumulates cross-references and syntheses over time. The wiki is the compounding artifact between raw sources and the user.
 - [Scaled Agile Framework — Big Picture](https://framework.scaledagile.com/#big-picture) — Scaled Agile, Inc. The work item hierarchy that manifast mirrors: Strategic (Themes, Initiatives), Product (Epics, Features), and Tactical (User Stories, Tasks) — the same structure used by teams in Jira, Azure DevOps, and SAFe programs.
 - [Software traceability: trends and future directions](https://dl.acm.org/doi/10.1145/2593882.2593891) — Cleland-Huang et al., FOSE 2014. The academic grounding for manifast's core promise: every artifact must be traceable back to its source. This paper surveys traceability as a first-class engineering concern, not an afterthought.
+
+---
+
+## Author
+
+**manifast** was created by **[Yan Justino](https://www.linkedin.com/in/yanjustino/)** — Staff Software Engineer at Banco Itaú and researcher at CESAR School.
+
+The framework is the convergence of two parallel tracks: academic research into structured software engineering processes and hands-on experience leading large-scale modernization efforts in the Brazilian financial industry.
+
+On the research side, Yan's work spans legacy system reengineering, service-oriented architecture, and DevOps process design — published at ICSE (2018), SOCA (2021–2022), and IEEE (2022). The theoretical foundation of manifast — that software engineering activities must follow traceable, repeatable steps with defined artifacts and quality checkpoints — comes directly from the [SPReaD](https://link.springer.com/article/10.1007/s11761-021-00329-x) methodology (da Silva, Justino & Adachi, SOCA 2022), a process framework for migrating legacy systems to microservices that was validated in production at a major Brazilian bank.
+
+On the industry side, manifast grew out of [protocolo-es-ai](https://github.com/yanjustino/protocolo-es-ai) — a protocol for structuring LLM adoption across the full software development lifecycle, designed and applied during real transformation programs at Itaú Unibanco. Where the protocol defined the what and why, manifast is the tooling realization: the how.
+
+> The idea that an LLM should maintain a persistent, compounding wiki — rather than re-derive knowledge on every query — is the architectural principle that made manifast possible. Academic rigour gave it structure. Industry reality gave it scope.
 
 ---
 

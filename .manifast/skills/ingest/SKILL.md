@@ -1,6 +1,6 @@
 ---
 name: ingest
-description: "Add new sources to the wiki, creating and updating pages as needed. Always update the index and log."
+description: "Add new sources to the wiki, creating and updating pages as needed. Always update the index and log. Default is non-interactive. Pass -buddy for step-by-step confirmation."
 ---
 
 # Skill: Ingest
@@ -14,26 +14,50 @@ If these variables are not explicitly set, derive them from `.env`:
 - `WIKI_PATH = docs/wiki/`
 - `WORK_ITEM_PATH = {MWI_PATH}`
 
+Derive `OUTPUT_PATH = {WORK_ITEM_PATH}/output/`.
+
 ---
 
-## Force mode
+## Buddy mode
 
-If the user invoked the skill with `-force` (e.g. `/ingest -force`), activate **force mode**:
+By default this skill runs non-interactively — it processes all files in `{INPUT_PATH}` sequentially without pausing for confirmation.
 
-- Skip all interactive confirmation prompts throughout the skill.
-- Process every file found in `{INPUT_PATH}` sequentially, running Steps 2–7 for each file without pausing.
-- At Step 2, proceed with your own judgment — do not ask questions.
-- At Step 4, proceed with the page list as identified — do not ask for approval.
-- At Step 7, do not ask "Anything you want me to revisit?" — just print the summary and move on to the next file.
-- After all files are processed, print a consolidated summary of everything that was created or updated.
+If the user invoked the skill with `-buddy` (e.g. `/ingest -buddy`), activate **buddy mode**:
+
+- Pause at Steps 2, 4, and 7 to ask the user for input before proceeding.
+- At Step 1, present a numbered menu and wait for the user to select a file.
+- At Step 2, surface key takeaways and wait for the user's response before writing anything.
+- At Step 4, present the page list and wait for approval before updating.
+- At Step 7, ask "Anything you want me to revisit?" before closing.
 
 ---
 
 ## Step 1 — Select the source
 
-Check whether force mode is active.
+**Default mode:** List all files in `{INPUT_PATH}`, announce that all will be processed sequentially without confirmation, and display the full queue:
 
-**Normal mode:** List the contents of `{INPUT_PATH}` using the filesystem tools and present a numbered menu to the user:
+```
+Files queued for ingest:
+1. filename-a.pdf
+2. filename-b.md
+3. filename-c.docx
+
+Starting with: filename-a.pdf (1 of 3)
+```
+
+Do not wait for user input. For each file, announce it before reading:
+
+```
+[1/3] Processing: filename-a.pdf
+```
+
+Read each file in full and process it through Steps 2–7 before moving to the next.
+
+- If `{INPUT_PATH}` does not exist or is empty, tell the user and stop. Do not proceed.
+- If a file is a PDF or image, extract all readable text first.
+- If a file has images with relevant content (charts, diagrams, screenshots), note them explicitly — you will reference them in the summary page.
+
+**Buddy mode:** List the contents of `{INPUT_PATH}` and present a numbered menu:
 
 ```
 Files available in input/:
@@ -45,14 +69,8 @@ Files available in input/:
 Which file do you want to ingest? (enter the number)
 ```
 
-- If `{INPUT_PATH}` does not exist or is empty, tell the user and stop. Do not proceed.
 - Wait for the user to reply with a number. Do not guess or assume a default.
 - Once the user selects a file, confirm the choice ("You selected: filename-a.pdf — proceeding.") and read it in full using the Read tool. Never infer or synthesize its content from context.
-
-**Force mode:** List all files in `{INPUT_PATH}` and announce that all will be processed sequentially without confirmation. Do not wait for user input. Read each file in full and process it through Steps 2–7 before moving to the next.
-
-- If the file is a PDF or image, extract all readable text first.
-- If the file has images with relevant content (charts, diagrams, screenshots), note them explicitly — you will reference them in the summary page.
 
 **Do not ingest from outside `{INPUT_PATH}` under any circumstance.**
 
@@ -60,7 +78,9 @@ Which file do you want to ingest? (enter the number)
 
 ## Step 2 — Discuss before writing
 
-**Normal mode:** Before touching any wiki file, surface the key takeaways to the user. Be concise: 3–5 bullet points max. Then ask:
+**Default mode:** Print the key takeaways (3–5 bullet points) and proceed immediately with your own judgment. Do not wait for a response.
+
+**Buddy mode:** Before touching any wiki file, surface the key takeaways. Be concise: 3–5 bullet points max. Then ask:
 
 - Is there anything here you want emphasized or ignored?
 - Does this contradict or reinforce anything already in the wiki?
@@ -69,8 +89,6 @@ Which file do you want to ingest? (enter the number)
 Wait for the user's response. Adjust your understanding before proceeding. If the user says "go ahead" with no changes, proceed with your own judgment.
 
 This step exists because the human curates, the LLM executes. Do not skip it even if the source seems straightforward.
-
-**Force mode:** Print the key takeaways (3–5 bullet points) and proceed immediately with your own judgment. Do not wait for a response.
 
 ---
 
@@ -130,13 +148,11 @@ What does this source leave unanswered? What would be worth investigating next?
 
 ## Step 4 — Identify pages to update
 
-Before writing anything, scan `{WIKI_PATH}index.md` and list every page that this source touches. Think across three categories:
+Before writing anything, scan `{WIKI_PATH}index.md` and list every page that this source touches. Think across two categories:
 
 **Entities** — people, organizations, products, datasets, models named in the source. Check if a page already exists. If yes, update it. If no, create it.
 
 **Concepts** — themes, techniques, theories, arguments the source engages with. Same rule: update if exists, create if not.
-
-**Overview** — `{WIKI_PATH}overview.md` always gets updated when a new source is ingested.
 
 Write this list out before proceeding:
 
@@ -145,12 +161,11 @@ Pages to update:
 - entities/author-name (exists)
 - concepts/self-attention (exists)
 - concepts/cross-attention (new)
-- overview (always)
 ```
 
-**Normal mode:** Ask the user if this list looks right. Adjust if needed.
+**Default mode:** Print the list and proceed immediately without waiting for a response.
 
-**Force mode:** Print the list and proceed immediately without waiting for a response.
+**Buddy mode:** Ask the user if this list looks right. Adjust if needed.
 
 ---
 
@@ -226,28 +241,23 @@ Links to related concepts and entities.
 ## Open questions
 ```
 
-### Updating overview
-
-`{WIKI_PATH}overview.md` is the synthesis layer. After every ingest:
-
-- Add a one-paragraph summary of what this source contributes to the overall picture.
-- Update the "Current state of knowledge" section if the source meaningfully changes the thesis.
-- Add any new contradictions or unresolved tensions to the "Open tensions" section.
-
 ---
 
 ## Step 6 — Update navigation files
 
 After all pages are written, update four navigation files — two global, two local.
 
-**`{WIKI_PATH}index.md`** (global) — add new pages in the correct category. For updated pages, do not add a duplicate entry. Entries use paths relative to `docs/wiki/` (e.g., `sources/slug.md`).
+**`{WIKI_PATH}index.md`** (global) — update two areas:
+
+1. **Navigation**: add new pages in the correct category (`## Sources`, `## Entities`, `## Concepts`). For updated pages, do not add a duplicate entry. Entries use paths relative to `docs/wiki/`.
+2. **Synthesis**: update the `## Synthesis` section with a one-paragraph summary of what this source contributes to the overall picture. Update `### Current state of knowledge` if the source meaningfully changes the thesis. Add any new contradictions or unresolved tensions to `### Open tensions`. Create these subsections if they do not exist yet.
 
 **`{WIKI_PATH}log.md`** (global) — append one entry at the top (most recent first):
 
 ```markdown
 ## [YYYY-MM-DD] ingest | Title of source
 
-Pages touched: sources/slug, entities/x, concepts/y, overview (N total)
+Pages touched: sources/slug, entities/x, concepts/y (N total)
 New pages created: concepts/cross-attention
 Contradictions flagged: 1 (see sources/slug)
 Work item: {WORK_ITEM_PATH}
@@ -264,7 +274,7 @@ last_updated: YYYY-MM-DD
 ---
 ```
 
-For each new or updated page, add an entry under the correct category (`## Sources`, `## Entities`, `## Concepts`). Do not duplicate entries that already exist in the local index.
+For each new or updated page, add an entry under the correct category. Do not duplicate entries that already exist in the local index.
 
 ```markdown
 ## Sources
@@ -292,13 +302,20 @@ Tell the user what was done in plain language. No need to list every file — su
 Done. Ingested "Attention Is All You Need" (2017).
 
 Created: sources/attention-is-all-you-need, concepts/cross-attention
-Updated: concepts/self-attention, concepts/transformer, entities/vaswani-ashish, overview
+Updated: concepts/self-attention, concepts/transformer, entities/vaswani-ashish
 Flagged: 1 contradiction with concepts/positional-encoding
-
-Anything you want me to revisit before we continue?
 ```
 
-**Force mode:** Print the same summary but omit the closing question. If more files remain in the queue, announce the next file and continue immediately.
+**Default mode:** Print the summary. If more files remain in the queue, announce the transition before continuing:
+
+```
+[1/3] Done: filename-a.pdf
+[2/3] Next: filename-b.md — starting now.
+```
+
+Then proceed immediately to Step 1 for the next file. If this was the last file, print a consolidated summary of everything processed across all files and stop.
+
+**Buddy mode:** Append "Anything you want me to revisit before we continue?" and wait for a response before moving on or closing.
 
 ---
 
@@ -315,4 +332,5 @@ Write all wiki pages and messages to the user in `{LANGUAGE}`. If `LANGUAGE` is 
 - Never answer questions during ingest. If the user asks something mid-flow, note it and say you will answer after the ingest is complete.
 - If a step produces more than ~20 file changes, pause and ask the user if they want to continue or scope down.
 - Prefer updating existing pages over creating new ones. Fragmentation is the enemy of a useful wiki.
-- All wiki pages go to `{WIKI_PATH}` — never write wiki files inside the work item's `output/` folder.
+- Only `index.md` and `log.md` may exist at the root of `{WIKI_PATH}`. All other wiki pages go inside subfolders (`sources/`, `entities/`, `concepts/`). Never create any other file directly at the wiki root.
+- Only `index.md` and `log.md` may exist at the root of `{OUTPUT_PATH}`. Never create any other file directly inside the work item's `output/` folder — artifacts go in `output/artifacts/`.

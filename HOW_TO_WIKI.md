@@ -21,10 +21,8 @@ docs/
     sources/      ← one page per ingested document
     concepts/     ← themes, patterns, techniques extracted from sources
     entities/     ← people, organizations, systems, datasets named in sources
-    overview.md   ← running synthesis of everything ingested so far
-    index.md      ← navigation index: all pages listed by category
+    index.md      ← navigation index + running synthesis (## Synthesis section)
     log.md        ← audit trail: every ingest, query, and lint recorded
-    SCHEMA.md     ← frontmatter schema and conventions
 ```
 
 Each wiki page carries a `source_workitem` field in its frontmatter that records which work item originated it. This enables `/lint` to detect orphaned pages when work items are removed.
@@ -101,7 +99,7 @@ The wiki pages created from this ingest will go to `docs/wiki/` — not inside t
 
 Supported formats: **Markdown**, **plain text**, **PDF**, **images** (charts, screenshots, diagrams).
 
-> One file per `/ingest` call. If you have five documents, run `/ingest` five times. Each source gets its own wiki page, and the wiki grows incrementally.
+> By default `/ingest` processes **all files** in `input/` sequentially in a single call, announcing each file as it goes. Pass `-buddy` to process one file at a time with interactive confirmation at each step.
 
 ### Step 2 — Run the command
 
@@ -111,32 +109,25 @@ Supported formats: **Markdown**, **plain text**, **PDF**, **images** (charts, sc
 
 Claude reads the file in full before doing anything else. For PDFs and images, it extracts all readable text first.
 
-### Step 3 — Review key takeaways
+### Step 3 — Key takeaways
 
-Before writing any wiki page, Claude surfaces what it found:
+Claude surfaces what it found before writing anything:
 
 ```
-Key takeaways from "stakeholder-meeting-notes.md":
+[1/1] Processing: stakeholder-meeting-notes.md
 
+Key takeaways:
 • Budget is fixed at $80k with a 3-month delivery window.
 • The client's main pain point is the manual status-update emails — 4h/week per coordinator.
 • Authentication strategy is undecided: SSO vs. local login is an open question.
 • Apelações (appeals) were mentioned but the client is unsure if they belong in MVP.
-
-Is there anything here you want emphasized or ignored?
-Does this contradict anything already in the wiki?
 ```
 
-This is your chance to guide what gets preserved. You can:
-- Say **"go ahead"** to proceed with Claude's judgment.
-- Ask Claude to emphasize or ignore specific points.
-- Flag a contradiction with something already in the wiki.
+In **default mode** Claude proceeds immediately with its own judgment. To guide what gets preserved — emphasize points, flag contradictions, or adjust scope before writing — use **`-buddy` mode** (`/ingest -buddy`), which pauses here and waits for your input.
 
-> This step is intentional and cannot be skipped. The human curates; Claude executes.
+### Step 4 — Pages to update
 
-### Step 4 — Confirm the pages to update
-
-Claude identifies which wiki pages will be created or updated, all inside `docs/wiki/`:
+Claude identifies which wiki pages will be created or updated and prints the list:
 
 ```
 Pages to update:
@@ -144,29 +135,26 @@ Pages to update:
 - concepts/budget-constraint (new)
 - entities/client-coordinator (new)
 - concepts/mvp-scope (exists — will update)
-- overview (always updated)
-
-Does this list look right?
 ```
 
-Approve the list or adjust it. Then Claude writes each page.
+In **default mode** Claude proceeds immediately. In **`-buddy` mode** it asks for your approval before writing.
 
-### Step 5 — Review the summary
+### Step 5 — Summary
 
 ```
 Done. Ingested "stakeholder-meeting-notes.md".
 
 Created: sources/stakeholder-meeting-notes, concepts/budget-constraint, entities/client-coordinator
-Updated: concepts/mvp-scope, overview
+Updated: concepts/mvp-scope
 Flagged: 1 contradiction — sources/stakeholder-meeting-notes disputes concepts/mvp-scope
          on whether appeals belong in MVP.
 
 Navigation updated:
-- docs/wiki/index.md (global)
+- docs/wiki/index.md (global — navigation + synthesis)
 - output/index.md (local — this work item's scoped view)
-
-Anything you want me to revisit before we continue?
 ```
+
+In **`-buddy` mode** the summary ends with "Anything you want me to revisit before we continue?" and waits for your response. In **default mode** it moves straight to the next file (if any) or stops.
 
 Contradictions are flagged but never silently resolved. Claude marks them with a `> [!contradiction]` callout and leaves the decision to you.
 
@@ -302,7 +290,7 @@ Claude does a full scan first — structural problems, then content problems —
 | Outdated sections | Pages with `> [!outdated]` callouts, or claims superseded by newer sources |
 | Unfiled queries | Questions that were answered but not saved as wiki pages |
 | Concept gaps | Terms mentioned across multiple pages with no page of their own |
-| Stale overview | `overview.md` hasn't been updated since 3+ new sources were ingested |
+| Stale synthesis | The `## Synthesis` section of `index.md` hasn't been updated since 3+ new sources were ingested |
 
 ### The lint report
 
@@ -323,7 +311,7 @@ Claude does a full scan first — structural problems, then content problems —
 - Outdated sections (0)
 - Unfiled queries (1): "What does the wiki say about authentication?" — 2026-05-03
 - Concept gaps (1): "phased delivery" appears in 3 pages, no page exists
-- Stale overview: no
+- Stale synthesis: no
 
 ### Summary
 6 issues found. 4 auto-fixable. 2 require your input.

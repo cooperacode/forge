@@ -141,7 +141,28 @@ Wait for confirmation or corrections. Do not write any file until the user appro
 
 ---
 
-## Step 5 — Write the feature detail artifact
+## Step 5 — Lock the output language
+
+Before writing any file, resolve and declare the language that will be used throughout:
+
+1. Read `{LANGUAGE}` from the parameters passed by the orchestrator.
+2. Map to the expected locale:
+   - `pt-BR` → Brazilian Portuguese
+   - `en` → English
+   - anything else → English (and warn the user)
+3. If `{LANGUAGE}` is not set or is empty, default to `en` and warn: "LANGUAGE was not set — defaulting to English."
+4. State the resolved language explicitly before proceeding:
+
+```
+Output language locked: {resolved language} ({LANGUAGE})
+All artifact content, headings, and messages will be written in this language.
+```
+
+**Do not begin writing any file until this step is complete.** This prevents language drift across multiple generated files.
+
+---
+
+## Step 6 — Write the feature detail artifact
 
 Create `{OUTPUT_PATH}artifacts/feature-detail/{SELECTED_FEATURE_ID}-{SELECTED_FEATURE_SLUG}.md`.
 
@@ -151,10 +172,9 @@ Keep the INVEST guidance applied in the `Proposed User Story Breakdown` section.
 
 Optional quality check: run `scripts/validate.sh {OUTPUT_PATH}artifacts/feature-detail/{SELECTED_FEATURE_ID}-{SELECTED_FEATURE_SLUG}.md`.
 
-Reference output format example: `examples/sample.md`.
 
 ---
-## Step 6 — Update navigation files
+## Step 7 — Update navigation files
 
 **`{OUTPUT_PATH}artifacts/index.md`** — create if it does not exist, then add or update the feature-detail entry:
 
@@ -179,7 +199,7 @@ Sources read: N pages
 
 ---
 
-## Step 7 — Close the loop
+## Step 8 — Close the loop
 
 ```
 Done. Feature detail generated at {OUTPUT_PATH}artifacts/feature-detail/{SELECTED_FEATURE_ID}-{SELECTED_FEATURE_SLUG}.md.
@@ -202,6 +222,7 @@ Anything you want me to revise?
 - **Require `feature-list.md` before proceeding.** This skill cannot run without it.
 - **Always ask for the feature ID (Step 2) before reading the wiki.** Do not guess or auto-select.
 - **Never write files before Step 4 is confirmed.** The analysis must be approved first.
+- **Never skip Step 5.** Language must be locked before any file is written — never assume or infer the language mid-generation.
 - **File path is fixed:** `artifacts/feature-detail/{feature_id}-{slug}.md`. Do not deviate.
 - **Never invent behaviors not present in the wiki.** Use `> [!gap]` for anything inferred.
 - **Business rules must be individually sourced.** Never write a rule without a [[wikilink]].

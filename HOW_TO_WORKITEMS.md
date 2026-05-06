@@ -131,8 +131,9 @@ For a root-level item with no parent, choose **None**. If this initiative belong
 
 | Work item level | Valid parent |
 |---|---|
-| Strategic | Strategic (Theme as parent of Initiative) |
-| Product | Strategic or Product (Feature as child of Epic) |
+| Strategic | *(none — always root-level)* |
+| Product | Strategic (Theme or Initiative) |
+| Product | Product (Feature as child of Epic) |
 | Tactical | Product |
 
 > **Epic → Feature:** within the Product level, an Epic can be the parent of a Feature. This matters for artifact generation: `feature-list` is generated on the Epic; `feature-detail` is generated on the Feature and reads the parent Epic's `feature-list` as its source. User stories then read `feature-detail` from the parent Feature.
@@ -146,7 +147,7 @@ Claude confirms and shows what was created:
 ```
 Work item created.
 
-Title:  redesign-the-onboarding-process
+Title:  Redesign the onboarding process
 Level:  Strategic · Initiative
 Path:   docs/strategic/initiatives/20260503-redesign-the-onboarding-process/
 Parent: (none)
@@ -166,8 +167,7 @@ docs/
     sources/
     concepts/
     entities/
-    overview.md
-    index.md
+    index.md           ← navigation + synthesis overview
     log.md
   strategic/
     initiatives/
@@ -184,7 +184,7 @@ And appends the item to `docs/manifast.yaml`:
 
 ```yaml
 items:
-  - title: redesign-the-onboarding-process
+  - title: Redesign the onboarding process
     description: Reduce time-to-first-value for new users by redesigning the onboarding flow end-to-end.
     tags: [onboarding, ux, strategic]
     hierarchyLevel: Strategic

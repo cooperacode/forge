@@ -95,7 +95,28 @@ Wait for a response. Adjust based on user feedback. If the user says "go ahead",
 
 ---
 
-## Step 5 — Write one ADR file per decision
+## Step 5 — Lock the output language
+
+Before writing any file, resolve and declare the language that will be used throughout:
+
+1. Read `{LANGUAGE}` from the parameters passed by the orchestrator.
+2. Map to the expected locale:
+   - `pt-BR` → Brazilian Portuguese
+   - `en` → English
+   - anything else → English (and warn the user)
+3. If `{LANGUAGE}` is not set or is empty, default to `en` and warn: "LANGUAGE was not set — defaulting to English."
+4. State the resolved language explicitly before proceeding:
+
+```
+Output language locked: {resolved language} ({LANGUAGE})
+All artifact content, headings, and messages will be written in this language.
+```
+
+**Do not begin writing any file until this step is complete.** This prevents language drift across multiple generated files.
+
+---
+
+## Step 6 — Write one ADR file per decision
 
 Create a numbered ADR file for each confirmed decision at:
 `{OUTPUT_PATH}artifacts/adr/NNN-{slug-of-decision-title}.md`
@@ -106,11 +127,9 @@ Use the template from `template.md` in this same skill directory. Fill all place
 
 Optional quality check: run `scripts/validate.sh <generated-adr-file.md>` for each generated ADR.
 
-Reference output format example: `examples/sample.md`.
-
 ---
 
-## Step 6 — Write the ADR index
+## Step 7 — Write the ADR index
 
 Create or update `{OUTPUT_PATH}artifacts/adr/index.md`:
 
@@ -132,7 +151,7 @@ generated: YYYY-MM-DD
 
 ---
 
-## Step 7 — Update navigation files
+## Step 8 — Update navigation files
 
 **`{OUTPUT_PATH}index.md`** — add or update the `## Artifacts` section:
 
@@ -156,7 +175,7 @@ Sources read: N pages
 
 ---
 
-## Step 8 — Close the loop
+## Step 9 — Close the loop
 
 ```
 Done. {N} ADR(s) generated at {OUTPUT_PATH}artifacts/adr/.
@@ -182,5 +201,6 @@ Anything you want me to revise?
 - **Status is always `accepted` on generation** unless the wiki explicitly marks something as proposed or superseded.
 - **Never write to source/concept/entity pages.** ADR generation is read-only on the wiki.
 - **Never skip Step 4.** Decisions misidentified here produce misleading ADRs.
+- **Never skip Step 5.** Language must be locked before any file is written — never assume or infer the language mid-generation.
 - **Alternatives section uses `> [!gap]`** when none were documented — never invent alternatives from training knowledge.
 - **Source citation format:** use `[[sources/slug]]`, `[[concepts/slug]]`, or `[[entities/slug]]` for local wiki pages. For files read from `{CONTEXT_PATH}`, substitute the actual runtime value and write the full repo-relative path: `[[docs/strategic/initiatives/20260504-foo/output/artifacts/brief.md]]`. Never use short names (`[[brief.md]]`) or computed relative paths (`[[../../...]]`) for cross-work-item references — they resolve to the wrong location.

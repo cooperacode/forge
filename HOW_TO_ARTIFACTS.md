@@ -99,10 +99,8 @@ Tactical level (User Story/Task)
 Every artifact follows the same three-phase pattern:
 
 1. **Claude reads the wiki** — all sources, concepts, entities from `docs/wiki/`, and any upstream context from a parent work item.
-2. **Claude confirms scope with you** — surfaces what it found and asks if anything should change before writing.
+2. **Claude surfaces scope** — lists what it found before writing. In default mode it proceeds immediately; pass `-buddy` to `/artifact` to pause and confirm scope before writing.
 3. **Claude writes the file** — to `output/artifacts/`, then updates `index.md` and `log.md`.
-
-You always review before Claude writes. Never skip this confirmation step.
 
 ---
 
@@ -466,7 +464,7 @@ output/
       F-002-US-001-verificar-conta.md
 ```
 
-`output/artifacts/index.md` and `output/log.md` are updated automatically after each artifact is generated.
+`output/index.md` and `output/log.md` are updated automatically after each artifact is generated.
 
 ---
 

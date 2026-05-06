@@ -22,15 +22,18 @@ MWI_TYPE
 MWI_PATH
 MWI_TAGS
 MWI_LANG
+MWI_PARENT
 ```
 
-If `MWI_LANG` is absent from `.env`, read `docs/manifast.yaml` and use its `language` field. If absent there too, default to `en`.
-
-If the `.env` file does not exist or any of these variables are missing, tell the user:
+If the `.env` file does not exist, or any of `MWI_TITLE`, `MWI_LEVEL`, `MWI_TYPE`, `MWI_PATH` are missing, tell the user:
 
 > No active work item found. Run `/workitem` to create or select one first.
 
 Then stop.
+
+For `MWI_LANG`: if absent from `.env`, read `docs/manifast.yaml` and use its `language` field. If absent there too, default to `en`.
+
+For `MWI_PARENT`: treat as empty string if absent.
 
 ---
 
@@ -45,19 +48,21 @@ OUTPUT_PATH = {MWI_PATH}/output/
 
 Verify that `OUTPUT_PATH` exists. If it does not, stop and tell the user to run `/workitem` first.
 
-Verify that `{OUTPUT_PATH}index.md` exists and has content (Sources, Entities, or Concepts sections with at least one entry). If not, stop and tell the user to run `/ingest` first — no sources have been ingested for this work item.
+Verify that `{OUTPUT_PATH}index.md` exists and has content (Sources, Entities, or Concepts sections with at least one entry). If the file does not exist or all sections are empty, stop and tell the user:
+
+> No ingested sources found for this work item. Run `/ingest` to populate `output/index.md` before generating artifacts.
 
 ---
 
 ## Step 2b — Resolve upstream context
 
-Read `docs/manifast.yaml`. Find the entry whose `path` matches `{MWI_PATH}`.
+Use `MWI_PARENT` extracted in Step 1.
 
-**If that entry has a non-empty `parent` field:**
+**If `MWI_PARENT` is non-empty:**
 
-1. Record `PARENT_PATH = {parent field value}`.
+1. Set `PARENT_PATH = {MWI_PARENT}`.
 2. Set `CONTEXT_PATH = {PARENT_PATH}/output/artifacts/`.
-3. Find the parent entry in `manifast.yaml` by its `path`. Read its `hierarchyLevel`.
+3. Read `docs/manifast.yaml`. Find the parent entry by its `path` and read its `hierarchyLevel`.
 4. Using the table below, identify which artifacts are relevant for the skill to read:
 
    | Parent `hierarchyLevel` | Relevant artifacts |
@@ -76,7 +81,7 @@ Read `docs/manifast.yaml`. Find the entry whose `path` matches `{MWI_PATH}`.
    > No artifacts found in parent work item. Run `/artifact` on the parent first to generate upstream context.
    Then continue without context.
 
-**If no `parent` field exists (or it is empty):**
+**If `MWI_PARENT` is empty:**
 
 Set `CONTEXT_PATH = ""`. Skills will skip upstream context reading.
 
@@ -113,13 +118,15 @@ Available artifacts for Product level:
 **Tactical:**
 ```
 Available artifacts for Tactical level:
-  1. user-story   — User Story with Gherkin acceptance scenarios (coming soon)
-  2. diagram      — Sequence or state diagram (coming soon)
+  1. user-story   — User Story with Gherkin acceptance scenarios
+  2. diagram      — Sequence or state diagram
 ```
 
 ### 3b — Validate and route
 
-Use the table below to resolve the artifact type to its skill. If the combination of level + artifact type is not in the table, tell the user it is not available and show the menu for their level.
+Use the table below to resolve the artifact type to its skill. Store the matched skill path as `SKILL_PATH` and the artifact type key as `{ARTIFACT_TYPE}`.
+
+If the combination of level + artifact type is not in the table, tell the user it is not available and show the menu for their level.
 
 | Level | Artifact type | Skill path | Status |
 |-------|--------------|-----------|--------|
@@ -135,10 +142,6 @@ Use the table below to resolve the artifact type to its skill. If the combinatio
 | Product | `diagram` | `.manifast/skills/diagram/SKILL.md` | ✓ available |
 | Tactical | `user-story` | `.manifast/skills/user-story/SKILL.md` | ✓ available |
 | Tactical | `diagram` | `.manifast/skills/diagram/SKILL.md` | ✓ available |
-
-For any artifact with status `planned`, tell the user:
-
-> `{artifact type}` is not yet available for `{level}` level. Run `/artifact` without arguments to see what is available.
 
 ---
 
@@ -214,7 +217,7 @@ WORK_ITEM_HIERARCHY_LEVEL = {MWI_LEVEL}
 LANGUAGE                  = {MWI_LANG}
 ```
 
-Then read and execute the skill file end-to-end, following every step inside it. Treat the skill instructions as authoritative — they override any default behavior.
+Then read and execute `{SKILL_PATH}` end-to-end, following every step inside it. Treat the skill instructions as authoritative — they override any default behavior.
 
 Do not summarize or shortcut the skill. Execute it fully.
 
@@ -265,7 +268,7 @@ Use this table to determine `NEXT_ARTIFACT` and `NEXT_DESCRIPTION`. At Product l
 | Strategic | — | `adr` | `diagram` | C4 Level 1 or Level 2 architecture diagram |
 | Strategic | — | `diagram` | _(none)_ | Strategic level complete — consider creating a Product Epic work item |
 | Product | Epic | `requirements` | `feature-list` | Prioritized feature list with dependencies |
-| Product | Epic | `feature-list` | _(create child)_ | Create a Feature work item (child of this Epic), then run `/artifact feature-detail` on it |
+| Product | Epic | `feature-list` | `adr` | Continue the Epic with architecture decision records — or first create a Feature child via `/workitem` and run `/artifact feature-detail` on it |
 | Product | Epic | `adr` | `der` | Entity-relationship diagram |
 | Product | Epic | `der` | `diagram` | C4 Level 3, process flow, or data flow diagram |
 | Product | Epic | `diagram` | _(none)_ | Epic level complete — consider creating a Tactical work item |
@@ -275,12 +278,6 @@ Use this table to determine `NEXT_ARTIFACT` and `NEXT_DESCRIPTION`. At Product l
 | Product | Feature | `diagram` | _(none)_ | Feature level complete — consider creating a Tactical work item |
 | Tactical | — | `user-story` | `diagram` | Sequence or state diagram |
 | Tactical | — | `diagram` | _(none)_ | Tactical level complete |
-
-For the `feature-list` → _(create child)_ row, output:
-```
----
-Next: create a Feature work item as a child of this Epic (via `/workitem`), then run `/artifact feature-detail` on it.
-```
 
 **Format the "What's next" block as:**
 
@@ -298,28 +295,9 @@ This level is complete. {level-specific closing message from table above.}
 
 ---
 
-## Artifact registry
-
-| Level | Artifact | Skill path | Status |
-|-------|----------|-----------|--------|
-| Strategic | Strategic Brief | `.manifast/skills/brief/SKILL.md` | ✓ available |
-| Strategic | Requirements (NFR) | `.manifast/skills/requirements/SKILL.md` | ✓ available |
-| Strategic | ADR | `.manifast/skills/adr/SKILL.md` | ✓ available |
-| Strategic | Diagram (C4 L1/L2) | `.manifast/skills/diagram/SKILL.md` | ✓ available |
-| Product | Requirements (Functional) | `.manifast/skills/requirements/SKILL.md` | ✓ available |
-| Product | DER | `.manifast/skills/der/SKILL.md` | ✓ available |
-| Product | ADR | `.manifast/skills/adr/SKILL.md` | ✓ available |
-| Product | Feature List | `.manifast/skills/feature-list/SKILL.md` | ✓ available |
-| Product | Feature Detail | `.manifast/skills/feature-detail/SKILL.md` | ✓ available |
-| Product | Diagram (C4 L3/fluxos) | `.manifast/skills/diagram/SKILL.md` | ✓ available |
-| Tactical | User Story | `.manifast/skills/user-story/SKILL.md` | ✓ available |
-| Tactical | Diagram (seq/estado) | `.manifast/skills/diagram/SKILL.md` | ✓ available |
-
----
-
 ## Rules
 
 - Never generate an artifact without first reading `.env`. The active work item is the source of truth.
 - Never write artifact files outside of `{OUTPUT_PATH}artifacts/`. Artifacts live inside the wiki, not alongside it.
-- Never invoke a skill that is not listed in the artifact registry above.
+- Never invoke a skill that is not listed in the routing table in Step 3b.
 - If the user asks for an artifact type not yet implemented, say so clearly and list what is available.

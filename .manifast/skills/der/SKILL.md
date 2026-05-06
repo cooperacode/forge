@@ -87,7 +87,28 @@ Wait for a response. If the user says "go ahead", proceed.
 
 ---
 
-## Step 4 — Write the DER artifact
+## Step 4 — Lock the output language
+
+Before writing any file, resolve and declare the language that will be used throughout:
+
+1. Read `{LANGUAGE}` from the parameters passed by the orchestrator.
+2. Map to the expected locale:
+   - `pt-BR` → Brazilian Portuguese
+   - `en` → English
+   - anything else → English (and warn the user)
+3. If `{LANGUAGE}` is not set or is empty, default to `en` and warn: "LANGUAGE was not set — defaulting to English."
+4. State the resolved language explicitly before proceeding:
+
+```
+Output language locked: {resolved language} ({LANGUAGE})
+All artifact content, headings, and messages will be written in this language.
+```
+
+**Do not begin writing any file until this step is complete.** This prevents language drift across multiple generated files.
+
+---
+
+## Step 5 — Write the DER artifact
 
 Create `{OUTPUT_PATH}artifacts/der.md`.
 
@@ -95,7 +116,6 @@ Use the template from `template.md` in this same skill directory. Fill all place
 
 Optional quality check: run `scripts/validate.sh {OUTPUT_PATH}artifacts/der.md`.
 
-Reference output format example: `examples/sample.md`.
 
 Mermaid ER rules to follow:
 - Entity names in `UPPER_SNAKE_CASE` in the diagram, natural language in the glossary
@@ -105,7 +125,7 @@ Mermaid ER rules to follow:
 - If an entity has no documented attributes, render it with an empty block `ENTITY_NAME { }`
 
 ---
-## Step 5 — Update navigation files
+## Step 6 — Update navigation files
 
 **`{OUTPUT_PATH}artifacts/index.md`** — create if it does not exist, then add or update the DER entry:
 
@@ -127,7 +147,7 @@ Sources read: N pages
 
 ---
 
-## Step 6 — Close the loop
+## Step 7 — Close the loop
 
 ```
 Done. DER generated at {OUTPUT_PATH}artifacts/der.md.
@@ -150,6 +170,7 @@ Anything you want me to revise?
 - **Clearly separate confirmed from inferred relationships.** Never present an inferred relationship as fact.
 - **Never write to source/concept/entity pages.** DER generation is read-only on the wiki.
 - **Never skip Step 3.** Wrong entities here produce a misleading diagram.
+- **Never skip Step 4.** Language must be locked before any file is written — never assume or infer the language mid-generation.
 - **This skill is Product-only.** If invoked for Strategic or Tactical, stop immediately.
 - **Mermaid syntax must be valid.** Prefer simpler, correct diagrams over complex, broken ones. If an entity's relationships are unclear, render the entity without relationships and flag it as a gap.
 - **Source citation format:** use `[[sources/slug]]`, `[[concepts/slug]]`, or `[[entities/slug]]` for local wiki pages. For files read from `{CONTEXT_PATH}`, substitute the actual runtime value and write the full repo-relative path: `[[docs/strategic/initiatives/20260504-foo/output/artifacts/brief.md]]`. Never use short names (`[[brief.md]]`) or computed relative paths (`[[../../...]]`) for cross-work-item references — they resolve to the wrong location.

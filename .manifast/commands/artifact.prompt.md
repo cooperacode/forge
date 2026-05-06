@@ -58,7 +58,7 @@ Verify that `OUTPUT_PATH` exists. If it does not, stop and tell the user to run 
 Verify that `{OUTPUT_PATH}index.md` exists and has content (Sources, Entities, or Concepts sections with at least one entry).
 
 - If the file exists and has at least one entry → continue normally.
-- If the file does not exist or all sections are empty **and `MWI_PARENT` is empty** → stop and tell the user:
+- If the file does not exist or all sections are empty **and `MWI_PARENT` is empty** → stop and tell the user, **unless** the requested artifact is `user-story` at Tactical level (standalone mode allows generation from work item description alone):
 
   > No ingested sources found for this work item. Run `/ingest` to populate `output/index.md` before generating artifacts.
 
@@ -208,7 +208,10 @@ For `user-story`, check the parent's `workItemType`:
 - If parent is **Feature** → require `feature-detail` in parent's `artifacts`
 - If parent is **Epic** → require `feature-list` in parent's `artifacts`
 
-If a cross-level prerequisite applies and the active work item has no parent, stop and tell the user:
+If a cross-level prerequisite applies and the active work item has no parent:
+
+- **If the artifact is `user-story`**: do not stop — proceed in standalone mode. The skill will derive stories from the work item description and local wiki instead of parent artifacts.
+- **Otherwise**, stop and tell the user:
 
 > Cannot generate `{artifact type}`: this artifact requires a parent work item with `{parent prerequisite}`. Set up a parent via `/workitem` first.
 

@@ -2,7 +2,7 @@
 name: workitem
 description: "Create a new work item for the manifesto project. Use when: adding a new task or feature to the project backlog."
 tools: [vscode/askQuestions, read, edit, search, todo, vscode/memory]
-argument-hint: "Provide a title for the work item, a detailed description, and any relevant tags or labels."
+argument-hint: "For most types: provide a title, description, and tags. For Feature: you will select from an Epic's feature-list."
 ---
 
 You are helping create a new work item for the project backlog. Follow the workflow below without unnecessary questions outside the defined steps.
@@ -108,7 +108,8 @@ Store the answer as `{{workItemType}}`.
 
 #### step 1.3: Gather work item details
 
-Ask the user to provide:
+If `{{workItemType}}` is **Feature**, follow the **Feature Selection Flow** below instead of asking for title/description/tags manually.  
+For all other work item types, ask the user to provide:
 
 ```yaml
 arguments:
@@ -125,15 +126,63 @@ arguments:
     default: "No tags provided."
 ```
 
+##### Feature Selection Flow
+
+**Step A — Select parent Epic**
+
+Filter `docs/manifast.yaml` for all items where `workItemType: Epic`.
+
+- If **no Epics exist**: warn the user that no Epics were found, then fall back to manual entry (ask title/description/tags as described above). Set `{{parentPath}} = ""`. Skip to step 1.4.
+- If **Epics exist**: use #tool:vscode/askQuestions to ask:
+  > Q: Which Epic does this Feature belong to?
+
+  Present each candidate as:
+  ```
+  {title} — {path}
+  ```
+  Plus a **"None — root-level item"** option at the bottom.
+
+  - If the user selects **"None"**: fall back to manual entry (ask title/description/tags as described above). Set `{{parentPath}} = ""`. Skip to step 1.4.
+  - Otherwise: set `{{parentPath}}` to the selected Epic's `path`.
+
+**Step B — Load feature-list from selected Epic**
+
+If an Epic was selected (not "None"), attempt to read `{{parentPath}}output/artifacts/feature-list.md`.
+
+- If the file **does not exist**: warn the user that no feature-list was found for the selected Epic and suggest running `/artifact feature-list` first. Then fall back to manual entry (ask title/description/tags as described above). Skip to step 1.4.
+- If the file **exists**: proceed to Step C.
+
+**Step C — Select feature from list**
+
+Parse the `## Features` table from the feature-list. Use #tool:vscode/askQuestions to ask:
+> Q: Which feature do you want to create a work item for?
+
+Present each row as:
+```
+{ID} · {Feature name} — {Description} [{Priority}]
+```
+
+Map the selected row's fields:
+- `{Feature name}` → `{{workItemTitle}}`
+- `{Description}` → `{{workItemDescription}}`
+- `{Priority}`, `{ID}` → `{{workItemTags}}` (e.g., `mvp, F-001`)
+
+**Step D — Skip step 1.3b**
+
+When `{{workItemType}}` is Feature and `{{parentPath}}` was resolved in Step A above, skip step 1.3b entirely — the parent is already set.
+
 #### step 1.3b: Select parent work item
+
+> **Skip this step if `{{workItemType}}` is Feature** (parent resolved in step 1.3 Feature Selection Flow).
 
 Using `docs/manifast.yaml` already read in the Preamble, filter existing items to show only **valid parents** for `{{hierarchyLevel}}`:
 
-| Child level | Valid parent types                              |
-|-------------|--------------------------------------------------|
-| Strategic   | *(none — Strategic items are always root-level)* |
-| Product     | Strategic (Theme, Initiative)                    |
-| Tactical    | Product (Epic, Feature)                          |
+| Child level  | Valid parent types                              |
+|--------------|-------------------------------------------------|
+| Strategic    | *(none — Strategic items are always root-level)*|
+| Epic         | Strategic (Theme, Initiative)                   |
+| Feature      | *(resolved in step 1.3 — always an Epic)*       |
+| Tactical     | Product (Epic, Feature)                         |
 
 **If `{{hierarchyLevel}}` is Strategic**, skip this question silently and set `{{parentPath}} = ""`.
 

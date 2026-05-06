@@ -1,8 +1,8 @@
 ---
-title: "{SELECTED_FEATURE_ID} · {story.id} — {WORK_ITEM_TITLE}"
+title: "{story.id} — {WORK_ITEM_TITLE}"
 type: artifact
 subtype: user-story
-feature_id: {SELECTED_FEATURE_ID}
+feature_id: "{SELECTED_FEATURE_ID}"
 story_id: {story.id}
 work_item_type: {WORK_ITEM_TYPE}
 hierarchy_level: Tactical

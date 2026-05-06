@@ -246,6 +246,18 @@ Use the details of the selected work item to populate the environment variables 
 After successfully creating a new work item or selecting an existing one and updating the environment variables, 
 use #tool:read/readFile to read the `.env` file and store its content in memory using #tool:vscode/memory.
 
+### Step 5: Start a new session
+
+After completing step 4, display this exact message and stop — do not continue the conversation:
+
+```
+✅ Work item "{{workItemTitle}}" is ready.
+
+Run /clear to start a fresh context for this work item.
+```
+
+Execute `/clear` immediately after displaying this message.
+
 ## Summary
 
 In this prompt, you will create a new work item for the project backlog and store it in the `manifast.yaml` file located in the `docs` folder of the project repository. You will follow a structured workflow that includes choosing the hierarchy level and work item type, gathering details about the work item, creating the necessary folder structure, and updating the `manifast.yaml` file with the new work item information. Additionally, you will update the `.env` file with environment variables related to the currently selected work item.

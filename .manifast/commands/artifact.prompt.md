@@ -55,9 +55,18 @@ OUTPUT_PATH = {MWI_PATH}/output/
 
 Verify that `OUTPUT_PATH` exists. If it does not, stop and tell the user to run `/workitem` first.
 
-Verify that `{OUTPUT_PATH}index.md` exists and has content (Sources, Entities, or Concepts sections with at least one entry). If the file does not exist or all sections are empty, stop and tell the user:
+Verify that `{OUTPUT_PATH}index.md` exists and has content (Sources, Entities, or Concepts sections with at least one entry).
 
-> No ingested sources found for this work item. Run `/ingest` to populate `output/index.md` before generating artifacts.
+- If the file exists and has at least one entry → continue normally.
+- If the file does not exist or all sections are empty **and `MWI_PARENT` is empty** → stop and tell the user:
+
+  > No ingested sources found for this work item. Run `/ingest` to populate `output/index.md` before generating artifacts.
+
+- If the file does not exist or all sections are empty **and `MWI_PARENT` is non-empty** → do not stop. Warn the user:
+
+  > Local wiki is empty — proceeding with parent context only. Run `/ingest` to add local sources later.
+
+  Then continue. Step 2b will resolve the upstream artifacts from the parent.
 
 ---
 

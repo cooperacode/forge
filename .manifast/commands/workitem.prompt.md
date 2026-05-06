@@ -249,9 +249,9 @@ items:
 
 Using `docs/manifast.yaml` already read in the Preamble, use #tool:vscode/askQuestions to display the list of existing work items. Once selected, display its details (title, description, tags, hierarchy level, work item type, creation date, update date). Go to **step 3**.
 
-### step 3: Edit environment variables file
+### step 3: Write the environment variables file
 
-If `.env` does not exist, use #tool:edit/createFile to create it. If it already exists, use #tool:edit/editFiles to replace only the `MWI_*` variables, preserving any other variables already present in the file.
+Write the `.env` file at the repository root with the following content. If the file already exists and contains variables unrelated to `MWI_*`, preserve those lines and replace only the `MWI_*` block.
 
 ```env
 MWI_TITLE={{workItemTitle}}
@@ -263,9 +263,11 @@ MWI_PARENT={{parentPath}}
 MWI_LANG={{language}}
 ```
 
-### Step 4: Store the .env content in memory
+Use the `Write` tool (or equivalent file-creation tool) to create or overwrite `.env`. Do not use `Edit` on a file that may not yet exist.
 
-Read the `.env` file using #tool:read/readFile and store its content in memory using #tool:vscode/memory
+### Step 4: Store the active work item in auto-memory
+
+Save a memory entry named **"Active Work Item"** with type `project` containing the same `MWI_*` variables written above and a one-line note explaining the work item context. This ensures the active work item is recoverable after `/clear` even if `.env` is deleted.
 
 ### Step 5: Finish
 

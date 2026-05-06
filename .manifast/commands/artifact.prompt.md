@@ -13,7 +13,7 @@ You are the **artifact orchestrator** for manifast. Your job is to read the acti
 
 ## Step 1 — Load active work item
 
-Read the `.env` file at the root of the repository. Extract:
+Use the Read tool to open the `.env` file. The path is `.env` relative to the current working directory (i.e., the repository root — the same directory that contains `.manifast/`). Do not infer the contents from memory or conversation history — call the Read tool explicitly. Extract:
 
 ```
 MWI_TITLE
@@ -25,11 +25,18 @@ MWI_LANG
 MWI_PARENT
 ```
 
-If the `.env` file does not exist, or any of `MWI_TITLE`, `MWI_LEVEL`, `MWI_TYPE`, `MWI_PATH` are missing, tell the user:
+If the `.env` file does not exist, or any of `MWI_TITLE`, `MWI_LEVEL`, `MWI_TYPE`, `MWI_PATH` are missing:
 
-> No active work item found. Run `/workitem` to create or select one first.
+1. Check the **auto-memory** (the MEMORY.md index is always loaded in context) for an "Active Work Item" entry. If the index references a memory file for the active work item, read that file and extract the `MWI_*` variables from it.
+2. If the variables are found in memory:
+   a. Write (or overwrite) the `.env` file at the repository root with those variables — this restores the file for future runs.
+   b. Warn the user: `".env" was missing and has been restored from memory. Active work item: {MWI_TITLE}.`
+   c. Continue with the restored variables.
+3. If not found in memory either, tell the user:
 
-Then stop.
+   > No active work item found. Run `/workitem` to create or select one first.
+
+   Then stop.
 
 For `MWI_LANG`: if absent from `.env`, read `docs/manifast.yaml` and use its `language` field. If absent there too, default to `en`.
 
@@ -101,7 +108,7 @@ Available artifacts for Strategic level:
   1. brief        — Strategic Brief (synthesis of all wiki knowledge)
   2. requirements — Non-Functional Requirements & architectural constraints
   3. adr          — Architecture Decision Records (foundational decisions)
-  4. diagram      — Architecture diagram (C4 Level 1 or Level 2)
+  4. diagram      — Architecture diagrams (C4 Level 1 and Level 2, generated together)
 ```
 
 **Product:**
@@ -299,5 +306,6 @@ This level is complete. {level-specific closing message from table above.}
 
 - Never generate an artifact without first reading `.env`. The active work item is the source of truth.
 - Never write artifact files outside of `{OUTPUT_PATH}artifacts/`. Artifacts live inside the wiki, not alongside it.
+- Never create `{OUTPUT_PATH}artifacts/index.md`. Artifact registration is always done by adding or updating the `## Artifacts` section in `{OUTPUT_PATH}index.md`.
 - Never invoke a skill that is not listed in the routing table in Step 3b.
 - If the user asks for an artifact type not yet implemented, say so clearly and list what is available.

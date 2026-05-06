@@ -176,10 +176,12 @@ Optional quality check: run `scripts/validate.sh {OUTPUT_PATH}artifacts/feature-
 ---
 ## Step 7 — Update navigation files
 
-**`{OUTPUT_PATH}artifacts/index.md`** — create if it does not exist, then add or update the feature-detail entry:
+**`{OUTPUT_PATH}index.md`** — add or update the `## Artifacts` section:
 
 ```markdown
-- [[feature-detail/{SELECTED_FEATURE_ID}-{SELECTED_FEATURE_SLUG}]] — Feature Detail: {SELECTED_FEATURE_NAME} (generated YYYY-MM-DD)
+## Artifacts
+
+- [[artifacts/feature-detail/{SELECTED_FEATURE_ID}-{SELECTED_FEATURE_SLUG}]] — Feature Detail: {SELECTED_FEATURE_NAME} (generated YYYY-MM-DD)
 ```
 
 **`{OUTPUT_PATH}log.md`** — append one entry at the top:

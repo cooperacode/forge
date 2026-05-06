@@ -2,6 +2,24 @@
 
 Use the matching section below for `{DIAGRAM_TYPE}`.
 
+---
+
+> **C4Model color conventions** — include the relevant `classDef` lines in every flowchart diagram:
+>
+> | Class | Element | Fill |
+> |---|---|---|
+> | `person` | Human actors / users | `#08427B` (dark blue) |
+> | `system` | Internal software systems | `#1168BD` (blue) |
+> | `external` | External systems / third parties | `#999999` (gray) |
+> | `container` | Apps, services, queues inside a system | `#438DD5` (medium blue) |
+> | `database` | Databases / storage | `#438DD5` (medium blue) |
+> | `component` | Components inside a container | `#85BBF0` (light blue, dark text) |
+> | `step` | Process steps | `#438DD5` (medium blue) |
+> | `decision` | Decision / branch nodes | `#85BBF0` (light blue, dark text) |
+> | `terminal` | Start / end nodes | `#1168BD` (blue) |
+
+---
+
 ## c4-context
 
 ````markdown
@@ -19,15 +37,17 @@ generated: YYYY-MM-DD
 ## Diagram
 
 ```mermaid
-C4Context
-  title System Context for {WORK_ITEM_TITLE}
+flowchart TB
+    classDef person   fill:#08427B,color:#ffffff,stroke:#052E56
+    classDef system   fill:#1168BD,color:#ffffff,stroke:#0B4884
+    classDef external fill:#999999,color:#ffffff,stroke:#6B6B6B
 
-  Person(personAlias, "Actor Name", "Description from wiki")
-  System(systemAlias, "System Name", "Description from wiki")
-  System_Ext(extAlias, "External System", "Description from wiki")
+    P1(["Actor Name<br/>[Person]<br/>Description from wiki"]):::person
+    S1["System Name<br/>[Software System]<br/>Description from wiki"]:::system
+    E1["External System<br/>[External System]<br/>Description from wiki"]:::external
 
-  Rel(personAlias, systemAlias, "Uses", "channel if stated")
-  Rel(systemAlias, extAlias, "Calls", "protocol if stated")
+    P1 -->|"Uses"| S1
+    S1 -->|"Calls — protocol if stated"| E1
 ```
 ````
 
@@ -48,19 +68,25 @@ generated: YYYY-MM-DD
 ## Diagram
 
 ```mermaid
-C4Container
-  title Container Diagram for {WORK_ITEM_TITLE}
+flowchart TB
+    classDef person    fill:#08427B,color:#ffffff,stroke:#052E56
+    classDef container fill:#438DD5,color:#ffffff,stroke:#2E6295
+    classDef database  fill:#438DD5,color:#ffffff,stroke:#2E6295
+    classDef external  fill:#999999,color:#ffffff,stroke:#6B6B6B
 
-  Person(personAlias, "Actor Name", "Description")
-  System_Boundary(sysBoundary, "System Name") {
-    Container(containerAlias, "Container Name", "Technology", "Description")
-    ContainerDb(dbAlias, "Database Name", "Technology", "Stores what")
-  }
-  System_Ext(extAlias, "External System", "Description")
+    P1(["Actor Name<br/>[Person]"]):::person
+    E1["External System<br/>[External System]"]:::external
 
-  Rel(personAlias, containerAlias, "Uses", "HTTPS")
-  Rel(containerAlias, dbAlias, "Reads/Writes", "SQL")
-  Rel(containerAlias, extAlias, "Calls", "REST")
+    subgraph boundary["System Name"]
+        C1["Container Name<br/>[Technology]<br/>Description"]:::container
+        DB1[("Database Name<br/>[Technology]<br/>Stores what")]:::database
+    end
+
+    style boundary fill:none,stroke:#444444,stroke-dasharray:5 5,color:#444444
+
+    P1  -->|"Uses — HTTPS"| C1
+    C1  -->|"Reads/Writes — SQL"| DB1
+    C1  -->|"Calls — REST"| E1
 ```
 ````
 
@@ -81,12 +107,22 @@ generated: YYYY-MM-DD
 ## Diagram
 
 ```mermaid
-C4Component
-  title Component Diagram for {WORK_ITEM_TITLE}
+flowchart TB
+    classDef component fill:#85BBF0,color:#000000,stroke:#5D82A8
+    classDef container fill:#438DD5,color:#ffffff,stroke:#2E6295
+    classDef external  fill:#999999,color:#ffffff,stroke:#6B6B6B
 
-  Container_Boundary(containerBoundary, "Container Name") {
-    Component(compAlias, "Component Name", "Technology", "Responsibility")
-  }
+    E1["External Container<br/>[Technology]"]:::container
+
+    subgraph boundary["Container Name"]
+        COMP1["Component Name<br/>[Technology]<br/>Responsibility"]:::component
+        COMP2["Component Name<br/>[Technology]<br/>Responsibility"]:::component
+    end
+
+    style boundary fill:none,stroke:#444444,stroke-dasharray:5 5,color:#444444
+
+    E1 -->|"Calls"| COMP1
+    COMP1 -->|"Uses"| COMP2
 ```
 ````
 
@@ -108,12 +144,16 @@ generated: YYYY-MM-DD
 
 ```mermaid
 flowchart TD
-  START([Start]) --> STEP1[Step name]
-  STEP1 --> DEC1{Decision?}
-  DEC1 -->|Yes| STEP2[Next step]
-  DEC1 -->|No| STEP3[Alternative step]
-  STEP2 --> END([End])
-  STEP3 --> END
+    classDef terminal  fill:#1168BD,color:#ffffff,stroke:#0B4884
+    classDef step      fill:#438DD5,color:#ffffff,stroke:#2E6295
+    classDef decision  fill:#85BBF0,color:#000000,stroke:#5D82A8
+
+    START([Start]):::terminal --> STEP1[Step name]:::step
+    STEP1 --> DEC1{Decision?}:::decision
+    DEC1 -->|Yes| STEP2[Next step]:::step
+    DEC1 -->|No|  STEP3[Alternative step]:::step
+    STEP2 --> END([End]):::terminal
+    STEP3 --> END
 ```
 ````
 
@@ -135,8 +175,16 @@ generated: YYYY-MM-DD
 
 ```mermaid
 flowchart LR
-  SRC([Source]) -->|"Data element"| PROC[Process]
-  PROC -->|"Transformed data"| DEST([Destination])
+    classDef external  fill:#999999,color:#ffffff,stroke:#6B6B6B
+    classDef step      fill:#438DD5,color:#ffffff,stroke:#2E6295
+    classDef database  fill:#438DD5,color:#ffffff,stroke:#2E6295
+
+    SRC(["Source<br/>[External System]"]):::external
+    PROC["Process / Transformation"]:::step
+    DEST[("Destination<br/>[Database]")]:::database
+
+    SRC  -->|"Data element"| PROC
+    PROC -->|"Transformed data"| DEST
 ```
 ````
 

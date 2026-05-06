@@ -29,16 +29,25 @@ Determine the content situation using the table below:
 
 ## Step 2 — Select diagram type
 
-Present the menu that corresponds to `{WORK_ITEM_HIERARCHY_LEVEL}`:
+**If `{WORK_ITEM_HIERARCHY_LEVEL}` is `Strategic` — fast-path (no menu):**
 
-**Strategic:**
+Both C4 diagrams are always generated together at Strategic level. Do not ask the user to choose.
+
+Set `DIAGRAM_SEQUENCE = [c4-context, c4-container]` and `DIAGRAM_TYPE = c4-context` (first pass).
+
+Announce:
 ```
-Which diagram do you want to generate?
-  1. C4 Level 1 — System Context  (the system and its external actors/systems)
-  2. C4 Level 2 — Container       (containers: apps, services, databases inside the system)
+Strategic level detected. Generating both C4 diagrams in sequence:
+  1. C4 Level 1 — System Context
+  2. C4 Level 2 — Container
+Starting with Level 1…
 ```
 
-**Product:**
+Then proceed to Step 3. After Step 8 completes for `c4-context`, advance to the next item in `DIAGRAM_SEQUENCE`, set `DIAGRAM_TYPE = c4-container`, announce `"C4 Level 1 done. Now generating C4 Level 2 — Container…"`, and return to Step 3. Skip Step 5 on the second pass (language is already locked). After Step 8 completes for `c4-container`, the skill is done — skip to the closing message in Step 8.
+
+---
+
+**If `{WORK_ITEM_HIERARCHY_LEVEL}` is `Product` — show menu and wait:**
 ```
 Which diagram do you want to generate?
   1. C4 Level 3 — Component  (components inside a specific container)
@@ -46,14 +55,14 @@ Which diagram do you want to generate?
   3. Data Flow               (how data moves between system parts)
 ```
 
-**Tactical:**
+**If `{WORK_ITEM_HIERARCHY_LEVEL}` is `Tactical` — show menu and wait:**
 ```
 Which diagram do you want to generate?
   1. Sequence  (interactions between actors/components over time)
   2. State     (states and transitions of an entity or process)
 ```
 
-Wait for the user's selection. Record it as `{DIAGRAM_TYPE}`. Do not proceed until a type is chosen.
+For Product and Tactical: wait for the user's selection. Record it as `{DIAGRAM_TYPE}`. Do not proceed until a type is chosen.
 
 ---
 
@@ -195,6 +204,19 @@ Sources read: N pages
 
 ## Step 8 — Close the loop
 
+**For Strategic level (after both passes complete):**
+```
+Done. Both C4 diagrams generated:
+  - C4 Level 1: {OUTPUT_PATH}artifacts/diagrams/c4-context.md  (N elements, N relationships)
+  - C4 Level 2: {OUTPUT_PATH}artifacts/diagrams/c4-container.md  (N elements, N relationships)
+
+Total gaps flagged: N
+Total sources read: N pages
+
+Anything you want me to revise?
+```
+
+**For Product and Tactical levels (single diagram):**
 ```
 Done. {Diagram type} diagram generated at {OUTPUT_PATH}artifacts/diagrams/{slug}.md.
 
@@ -215,8 +237,9 @@ Anything you want me to revise?
 - **Mermaid syntax must be valid.** Test mentally before writing — prefer a simpler correct diagram over a complex broken one.
 - **Never merge distinct elements** to make the diagram smaller. One system = one node; one container = one node.
 - **Never modify source/concept/entity pages.** Diagram generation is read-only on the wiki.
-- **Never skip Step 2.** The diagram type must be explicitly selected — do not guess.
+- **Strategic level never shows a menu.** Both C4 L1 and C4 L2 are always generated in sequence automatically.
+- **Never skip Step 2 for Product/Tactical.** The diagram type must be explicitly selected — do not guess.
 - **Never skip Step 4.** Wrong elements produce a misleading diagram that will be harder to correct than to prevent.
-- **Never skip Step 5.** Language must be locked before any file is written — never assume or infer the language mid-generation.
+- **Never skip Step 5.** Language must be locked before any file is written — lock it once per skill invocation (not once per pass).
 - **Technology labels come only from the wiki.** If the wiki does not state the technology, use `"not stated"` in the diagram element description.
-- **One artifact file per diagram type.** If the user wants both a C4 L1 and a C4 L2, run the skill twice.
+- **One artifact file per diagram type.** Strategic generates two files (`c4-context.md` and `c4-container.md`) in a single skill run.

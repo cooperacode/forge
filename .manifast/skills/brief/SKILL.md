@@ -107,14 +107,12 @@ Rules while writing:
 
 After writing the brief, update:
 
-**`{OUTPUT_PATH}artifacts/index.md`** — create if it does not exist, then add or update the brief entry:
+**`{OUTPUT_PATH}index.md`** — add or update the `## Artifacts` section:
 
 ```markdown
-# Artifacts — {WORK_ITEM_TITLE}
+## Artifacts
 
-## Strategic
-
-- [[brief]] — Strategic Brief (generated YYYY-MM-DD)
+- [[artifacts/brief]] — Strategic Brief (generated YYYY-MM-DD)
 ```
 
 **`{OUTPUT_PATH}log.md`** — append one entry at the top:
@@ -150,7 +148,7 @@ Anything you want me to revise before we continue?
 
 - **Write all content in `{LANGUAGE}`.** If `LANGUAGE` is `pt-BR`, write in Brazilian Portuguese. If `LANGUAGE` is `en`, write in English. Apply this to artifact content, section headings, and all messages shown to the user. If `LANGUAGE` is not set, default to English.
 - **Never write content not supported by the wiki.** Use `> [!gap]` for any section the wiki does not cover. Do not fill gaps with your training knowledge.
-- **Never modify source or concept pages.** Brief generation is read-only on the wiki (`docs/wiki/`). The only files you write are `artifacts/brief.md`, `artifacts/index.md`, and `log.md` — all inside `{OUTPUT_PATH}`.
+- **Never modify source or concept pages.** Brief generation is read-only on the wiki (`docs/wiki/`). The only files you write are `artifacts/brief.md`, `index.md` (Artifacts section), and `log.md` — all inside `{OUTPUT_PATH}`.
 - **Never skip Step 3.** The user must confirm scope before you write 400+ words. This keeps the brief aligned with intent.
 - **Never skip Step 4.** Language must be locked before any file is written — never assume or infer the language mid-generation.
 - **If `overview.md` does not exist**, proceed using source and concept pages only — note in the brief that the overview is absent.

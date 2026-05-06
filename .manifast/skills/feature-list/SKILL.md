@@ -117,10 +117,12 @@ Optional quality check: run `scripts/validate.sh {OUTPUT_PATH}artifacts/feature-
 ---
 ## Step 6 — Update navigation files
 
-**`{OUTPUT_PATH}artifacts/index.md`** — create if it does not exist, then add or update the feature-list entry:
+**`{OUTPUT_PATH}index.md`** — add or update the `## Artifacts` section:
 
 ```markdown
-- [[feature-list]] — Feature List ({N} features, generated YYYY-MM-DD)
+## Artifacts
+
+- [[artifacts/feature-list]] — Feature List ({N} features, generated YYYY-MM-DD)
 ```
 
 **`{OUTPUT_PATH}log.md`** — append one entry at the top:

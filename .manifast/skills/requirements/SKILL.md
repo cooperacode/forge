@@ -131,10 +131,12 @@ Optional quality check: run `scripts/validate.sh {OUTPUT_PATH}artifacts/requirem
 ---
 ## Step 7 — Update navigation files
 
-**`{OUTPUT_PATH}artifacts/index.md`** — create if it does not exist, then add or update the requirements entry:
+**`{OUTPUT_PATH}index.md`** — add or update the `## Artifacts` section:
 
 ```markdown
-- [[requirements]] — Quality Attributes & Constraints (generated YYYY-MM-DD)
+## Artifacts
+
+- [[artifacts/requirements]] — Quality Attributes & Constraints (generated YYYY-MM-DD)
 ```
 
 **`{OUTPUT_PATH}log.md`** — append one entry at the top:

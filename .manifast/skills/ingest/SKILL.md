@@ -16,19 +16,51 @@ If these variables are not explicitly set, derive them from `.env`:
 
 ---
 
-## Step 1 — Read the source
+## Force mode
 
-Locate the file the user indicated in `{INPUT_PATH}`. Read it in full before doing anything else.
+If the user invoked the skill with `-force` (e.g. `/ingest -force`), activate **force mode**:
+
+- Skip all interactive confirmation prompts throughout the skill.
+- Process every file found in `{INPUT_PATH}` sequentially, running Steps 2–7 for each file without pausing.
+- At Step 2, proceed with your own judgment — do not ask questions.
+- At Step 4, proceed with the page list as identified — do not ask for approval.
+- At Step 7, do not ask "Anything you want me to revisit?" — just print the summary and move on to the next file.
+- After all files are processed, print a consolidated summary of everything that was created or updated.
+
+---
+
+## Step 1 — Select the source
+
+Check whether force mode is active.
+
+**Normal mode:** List the contents of `{INPUT_PATH}` using the filesystem tools and present a numbered menu to the user:
+
+```
+Files available in input/:
+
+1. filename-a.pdf
+2. filename-b.md
+3. filename-c.docx
+
+Which file do you want to ingest? (enter the number)
+```
+
+- If `{INPUT_PATH}` does not exist or is empty, tell the user and stop. Do not proceed.
+- Wait for the user to reply with a number. Do not guess or assume a default.
+- Once the user selects a file, confirm the choice ("You selected: filename-a.pdf — proceeding.") and read it in full using the Read tool. Never infer or synthesize its content from context.
+
+**Force mode:** List all files in `{INPUT_PATH}` and announce that all will be processed sequentially without confirmation. Do not wait for user input. Read each file in full and process it through Steps 2–7 before moving to the next.
 
 - If the file is a PDF or image, extract all readable text first.
 - If the file has images with relevant content (charts, diagrams, screenshots), note them explicitly — you will reference them in the summary page.
-- If the file does not exist in `{INPUT_PATH}`, tell the user and stop. Do not ingest from outside `{INPUT_PATH}`.
+
+**Do not ingest from outside `{INPUT_PATH}` under any circumstance.**
 
 ---
 
 ## Step 2 — Discuss before writing
 
-Before touching any wiki file, surface the key takeaways to the user. Be concise: 3–5 bullet points max. Then ask:
+**Normal mode:** Before touching any wiki file, surface the key takeaways to the user. Be concise: 3–5 bullet points max. Then ask:
 
 - Is there anything here you want emphasized or ignored?
 - Does this contradict or reinforce anything already in the wiki?
@@ -37,6 +69,8 @@ Before touching any wiki file, surface the key takeaways to the user. Be concise
 Wait for the user's response. Adjust your understanding before proceeding. If the user says "go ahead" with no changes, proceed with your own judgment.
 
 This step exists because the human curates, the LLM executes. Do not skip it even if the source seems straightforward.
+
+**Force mode:** Print the key takeaways (3–5 bullet points) and proceed immediately with your own judgment. Do not wait for a response.
 
 ---
 
@@ -114,7 +148,9 @@ Pages to update:
 - overview (always)
 ```
 
-Ask the user if this list looks right. Adjust if needed.
+**Normal mode:** Ask the user if this list looks right. Adjust if needed.
+
+**Force mode:** Print the list and proceed immediately without waiting for a response.
 
 ---
 
@@ -262,6 +298,8 @@ Flagged: 1 contradiction with concepts/positional-encoding
 Anything you want me to revisit before we continue?
 ```
 
+**Force mode:** Print the same summary but omit the closing question. If more files remain in the queue, announce the next file and continue immediately.
+
 ---
 
 ## Language
@@ -271,6 +309,8 @@ Write all wiki pages and messages to the user in `{LANGUAGE}`. If `LANGUAGE` is 
 ## Rules
 
 - Never ingest a file that is not in `{INPUT_PATH}`. If the user pastes content directly into chat, ask them to save it to `{INPUT_PATH}` first, then ingest from there. This keeps the source layer clean.
+- Never create or write files inside `{INPUT_PATH}`. That folder is read-only for this skill — only the user places files there.
+- Never fabricate or synthesize source content. If you cannot read a real file from `{INPUT_PATH}`, stop. Do not proceed with invented or inferred content.
 - Never overwrite existing wiki content without reading it first.
 - Never answer questions during ingest. If the user asks something mid-flow, note it and say you will answer after the ingest is complete.
 - If a step produces more than ~20 file changes, pause and ask the user if they want to continue or scope down.

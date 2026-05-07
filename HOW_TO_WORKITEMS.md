@@ -50,7 +50,17 @@ Run:
 /workitem
 ```
 
-If you have never created a work item before, Claude will skip straight to creation. If you have existing items, it will ask what you want to do:
+**If this is the very first run** (no `docs/manifast.yaml` exists yet), Claude asks which language the project should use before anything else:
+
+```
+What language should this project use?
+  ▸ en     — English
+    pt-BR  — Portuguese (Brazil)
+```
+
+Choose your preferred language. This is saved once in `docs/manifast.yaml` and never asked again. To change it later, run `/language`.
+
+After the language is set, Claude skips straight to creation. If you have existing items, it will ask what you want to do instead:
 
 ```
 What action would you like to perform?
@@ -65,6 +75,8 @@ Choose **Create a new work item**.
 ## Step-by-step: creating a work item
 
 The following example creates a Strategic Initiative called *"Redesign the onboarding process"*. Follow the same steps for any level or type.
+
+> **First run only:** before Step 1, Claude asks for the project language (`en` or `pt-BR`). This happens once and is saved in `docs/manifast.yaml`. Skip ahead if the project already exists.
 
 ---
 
@@ -142,17 +154,12 @@ For a root-level item with no parent, choose **None**. If this initiative belong
 
 ### Step 5 — Done
 
-Claude confirms and shows what was created:
+Claude confirms:
 
 ```
-Work item created.
+✅ Work item "Redesign the onboarding process" is ready.
 
-Title:  Redesign the onboarding process
-Level:  Strategic · Initiative
-Path:   docs/strategic/initiatives/20260503-redesign-the-onboarding-process/
-Parent: (none)
-
-Active item updated in .env.
+Run /clear to start a fresh context for this work item.
 ```
 
 ---

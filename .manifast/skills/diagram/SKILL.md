@@ -174,6 +174,8 @@ Create `{OUTPUT_PATH}artifacts/diagrams/{diagram-type-slug}.md`.
 
 Use the template from `template.md` in this same skill directory and select the section that matches `{DIAGRAM_TYPE}`.
 
+**Copy the Mermaid diagram type keyword exactly as it appears in the template** — `flowchart TB`, `flowchart TD`, `flowchart LR`, `sequenceDiagram`, or `stateDiagram-v2`. Do not change it. Do not substitute `C4Context`, `C4Container`, or `C4Component` — those Mermaid types are forbidden regardless of diagram type.
+
 Fill all placeholders and preserve the section order.
 
 Optional quality check: run `scripts/validate.sh {OUTPUT_PATH}artifacts/diagrams/{diagram-type-slug}.md`.
@@ -236,6 +238,8 @@ Anything you want me to revise?
 
 - **Write all content in `{LANGUAGE}`.** If `LANGUAGE` is `pt-BR`, write in Brazilian Portuguese. If `LANGUAGE` is `en`, write in English. Apply this to artifact content, section headings, and all messages shown to the user. If `LANGUAGE` is not set, default to English.
 - **Never invent elements not present in the wiki.** Use `> [!gap]` for anything the wiki does not cover.
+- **`flowchart` is mandatory for all C4 diagrams.** Never use `C4Context`, `C4Container`, or `C4Component` Mermaid diagram types — they are forbidden. All c4-context, c4-container, and c4-component diagrams must open with `flowchart TB` exactly as in the template.
+- **Follow the template verbatim for the Mermaid type keyword.** The opening keyword of every diagram block (`flowchart TB`, `flowchart TD`, `flowchart LR`, `sequenceDiagram`, `stateDiagram-v2`) is fixed by the template and must not be changed or substituted.
 - **Mermaid syntax must be valid.** Test mentally before writing — prefer a simpler correct diagram over a complex broken one.
 - **Never merge distinct elements** to make the diagram smaller. One system = one node; one container = one node.
 - **Never modify source/concept/entity pages.** Diagram generation is read-only on the wiki.

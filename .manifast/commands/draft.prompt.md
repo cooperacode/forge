@@ -177,6 +177,8 @@ WORK_ITEM_HIERARCHY_LEVEL = {MWI_LEVEL}
 LANGUAGE                  = {MWI_LANG}
 ```
 
+> ⚠️ **Language enforcement (non-negotiable):** Every word of the artifact — content, headings, table values, labels, and all user-facing messages — MUST be written in `{MWI_LANG}`. Source documents and wiki pages may be in a different language. Never mirror the language of source material. `{MWI_LANG}` is the only permitted output language, regardless of what you read.
+
 Then read and execute `{SKILL_PATH}` end-to-end, following every step inside it. Treat the skill instructions as authoritative — they override any default behavior.
 
 Do not summarize or shortcut the skill. Execute it fully.

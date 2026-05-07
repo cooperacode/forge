@@ -13,6 +13,8 @@ This skill is for **Tactical-level work items only** (User Story, Task, Bug). If
 
 Follow every step in order.
 
+> ⚠️ **Language lock:** Write the entire artifact — content, headings, table values, and all messages — in `{LANGUAGE}`. Source documents may be in a different language; never mirror them. This constraint is active from the first character to the last, throughout every step.
+
 ---
 
 ## Step 1 — Detect parent mode

@@ -11,6 +11,8 @@ The orchestrator passed `OUTPUT_PATH` and `WORK_ITEM_META` at the top of this pr
 
 Follow every step in order.
 
+> ⚠️ **Language lock:** Write the entire artifact — content, headings, table values, and all messages — in `{LANGUAGE}`. Source documents may be in a different language; never mirror them. This constraint is active from the first character to the last, throughout every step.
+
 ---
 
 ## Step 1 — Verify wiki has content

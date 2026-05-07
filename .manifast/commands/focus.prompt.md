@@ -302,28 +302,28 @@ Run /clear to start a fresh context for this work item.
 
 Called from Step 1.3 when `{{workItemType}}` is **Feature**. Returns to Step 1.5 with all fields set.
 
-**Step A — Select parent Epic**
+**Step A — List available Epics**
 
 Filter `docs/manifast.yaml` for all items where `workItemType: Epic`.
 
-- If **no Epics exist**: warn the user that no Epics were found, then fall back to manual entry (ask title/description/tags as described in Step 1.3). Set `{{parentPath}} = ""`. Return to Step 1.5.
-- If **Epics exist**: use #tool:vscode/askQuestions to ask:
-  > Q: Which Epic does this Feature belong to?
+If any Epics exist, use #tool:vscode/askQuestions to ask:
+> Q: Which Epic does this Feature belong to?
 
-  Present each candidate as:
-  ```
-  {title} — {path}
-  ```
-  Plus a **"None — root-level item"** option at the bottom.
+Present each candidate as:
+```
+{title} — {path}
+```
+Plus a **"Standalone — create from scratch"** option at the bottom.
 
-  - If the user selects **"None"**: fall back to manual entry (ask title/description/tags as described in Step 1.3). Set `{{parentPath}} = ""`. Return to Step 1.5.
-  - Otherwise: set `{{parentPath}}` to the selected Epic's `path`.
+- If **no Epics exist**: warn the user, automatically fall into Standalone mode (Step D below).
+- If the user selects **"Standalone — create from scratch"**: go to Step D.
+- Otherwise: set `{{parentPath}}` to the selected Epic's `path` and continue to Step B.
 
 **Step B — Load feature-list from selected Epic**
 
-If an Epic was selected (not "None"), attempt to read `{{parentPath}}output/artifacts/feature-list.md`.
+If an Epic was selected, attempt to read `{{parentPath}}output/artifacts/feature-list.md`.
 
-- If the file **does not exist**: warn the user that no feature-list was found for the selected Epic and suggest running `/draft feature-list` first. Then fall back to manual entry (ask title/description/tags as described in Step 1.3). Return to Step 1.5.
+- If the file **does not exist**: warn the user that no feature-list was found for the selected Epic and suggest running `/draft feature-list` first. Then automatically fall into Standalone mode (Step D below).
 - If the file **exists**: proceed to Step C.
 
 **Step C — Select feature from list**
@@ -335,6 +335,9 @@ Present each row as:
 ```
 {ID} · {Feature name} — {Description} [{Priority}]
 ```
+Plus a **"Standalone — create from scratch"** option at the bottom.
+
+- If the user selects **"Standalone — create from scratch"**: go to Step D.
 
 Map the selected row's fields:
 - `{Feature name}` → `{{workItemTitle}}`
@@ -342,6 +345,15 @@ Map the selected row's fields:
 - `{Priority}`, `{ID}` → `{{workItemTags}}` (e.g., `mvp, F-001`)
 
 Return to **Step 1.5** — `{{parentPath}}` is already set; Step 1.4 is skipped.
+
+**Step D — Standalone mode**
+
+Ask the user to provide title, description, and tags (same fields as the default manual entry in Step 1.3). Then display this note:
+> ℹ️ Standalone feature created. Run `/ingest` to add source documents before `/draft feature-detail`. If you already have a feature code, include it in the tags (for example: `F-001`).
+
+Set `{{parentPath}} = ""`.
+
+Return to **Step 1.5**.
 
 ---
 

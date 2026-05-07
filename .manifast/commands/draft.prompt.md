@@ -2,7 +2,7 @@
 name: draft
 description: "Generate a software engineering artifact for the active work item. Routes to the correct artifact type based on the hierarchy level set in .env."
 tools: [read, edit, search, todo]
-argument-hint: "Artifact type to generate. Strategic: brief, requirements, adr, diagram. Product: requirements, der, adr, feature-list, diagram. Tactical: user-story, diagram. Omit to see the menu for the active level."
+argument-hint: "Artifact type to generate. Strategic: brief, requirements, adr, diagram. Product: requirements, der, adr, feature-list, feature-detail, diagram. Tactical: user-story, diagram. Omit to see the menu for the active level."
 ---
 
 You are the **artifact orchestrator** for manifast. Your job is to read the active work item context, determine which artifact to generate, and invoke the correct skill.
@@ -76,10 +76,16 @@ Verify that `OUTPUT_PATH` exists. If it does not, stop and tell the user to run 
 
 Verify that `{OUTPUT_PATH}index.md` exists and has content (Sources, Entities, or Concepts sections with at least one entry).
 
+If the artifact type was **not** passed as an argument and this check depends on whether standalone generation is allowed, temporarily continue to **Step 3.1** to resolve the artifact type from the menu, then return to this check before executing any skill.
+
 - If the file exists and has at least one entry → continue normally.
-- If the file does not exist or all sections are empty **and `MWI_PARENT` is empty** → stop and tell the user, **unless** the requested artifact is `user-story` at Tactical level in standalone mode (no parent set — stories are derived from the work item description alone):
+- If the file does not exist or all sections are empty **and `MWI_PARENT` is empty** → stop and tell the user, **unless** the requested artifact is `feature-detail` at Product level in standalone mode or `user-story` at Tactical level in standalone mode (no parent set — artifacts are derived from the work item description alone):
 
   > No ingested sources found for this work item. Run `/ingest` to populate `output/index.md` before generating artifacts.
+
+  For standalone `feature-detail`, warn but continue:
+
+  > Local wiki is empty — generating feature detail from the work item description only. Run `/ingest` to add source documents for richer output.
 
   For standalone `user-story`, warn but continue:
 
@@ -153,6 +159,7 @@ For `user-story`, the only valid parent type is **Feature** — require `feature
 
 If a cross-level prerequisite applies and the active work item has no parent:
 
+- **If the artifact is `feature-detail` and `MWI_TYPE` is `Feature`**: do not stop — proceed in standalone mode. The skill will derive the feature detail from the active work item description and local wiki instead of parent artifacts.
 - **If the artifact is `user-story`**: do not stop — proceed in standalone mode. The skill will derive stories from the work item description and local wiki instead of parent artifacts.
 - **Otherwise**, stop and tell the user:
 
@@ -170,6 +177,8 @@ Before invoking the skill, assemble the context block that the skill expects:
 ```
 OUTPUT_PATH               = {OUTPUT_PATH}
 CONTEXT_PATH              = {CONTEXT_PATH}        ← empty string if no parent
+WORK_ITEM_ID              = {MWI_ID}
+WORK_ITEM_PATH            = {MWI_PATH}
 WORK_ITEM_TITLE           = {MWI_TITLE}
 WORK_ITEM_TYPE            = {MWI_TYPE}
 WORK_ITEM_TAGS            = {MWI_TAGS}
@@ -263,7 +272,7 @@ Available artifacts for Product level:
   2. der             — Entity-Relationship Diagram (Mermaid ER)
   3. adr             — Architecture Decision Records (feature-scoped)
   4. feature-list    — Feature List with priorities and dependencies
-  5. feature-detail  — Deep analysis of a specific feature + proposed user story breakdown
+  5. feature-detail  — Deep analysis of the active Feature + proposed user story breakdown
   6. diagram         — Architecture or flow diagram (C4 L3, process flow, data flow)
 ```
 
@@ -324,7 +333,7 @@ Available artifacts for Tactical level:
 | Level    | Work Item Type | Artifact         | Requires (parent work item)        |
 |----------|---------------|------------------|------------------------------------|
 | Product  | Epic          | `requirements`   | parent Strategic: `brief`          |
-| Product  | Feature       | `feature-detail` | parent Epic: `feature-list`        |
+| Product  | Feature       | `feature-detail` | parent Epic: `feature-list` (only when parent exists) |
 | Tactical | any           | `user-story`     | parent Feature: `feature-detail`   |
 
 ### What's next table

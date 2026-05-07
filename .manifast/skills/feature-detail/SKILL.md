@@ -1,15 +1,15 @@
 ---
 name: feature-detail
-description: "Generate a Feature Detail artifact for a specific feature from the feature list. Provides deep analysis of scope, business rules, entity interactions, and a proposed user story breakdown. Product level only."
+description: "Generate a Feature Detail artifact for the active Feature work item. Uses the feature itself as scope and optionally enriches it with parent Epic artifacts and local wiki context."
 ---
 
 # Skill: Feature Detail
 
-You were invoked by the orchestrator because the user wants to detail a specific feature from the active wiki. Your job is to select one feature from the existing `feature-list.md`, analyze it in depth across all wiki content, and produce a detailed specification with a proposed user story breakdown.
+You were invoked by the orchestrator because the user wants to detail the active Feature work item. Your job is to analyze that feature in depth across the available wiki and upstream context, then produce a detailed specification with a proposed user story breakdown.
 
-The orchestrator passed `OUTPUT_PATH`, `WORK_ITEM_TITLE`, `WORK_ITEM_TYPE`, `CONTEXT_PATH`, and `LANGUAGE` — use those values for all file operations and metadata.
+The orchestrator passed `OUTPUT_PATH`, `WORK_ITEM_ID`, `WORK_ITEM_PATH`, `WORK_ITEM_TITLE`, `WORK_ITEM_TYPE`, `WORK_ITEM_TAGS`, `CONTEXT_PATH`, and `LANGUAGE` — use those values for all file operations and metadata.
 
-This skill is for **Product-level work items only** (Epic, Feature). If `{WORK_ITEM_TYPE}` is Strategic or Tactical, tell the user this artifact is not applicable for that layer and stop.
+This skill is for **Product-level Feature work items only**. If `{WORK_ITEM_TYPE}` is not `Feature`, tell the user this artifact is not applicable for the active work item and stop.
 
 Follow every step in order.
 
@@ -17,55 +17,80 @@ Follow every step in order.
 
 ---
 
-## Step 1 — Verify wiki and feature-list
+## Step 1 — Detect parent mode
 
 Attempt to read `{OUTPUT_PATH}index.md` and set `LOCAL_WIKI`:
 
 | `{OUTPUT_PATH}index.md` | Action |
 |--------------------------|--------|
 | exists and has content   | Set `LOCAL_WIKI = true`. Note the total number of pages indexed. |
-| missing or empty         | Set `LOCAL_WIKI = false`. Warn the user: "No sources ingested for this work item — the feature detail will rely on the parent's artifacts only." |
+| missing or empty         | Set `LOCAL_WIKI = false`. The skill will rely on the active work item description and any available parent artifacts. |
 
-The `feature-list.md` is an **Epic-level artifact** and lives in the parent work item's output. Check `{CONTEXT_PATH}`:
+`{CONTEXT_PATH}` points to the **direct parent** work item's `output/artifacts/`. What is available there determines the parent mode. Check `{CONTEXT_PATH}`:
 
-- **If `{CONTEXT_PATH}` is empty**, stop and tell the user:
+- **If `{CONTEXT_PATH}` is empty**, set `PARENT_MODE = STANDALONE` and continue to Step 2.
 
-  > No parent work item is configured. Feature Detail requires an Epic-level parent with a feature list. Set up a parent work item via `/focus` and generate its feature list with `/draft feature-list` first.
+- **If `{CONTEXT_PATH}` is non-empty**, inspect its contents:
 
-- **If `{CONTEXT_PATH}` is non-empty**, check whether `{CONTEXT_PATH}feature-list.md` exists.
+  | What exists in `{CONTEXT_PATH}` | `PARENT_MODE` | Meaning |
+  |----------------------------------|---------------|---------|
+  | `feature-list.md` | `EPIC` | Parent is an Epic work item with product context |
+  | Anything else but no `feature-list.md` | — | Stop (see below) |
 
-  - **If it does not exist**, stop and tell the user:
+  - **If `feature-list.md` does not exist**, stop and tell the user:
 
-    > No `feature-list.md` found in the parent work item (`{CONTEXT_PATH}`). Run `/draft feature-list` on the parent Epic first, then come back here.
+    > The parent work item has no `feature-list.md`, so it cannot provide Product context for this Feature.
+    > Run `/draft feature-list` on the parent Epic first, or remove the parent and continue in standalone mode.
 
-  - **If it exists**, read it in full. Extract all feature rows: `ID`, name, description, beneficiary, priority, and dependencies.
+  - **If it exists**, set `PARENT_MODE = EPIC` and continue to Step 2.
 
----
+Record `PARENT_MODE` before continuing.
 
-## Step 2 — Ask the user to select a feature
+## Step 2 — Resolve feature scope from the active work item
 
-Show the list of features and ask which one to detail:
+Read `docs/manifast.yaml` and find the item whose `path` matches `{WORK_ITEM_PATH}`.
 
-```
-Feature list loaded. Which feature do you want to detail?
+- If no item matches `{WORK_ITEM_PATH}`, stop and tell the user:
 
-| ID    | Feature         | Priority        |
-|-------|----------------|-----------------|
-| F-001 | {name}         | {priority}      |
-| F-002 | {name}         | {priority}      |
-...
+  > The active Feature work item could not be found in `docs/manifast.yaml`. Run `/focus` again to restore the active context.
 
-Reply with the feature ID (e.g. F-001).
-```
-
-Wait for the user's reply. Record:
+Extract from the matched item:
 
 ```
-SELECTED_FEATURE_ID   = {e.g. F-001}
-SELECTED_FEATURE_NAME = {full name from feature-list}
-SELECTED_FEATURE_DESC = {description from feature-list}
+SELECTED_FEATURE_NAME = {title}
+SELECTED_FEATURE_DESC = {description}
 SELECTED_FEATURE_SLUG = {kebab-case short name, ASCII only}
+ACTIVE_WORK_ITEM_SOURCE = [[docs/manifast.yaml]]
 ```
+
+Resolve `SELECTED_FEATURE_ID` in this order:
+
+1. If `tags` contains a token matching `F-[A-Za-z0-9-]+`, use the first match and normalize it to uppercase.
+2. Otherwise, derive it deterministically from `{WORK_ITEM_ID}` as `F-{ASCII-UPPER-KEBAB of WORK_ITEM_ID}` and warn the user:
+
+   > No explicit feature ID tag was found. Using derived feature ID: `{SELECTED_FEATURE_ID}`.
+
+If `PARENT_MODE = EPIC`, read `{CONTEXT_PATH}feature-list.md` in full and extract all feature rows: `ID`, name, description, beneficiary, priority, and dependencies.
+
+Try to match the active feature against the feature list using this order:
+
+1. Row `ID` equals `SELECTED_FEATURE_ID`
+2. Row feature name equals `SELECTED_FEATURE_NAME` (case-insensitive)
+
+If a match is found, record:
+
+```
+PARENT_FEATURE_MATCH = true
+PARENT_FEATURE_PRIORITY = {priority}
+PARENT_FEATURE_DEPENDENCIES = {dependencies}
+PARENT_FEATURE_BENEFICIARY = {beneficiary}
+```
+
+If no match is found, warn the user:
+
+> This Feature is not present in the parent Epic's `feature-list.md`. Continuing with the active work item description as the primary scope and using the Epic artifacts only as supporting context.
+
+Set `PARENT_FEATURE_MATCH = false`.
 
 Check whether `{OUTPUT_PATH}artifacts/feature-detail/{SELECTED_FEATURE_ID}-{SELECTED_FEATURE_SLUG}.md` already exists. If it does, warn the user:
 
@@ -77,9 +102,36 @@ Wait for confirmation before continuing.
 
 ## Step 3 — Read all wiki pages
 
+### If `PARENT_MODE = STANDALONE`
+
+The active work item description is the **primary source**.
+
+When a statement comes directly from the active work item entry rather than the local wiki, cite `[[docs/manifast.yaml]]`.
+
+If `LOCAL_WIKI = false`, warn the user:
+
+> No ingested sources found for this work item. The feature detail will be based solely on the work item description.
+
+**If `LOCAL_WIKI = true`**, also read:
+
+1. `docs/wiki/overview.md` — global synthesis (read directly)
+2. All `sources/` pages listed in `{OUTPUT_PATH}index.md` — follow each link to load from `docs/wiki/`
+3. All `concepts/` pages listed in `{OUTPUT_PATH}index.md`
+4. All `entities/` pages listed in `{OUTPUT_PATH}index.md`
+
+### If `PARENT_MODE = EPIC`
+
+The active work item description remains the **primary source**. The parent Epic artifacts provide upstream product context.
+
+When a statement comes directly from the active work item entry rather than the local wiki or parent artifacts, cite `[[docs/manifast.yaml]]`.
+
+If `LOCAL_WIKI = false`, warn the user:
+
+> No ingested sources found for this work item. The feature detail will rely on the work item description and the parent Epic artifacts only.
+
 Read in this order:
 
-1. `{CONTEXT_PATH}feature-list.md` (already read in Step 1 — the authoritative feature scope)
+1. `{CONTEXT_PATH}feature-list.md` (already read in Step 2)
 
 **If `LOCAL_WIKI = true`**, also read:
 
@@ -88,9 +140,10 @@ Read in this order:
 4. All `concepts/` pages listed in `{OUTPUT_PATH}index.md`
 5. All `entities/` pages listed in `{OUTPUT_PATH}index.md`
 
-6. Any other files present in `{CONTEXT_PATH}` (remaining parent Epic artifacts):
-   - `brief.md` — strategic goals; any behavior in this feature that doesn't serve a stated goal should be flagged.
-   - `requirements.md` (NFR) — constraints that shape implementation; carry them into the business rules section.
+6. Any other files present in `{CONTEXT_PATH}`:
+   - `requirements.md` — functional or product constraints that shape the feature; carry them into the business rules and acceptance criteria sections.
+   - `der.md` — canonical entity names; use them verbatim in the entity interactions section.
+   - `adr/` and `diagrams/` — use them only when they materially clarify dependencies, data flow, or implementation constraints.
    - Note each upstream source when carrying a constraint or framing forward.
 
 While reading, focus exclusively on `{SELECTED_FEATURE_ID} — {SELECTED_FEATURE_NAME}`. Extract:
@@ -223,15 +276,17 @@ Anything you want me to revise?
 ## Rules
 
 - **Write all content in `{LANGUAGE}`.** If `LANGUAGE` is `pt-BR`, write in Brazilian Portuguese. If `LANGUAGE` is `en`, write in English. Apply this to artifact content, section headings, and all messages shown to the user. If `LANGUAGE` is not set, default to English.
-- **Require `feature-list.md` before proceeding.** This skill cannot run without it.
-- **Always ask for the feature ID (Step 2) before reading the wiki.** Do not guess or auto-select.
+- **This skill is for Product-level `Feature` work items only.** If the active work item is not a Feature, stop immediately.
+- **Always detect `PARENT_MODE` in Step 1 before doing anything else.** The mode determines whether Epic artifacts are available.
+- **The active work item is the authoritative feature scope.** Never ask the user to select a different feature from the parent's `feature-list.md`.
+- **If a parent Epic exists, `feature-list.md` is required.** Without it, stop and ask the user to generate the parent's feature list first or remove the parent to continue in standalone mode.
+- **If no explicit feature ID tag exists, derive `SELECTED_FEATURE_ID` deterministically from `{WORK_ITEM_ID}` and warn the user.** Never leave `feature_id` blank.
 - **Never write files before Step 4 is confirmed.** The analysis must be approved first.
 - **Never skip Step 5.** Language must be locked before any file is written — never assume or infer the language mid-generation.
 - **File path is fixed:** `artifacts/feature-detail/{feature_id}-{slug}.md`. Do not deviate.
-- **Never invent behaviors not present in the wiki.** Use `> [!gap]` for anything inferred.
+- **Never invent behaviors not present in the available sources.** Use `> [!gap]` for anything inferred or underspecified.
 - **Business rules must be individually sourced.** Never write a rule without a [[wikilink]].
 - **User story breakdown is a proposal, not a commitment.** Stories are generated later at the Tactical level — this breakdown is guidance, not a locked contract.
 - **Apply INVEST to every proposed story.** Flag violations explicitly in the INVEST Notes column: split stories that violate **S** (too large for one sprint); mark as `> [!gap]` stories that violate **E** or **T** (cannot estimate or verify due to missing wiki detail); note explicit dependencies for stories that violate **I**. Never write a story that fails **V** — if no persona benefits, it is a technical task, not a user story.
 - **Never write to source/concept/entity pages.** This skill is read-only on the wiki.
-- **This skill is Product-only.** If invoked for Strategic or Tactical, stop immediately.
-- **Source citation format:** use `[[sources/slug]]`, `[[concepts/slug]]`, or `[[entities/slug]]` for local wiki pages. For files read from `{CONTEXT_PATH}`, substitute the actual runtime value and write the full repo-relative path: `[[docs/strategic/initiatives/20260504-foo/output/artifacts/brief.md]]`. Never use short names (`[[brief.md]]`) or computed relative paths (`[[../../...]]`) for cross-work-item references — they resolve to the wrong location.
+- **Source citation format:** use `[[sources/slug]]`, `[[concepts/slug]]`, or `[[entities/slug]]` for local wiki pages. For facts derived directly from the active work item entry, use `[[docs/manifast.yaml]]`. For files read from `{CONTEXT_PATH}`, substitute the actual runtime value and write the full repo-relative path. Never use short names or computed relative paths for cross-work-item references.

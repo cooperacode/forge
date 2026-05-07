@@ -1,31 +1,34 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../../../scripts/validate_common.sh"
+
 FILE="${1:-}"
-if [[ -z "$FILE" || ! -f "$FILE" ]]; then
-  echo "Usage: $0 <adr-file.md>"
-  exit 1
-fi
+require_file "$FILE" "Usage: $0 <adr-file.md>"
 
-required_sections=(
-  "## Status"
-  "## Context"
-  "## Decision"
-  "## Alternatives Considered"
-  "## Consequences"
+assert_frontmatter_line "$FILE" '^title:' "Missing frontmatter field: title"
+assert_frontmatter_line "$FILE" '^type: artifact$' "Frontmatter must include: type: artifact"
+assert_frontmatter_line "$FILE" '^subtype: adr$' "Frontmatter must include: subtype: adr"
+assert_frontmatter_line "$FILE" '^adr_number:' "Missing frontmatter field: adr_number"
+assert_frontmatter_line "$FILE" '^status: accepted$' "Frontmatter must include: status: accepted"
+assert_frontmatter_line "$FILE" '^work_item_type:' "Missing frontmatter field: work_item_type"
+assert_frontmatter_line "$FILE" '^hierarchy_level:' "Missing frontmatter field: hierarchy_level"
+assert_frontmatter_line "$FILE" '^generated:' "Missing frontmatter field: generated"
+
+assert_exact_headings "$FILE" 2 \
+  "## Status" \
+  "## Context" \
+  "## Decision" \
+  "## Alternatives Considered" \
+  "## Consequences" \
   "## Sources"
-)
 
-for section in "${required_sections[@]}"; do
-  if ! rg -q "^${section}$" "$FILE"; then
-    echo "Missing section: ${section}"
-    exit 2
-  fi
-done
+assert_exact_headings "$FILE" 3 \
+  "### Positive" \
+  "### Negative / Trade-offs" \
+  "### Neutral"
 
-if ! rg -q '^status: accepted$' "$FILE"; then
-  echo "Frontmatter must include: status: accepted"
-  exit 3
-fi
+assert_body_line "$FILE" '^\| Alternative \| Why rejected \|$' "Missing Alternatives Considered table header"
 
-echo "OK: ADR structure looks valid for $FILE"
+echo "OK: ADR structure matches template for $FILE"

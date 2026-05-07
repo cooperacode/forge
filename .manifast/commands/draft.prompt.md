@@ -187,7 +187,7 @@ Do not summarize or shortcut the skill. Execute it fully.
 
 ### Step 6.1: Register the artifact in manifast.yaml
 
-After the skill completes successfully, update `docs/manifast.yaml`:
+After the skill completes successfully and all generated artifact files pass the skill validator, update `docs/manifast.yaml`:
 
 1. Find the entry whose `path` matches `{MWI_PATH}`.
 2. If it has no `artifacts` field, add one as an empty list.
@@ -236,6 +236,7 @@ This level is complete. {level-specific closing message from table.}
 - Never generate an artifact without first reading `.env`. The active work item is the source of truth.
 - Never write artifact files outside of `{OUTPUT_PATH}artifacts/`. Artifacts live inside the wiki, not alongside it.
 - Never create `{OUTPUT_PATH}artifacts/index.md`. Artifact registration is always done by adding or updating the `## Artifacts` section in `{OUTPUT_PATH}index.md`.
+- Never register an artifact in `docs/manifast.yaml` if its skill validator fails.
 - Never invoke a skill that is not listed in the routing table.
 - If the user asks for an artifact type not yet implemented, say so clearly and list what is available.
 - Do not ask unnecessary questions. Only pause where a step explicitly requires user input.

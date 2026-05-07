@@ -12,7 +12,7 @@ relationships_inferred: N
 
 # DER: {WORK_ITEM_TITLE}
 
-## Diagrama
+## Diagram
 
 ```mermaid
 erDiagram

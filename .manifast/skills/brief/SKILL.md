@@ -93,9 +93,9 @@ All artifact content, headings, and messages will be written in this language.
 
 Create the file `{OUTPUT_PATH}artifacts/brief.md`.
 
-Use the template from `template.md` in this same skill directory. Fill all placeholders and preserve the section order.
+Use the template from `template.md` in this same skill directory. Fill all placeholders, preserve the section order, and do not add, remove, or rename headings outside the template.
 
-Optional quality check: run `scripts/validate.sh {OUTPUT_PATH}artifacts/brief.md`.
+Run `scripts/validate.sh {OUTPUT_PATH}artifacts/brief.md`. If validation fails, fix the artifact until it passes. Do not update navigation files or report success before validation passes.
 
 
 Rules while writing:

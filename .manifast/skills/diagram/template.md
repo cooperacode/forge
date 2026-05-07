@@ -49,6 +49,13 @@ flowchart TB
     P1 -->|"Uses"| S1
     S1 -->|"Calls — protocol if stated"| E1
 ```
+
+## Sources
+
+- [[overview]]
+- [[sources/...]]
+- [[concepts/...]]
+- [[entities/...]]
 ````
 
 ## c4-container
@@ -88,6 +95,13 @@ flowchart TB
     C1  -->|"Reads/Writes — SQL"| DB1
     C1  -->|"Calls — REST"| E1
 ```
+
+## Sources
+
+- [[overview]]
+- [[sources/...]]
+- [[concepts/...]]
+- [[entities/...]]
 ````
 
 ## c4-component
@@ -124,6 +138,13 @@ flowchart TB
     E1 -->|"Calls"| COMP1
     COMP1 -->|"Uses"| COMP2
 ```
+
+## Sources
+
+- [[overview]]
+- [[sources/...]]
+- [[concepts/...]]
+- [[entities/...]]
 ````
 
 ## process-flow
@@ -155,6 +176,13 @@ flowchart TD
     STEP2 --> END([End]):::terminal
     STEP3 --> END
 ```
+
+## Sources
+
+- [[overview]]
+- [[sources/...]]
+- [[concepts/...]]
+- [[entities/...]]
 ````
 
 ## data-flow
@@ -186,6 +214,13 @@ flowchart LR
     SRC  -->|"Data element"| PROC
     PROC -->|"Transformed data"| DEST
 ```
+
+## Sources
+
+- [[overview]]
+- [[sources/...]]
+- [[concepts/...]]
+- [[entities/...]]
 ````
 
 ## sequence
@@ -214,6 +249,13 @@ sequenceDiagram
   ServiceB-->>ServiceA: Response
   ServiceA-->>User: Response
 ```
+
+## Sources
+
+- [[overview]]
+- [[sources/...]]
+- [[concepts/...]]
+- [[entities/...]]
 ````
 
 ## state
@@ -238,4 +280,11 @@ stateDiagram-v2
   StateName --> OtherState : event / condition
   OtherState --> [*] : terminal condition
 ```
+
+## Sources
+
+- [[overview]]
+- [[sources/...]]
+- [[concepts/...]]
+- [[entities/...]]
 ````

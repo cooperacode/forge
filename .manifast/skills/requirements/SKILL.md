@@ -125,9 +125,9 @@ Use `template.md` in this same skill directory.
 - Use **Constraints Mode Template** when `{WORK_ITEM_TYPE}` is `Theme` or `Initiative`.
 - Use **Functional Mode Template** when `{WORK_ITEM_TYPE}` is `Epic` or `Feature`.
 
-Fill all placeholders and preserve the section order.
+Fill all placeholders, preserve the section order, and do not add, remove, or rename headings outside the template.
 
-Optional quality check: run `scripts/validate.sh {OUTPUT_PATH}artifacts/requirements.md`.
+Run `scripts/validate.sh {OUTPUT_PATH}artifacts/requirements.md`. If validation fails, fix the artifact until it passes. Do not update navigation files or report success before validation passes.
 
 
 ---

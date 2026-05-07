@@ -267,9 +267,9 @@ For each story in `STORIES`, create the file using the naming rule for the activ
 Example (FEATURE): `output/artifacts/user-stories/F-001-US-001-cadastrar-produto-catalogo.md`
 Example (STANDALONE): `output/artifacts/user-stories/US-001-corrigir-label-botao.md`
 
-Use the template from `template.md` in this same skill directory. Fill all placeholders and preserve the section order.
+Use the template from `template.md` in this same skill directory. Fill all placeholders, preserve the section order, and do not add, remove, or rename headings outside the template.
 
-Optional quality check: run `scripts/validate.sh <generated-story-file.md>` for each generated story file.
+Run `scripts/validate.sh <generated-story-file.md>` for each generated story file. If validation fails for any story, fix it until it passes. Do not update navigation files or report success before all generated files pass validation.
 
 
 Write all stories before moving to Step 6. If a story has a `> [!gap]` confirmed by the user as acceptable, write the file with the gap note included.
@@ -277,7 +277,7 @@ Write all stories before moving to Step 6. If a story has a `> [!gap]` confirmed
 ---
 ## Step 7 — Update navigation files
 
-**`{OUTPUT_PATH}artifacts/index.md`** — create if it does not exist, then add or update user stories entries using the same naming rule from Step 6:
+**`{OUTPUT_PATH}index.md`** — add or update the `## Artifacts` section with the user stories entries using the same naming rule from Step 6:
 
 ```markdown
 {FEATURE/EPIC mode}

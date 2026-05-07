@@ -114,9 +114,9 @@ All artifact content, headings, and messages will be written in this language.
 
 Create `{OUTPUT_PATH}artifacts/der.md`.
 
-Use the template from `template.md` in this same skill directory. Fill all placeholders and preserve the section order.
+Use the template from `template.md` in this same skill directory. Fill all placeholders, preserve the section order, and do not add, remove, or rename headings outside the template.
 
-Optional quality check: run `scripts/validate.sh {OUTPUT_PATH}artifacts/der.md`.
+Run `scripts/validate.sh {OUTPUT_PATH}artifacts/der.md`. If validation fails, fix the artifact until it passes. Do not update navigation files or report success before validation passes.
 
 
 Mermaid ER rules to follow:
@@ -129,7 +129,7 @@ Mermaid ER rules to follow:
 ---
 ## Step 6 — Update navigation files
 
-**`{OUTPUT_PATH}artifacts/index.md`** — create if it does not exist, then add or update the DER entry:
+**`{OUTPUT_PATH}index.md`** — add or update the `## Artifacts` section with the DER entry:
 
 ```markdown
 - [[der]] — DER ({N} entities, {N} relationships, generated YYYY-MM-DD)

@@ -125,9 +125,9 @@ Create a numbered ADR file for each confirmed decision at:
 
 Number sequentially starting at `001`. If ADR files already exist in that folder, continue from the highest existing number.
 
-Use the template from `template.md` in this same skill directory. Fill all placeholders and preserve the section order.
+Use the template from `template.md` in this same skill directory. Fill all placeholders, preserve the section order, and do not add, remove, or rename headings outside the template.
 
-Optional quality check: run `scripts/validate.sh <generated-adr-file.md>` for each generated ADR.
+Run `scripts/validate.sh <generated-adr-file.md>` for each generated ADR. If validation fails for any ADR, fix it until it passes. Do not write the ADR index, update navigation files, or report success before all ADR files pass validation.
 
 ---
 

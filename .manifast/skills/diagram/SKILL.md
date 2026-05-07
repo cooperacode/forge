@@ -176,9 +176,9 @@ Use the template from `template.md` in this same skill directory and select the 
 
 **Copy the Mermaid diagram type keyword exactly as it appears in the template** — `flowchart TB`, `flowchart TD`, `flowchart LR`, `sequenceDiagram`, or `stateDiagram-v2`. Do not change it. Do not substitute `C4Context`, `C4Container`, or `C4Component` — those Mermaid types are forbidden regardless of diagram type.
 
-Fill all placeholders and preserve the section order.
+Fill all placeholders, preserve the section order, and do not add, remove, or rename headings outside the template.
 
-Optional quality check: run `scripts/validate.sh {OUTPUT_PATH}artifacts/diagrams/{diagram-type-slug}.md`.
+Run `scripts/validate.sh {OUTPUT_PATH}artifacts/diagrams/{diagram-type-slug}.md`. If validation fails, fix the artifact until it passes. Do not update navigation files or report success before validation passes.
 
 
 ---

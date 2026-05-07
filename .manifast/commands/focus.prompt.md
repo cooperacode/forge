@@ -2,7 +2,7 @@
 name: focus
 description: "Create a new work item for the manifesto project. Use when: adding a new task or feature to the project backlog."
 tools: [vscode/askQuestions, read, edit, search, todo, vscode/memory]
-argument-hint: "For most types: provide a title, description, and tags. For Feature: you will select from an Epic's feature-list."
+argument-hint: "For most types: provide a title, description, and tags. For Feature: select from an Epic's feature-list or create standalone."
 ---
 
 You are helping create a new work item for the project backlog. Follow the workflow below without unnecessary questions outside the defined steps.

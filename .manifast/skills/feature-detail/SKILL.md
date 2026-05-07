@@ -40,7 +40,7 @@ Attempt to read `{OUTPUT_PATH}index.md` and set `LOCAL_WIKI`:
   - **If `feature-list.md` does not exist**, stop and tell the user:
 
     > The parent work item has no `feature-list.md`, so it cannot provide Product context for this Feature.
-    > Run `/draft feature-list` on the parent Epic first, or remove the parent and continue in standalone mode.
+    > Switch to the parent Epic and run `/draft feature-list` first. To work without an Epic, create a standalone Feature with `/focus`.
 
   - **If it exists**, set `PARENT_MODE = EPIC` and continue to Step 2.
 
@@ -86,11 +86,9 @@ PARENT_FEATURE_DEPENDENCIES = {dependencies}
 PARENT_FEATURE_BENEFICIARY = {beneficiary}
 ```
 
-If no match is found, warn the user:
+If no match is found, set `PARENT_FEATURE_MATCH = false` and warn the user:
 
 > This Feature is not present in the parent Epic's `feature-list.md`. Continuing with the active work item description as the primary scope and using the Epic artifacts only as supporting context.
-
-Set `PARENT_FEATURE_MATCH = false`.
 
 Check whether `{OUTPUT_PATH}artifacts/feature-detail/{SELECTED_FEATURE_ID}-{SELECTED_FEATURE_SLUG}.md` already exists. If it does, warn the user:
 
@@ -279,7 +277,7 @@ Anything you want me to revise?
 - **This skill is for Product-level `Feature` work items only.** If the active work item is not a Feature, stop immediately.
 - **Always detect `PARENT_MODE` in Step 1 before doing anything else.** The mode determines whether Epic artifacts are available.
 - **The active work item is the authoritative feature scope.** Never ask the user to select a different feature from the parent's `feature-list.md`.
-- **If a parent Epic exists, `feature-list.md` is required.** Without it, stop and ask the user to generate the parent's feature list first or remove the parent to continue in standalone mode.
+- **If a parent Epic exists, `feature-list.md` is required.** Without it, stop and ask the user to generate the parent's feature list first or create a standalone Feature with `/focus`.
 - **If no explicit feature ID tag exists, derive `SELECTED_FEATURE_ID` deterministically from `{WORK_ITEM_ID}` and warn the user.** Never leave `feature_id` blank.
 - **Never write files before Step 4 is confirmed.** The analysis must be approved first.
 - **Never skip Step 5.** Language must be locked before any file is written — never assume or infer the language mid-generation.

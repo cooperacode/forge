@@ -130,11 +130,21 @@ If the user passed an argument (e.g. `/draft der`), use that as the requested ar
 
 If no argument was passed, show the menu for the active `MWI_LEVEL` from the [artifact menus](#artifact-menus) and wait for a selection.
 
+At Product level, tailor the menu by `MWI_TYPE`:
+- If `MWI_TYPE` is `Epic`, show only Epic artifacts: `requirements`, `feature-list`, `adr`, `der`, `diagram`.
+- If `MWI_TYPE` is `Feature`, show only Feature artifacts: `feature-detail`, `adr`, `der`, `diagram`.
+
 ### Step 3.2: Validate and route
 
 Using the [routing table](#routing-table), match `MWI_LEVEL` + artifact type to a skill. Store the matched skill path as `SKILL_PATH` and the artifact type key as `ARTIFACT_TYPE`.
 
 If the combination of level + artifact type is not in the routing table, tell the user it is not available and show the menu for their level.
+
+At Product level, also validate the artifact against `MWI_TYPE` before invoking any skill:
+- If `MWI_TYPE` is `Epic`, reject `feature-detail` and tell the user:
+  > `feature-detail` is only available for Feature work items. Create or select a Feature with `/focus`, then run `/draft feature-detail`.
+- If `MWI_TYPE` is `Feature`, reject `requirements` and `feature-list` and tell the user:
+  > `{artifact type}` is only available for Epic work items. Select an Epic with `/focus`, then run `/draft {artifact type}`.
 
 ## Step 4 — Validate prerequisites
 
@@ -268,12 +278,19 @@ Available artifacts for Strategic level:
 **Product:**
 ```
 Available artifacts for Product level:
+
+For Epic work items:
   1. requirements    — Functional requirements with acceptance criteria
   2. der             — Entity-Relationship Diagram (Mermaid ER)
   3. adr             — Architecture Decision Records (feature-scoped)
   4. feature-list    — Feature List with priorities and dependencies
-  5. feature-detail  — Deep analysis of the active Feature + proposed user story breakdown
-  6. diagram         — Architecture or flow diagram (C4 L3, process flow, data flow)
+  5. diagram         — Architecture or flow diagram (C4 L3, process flow, data flow)
+
+For Feature work items:
+  1. feature-detail  — Deep analysis of the active Feature + proposed user story breakdown
+  2. adr             — Feature-scoped architecture decision records
+  3. der             — Entity-Relationship Diagram (Mermaid ER)
+  4. diagram         — Architecture or flow diagram (C4 L3, process flow, data flow)
 ```
 
 **Tactical:**

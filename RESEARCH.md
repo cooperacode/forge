@@ -52,9 +52,9 @@ flowchart TD
         end
 
         subgraph CONCEPT_M["manifast"]
-            CM1["/workitem<br/>/ingest · /query"]
-            CM2["/artifact brief"]
-            CM3["/artifact requirements"]
+            CM1["/focus<br/>/ingest · /query"]
+            CM2["/draft brief"]
+            CM3["/draft requirements"]
             CM1 --> CM2 --> CM3
         end
 
@@ -71,9 +71,9 @@ flowchart TD
         end
 
         subgraph DEVELOP_M["manifast"]
-            DM1["/artifact feature-list"]
-            DM2["/artifact adr · /artifact der"]
-            DM3["/artifact diagram · /artifact user-story"]
+            DM1["/draft feature-list"]
+            DM2["/draft adr · /draft der"]
+            DM3["/draft diagram · /draft user-story"]
             DM1 --> DM2 --> DM3
         end
 
@@ -206,7 +206,7 @@ cd manifesto
 }
 ```
 
-No extra configuration needed — open the folder and the `/workitem`, `/ingest`, `/query`, and `/lint` commands appear in the chat panel.
+No extra configuration needed — open the folder and the `/focus`, `/ingest`, `/query`, and `/lint` commands appear in the chat panel.
 
 ---
 
@@ -229,10 +229,10 @@ claude --plugin .
 
 **VS Code:** open the folder — commands load automatically via `.vscode/settings.json`.
 
-### 2. Run the `/workitem` command
+### 2. Run the `/focus` command
 
 ```
-/workitem
+/focus
 ```
 
 Claude will ask what you want to do:
@@ -252,7 +252,7 @@ sequenceDiagram
     participant C as Claude
     participant FS as File System
 
-    U->>C: /workitem
+    U->>C: /focus
 
     alt workitems.yaml does not exist
         C->>U: Prompt: choose hierarchy level
@@ -288,7 +288,7 @@ docs/
         context/  ← upstream artifacts propagated from parent work item
 ```
 
-The item is appended to `docs/workitems.yaml` and `.env` is updated:
+The item is appended to `docs/focuss.yaml` and `.env` is updated:
 
 ```env
 MWI_TITLE=feature-name
@@ -300,7 +300,7 @@ MWI_PARENT=docs/strategic/initiatives/20260503-parent-initiative
 MWI_LANG=en
 ```
 
-If `workitems.yaml` already has entries, `/workitem` lets you pick one from the list instead. Selecting an item updates `.env` so subsequent commands target the correct folders.
+If `workitems.yaml` already has entries, `/focus` lets you pick one from the list instead. Selecting an item updates `.env` so subsequent commands target the correct folders.
 
 ---
 
@@ -505,10 +505,10 @@ Scans the wiki for orphan pages, broken wikilinks, missing frontmatter, stale co
 
 ## Generating artifacts
 
-Once knowledge is ingested into the wiki, `/artifact` synthesizes it into structured software engineering documents. The orchestrator reads the active work item from `.env`, determines the hierarchy level, and routes to the correct skill.
+Once knowledge is ingested into the wiki, `/draft` synthesizes it into structured software engineering documents. The orchestrator reads the active work item from `.env`, determines the hierarchy level, and routes to the correct skill.
 
 ```
-/artifact [type]
+/draft [type]
 ```
 
 Omit the type to see the menu for the active level. Pass a type to skip the menu. See the full list in [Artifact skills — by hierarchy level](#artifact-skills--by-hierarchy-level).
@@ -600,10 +600,10 @@ Work items form a hierarchy. When a Product Epic is linked to a Strategic Initia
 
 ### Linking a parent during registration
 
-When creating a work item with `/workitem`, step 1.3b presents a list of valid parent candidates from `workitems.yaml`. Selecting one stores the relationship:
+When creating a work item with `/focus`, step 1.3b presents a list of valid parent candidates from `workitems.yaml`. Selecting one stores the relationship:
 
 ```yaml
-# docs/workitems.yaml
+# docs/focuss.yaml
 items:
   - title: initiative-title
     hierarchyLevel: Strategic
@@ -663,7 +663,7 @@ If the parent has no published artifacts yet, the orchestrator warns:
 
 ```
 No artifacts found in parent work item.
-Run /artifact on the parent first to generate upstream context.
+Run /draft on the parent first to generate upstream context.
 ```
 
 ---
@@ -674,12 +674,12 @@ Run /artifact on the parent first to generate upstream context.
 
 | Command      | Purpose                                               |
 |--------------|-------------------------------------------------------|
-| `/language`  | Set the language for artifacts and interactions (`en`, `pt-BR`) |
-| `/workitem`  | Register or select a work item (supports parent linking) |
+| `/lang`  | Set the language for artifacts and interactions (`en`, `pt-BR`) |
+| `/focus`  | Register or select a work item (supports parent linking) |
 | `/ingest`    | Add source documents to the wiki                     |
 | `/query`     | Answer questions from wiki content with citations    |
 | `/lint`      | Find and fix structural and content problems         |
-| `/artifact`  | Generate an engineering artifact from wiki knowledge |
+| `/draft`  | Generate an engineering artifact from wiki knowledge |
 
 ### Artifact skills — by hierarchy level
 

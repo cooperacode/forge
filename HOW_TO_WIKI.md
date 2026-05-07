@@ -1,6 +1,6 @@
 # How To: Create and Maintain a Wiki
 
-This guide covers the three operations that build and maintain your knowledge base: ingesting sources, querying the wiki, and running health checks. It assumes you have an active work item (`/workitem`) and at least one source document ready.
+This guide covers the three operations that build and maintain your knowledge base: ingesting sources, querying the wiki, and running health checks. It assumes you have an active work item (`/focus`) and at least one source document ready.
 
 ---
 
@@ -9,7 +9,7 @@ This guide covers the three operations that build and maintain your knowledge ba
 The wiki is the layer between your raw source documents and your generated artifacts. Every time you ingest a source, Claude reads it and writes structured wiki pages — summaries, concept definitions, entity profiles, and a synthesis overview. Artifacts are then generated from the wiki, not from the raw files.
 
 ```
-input/          →    /ingest    →    docs/wiki/     →    /artifact    →    output/artifacts/
+input/          →    /ingest    →    docs/wiki/     →    /draft    →    output/artifacts/
 (raw sources)                       (structured)                           (briefs, ADRs, etc.)
 ```
 
@@ -44,7 +44,7 @@ docs/wiki/index.md         ← global: all pages, all work items
 output/index.md            ← local: only pages from this work item
 ```
 
-The local index is created as an empty stub when you run `/workitem` and populated automatically each time you run `/ingest`. You never need to edit it manually.
+The local index is created as an empty stub when you run `/focus` and populated automatically each time you run `/ingest`. You never need to edit it manually.
 
 ### Local index format
 
@@ -258,7 +258,7 @@ Run lint periodically to catch structural problems and surface knowledge that is
 ### When to run it
 
 - After ingesting 3 or more new sources in a session.
-- Before running `/artifact brief` or `/artifact requirements`.
+- Before running `/draft brief` or `/draft requirements`.
 - If you notice broken links or missing pages while browsing the wiki.
 
 ### Running the check
@@ -365,12 +365,12 @@ Drop file into input/
         ↓
    /query               ← any time, as often as needed
         ↓
-   /lint                ← periodic, especially before /artifact
+   /lint                ← periodic, especially before /draft
         ↓
-   /artifact            ← when the wiki is ready
+   /draft            ← when the wiki is ready
 ```
 
-There is no required number of sources before running `/artifact`. The wiki tells you — gaps in the lint report or in query answers are the signal to ingest more before generating.
+There is no required number of sources before running `/draft`. The wiki tells you — gaps in the lint report or in query answers are the signal to ingest more before generating.
 
 ---
 

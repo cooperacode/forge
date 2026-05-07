@@ -42,12 +42,12 @@ Make sure the repository is open and manifast is active in your environment. The
 
 ---
 
-## Running `/workitem` for the first time
+## Running `/focus` for the first time
 
 Run:
 
 ```
-/workitem
+/focus
 ```
 
 **If this is the very first run** (no `docs/manifast.yaml` exists yet), Claude asks which language the project should use before anything else:
@@ -58,7 +58,7 @@ What language should this project use?
     pt-BR  — Portuguese (Brazil)
 ```
 
-Choose your preferred language. This is saved once in `docs/manifast.yaml` and never asked again. To change it later, run `/language`.
+Choose your preferred language. This is saved once in `docs/manifast.yaml` and never asked again. To change it later, run `/lang`.
 
 After the language is set, Claude skips straight to creation. If you have existing items, it will ask what you want to do instead:
 
@@ -191,7 +191,8 @@ And appends the item to `docs/manifast.yaml`:
 
 ```yaml
 items:
-  - title: Redesign the onboarding process
+  - id: redesign_the_onboarding_process
+    title: Redesign the onboarding process
     description: Reduce time-to-first-value for new users by redesigning the onboarding flow end-to-end.
     tags: [onboarding, ux, strategic]
     hierarchyLevel: Strategic
@@ -202,10 +203,11 @@ items:
     parent: ""
 ```
 
-The `.env` file is also updated so every subsequent command (`/ingest`, `/artifact`, etc.) knows which work item is active:
+The `.env` file is also updated so every subsequent command (`/ingest`, `/draft`, etc.) knows which work item is active:
 
 ```env
-MWI_TITLE=redesign-the-onboarding-process
+MWI_ID=redesign_the_onboarding_process
+MWI_TITLE=Redesign the onboarding process
 MWI_TAGS=[onboarding, ux, strategic]
 MWI_LEVEL=Strategic
 MWI_TYPE=Initiative
@@ -221,7 +223,7 @@ MWI_LANG=en
 If you have multiple work items and want to switch between them:
 
 ```
-/workitem
+/focus
 ```
 
 Choose **Select an existing work item**. Claude lists everything in `manifast.yaml`:
@@ -249,7 +251,7 @@ With a work item active, the typical next steps are:
    Claude reads each source and writes structured wiki pages
    to the centralized docs/wiki/ folder.
 
-3. /artifact
+3. /draft
    Generate briefs, quality attributes, ADRs, feature lists,
    diagrams, and user stories — written to this work item's
    output/artifacts/ folder.
@@ -262,13 +264,13 @@ See [HOW_TO.md](HOW_TO.md) for the full end-to-end sequence.
 ## Common questions
 
 **Can I have multiple active work items?**
-No — `.env` tracks one active item at a time. Run `/workitem` to switch.
+No — `.env` tracks one active item at a time. Run `/focus` to switch.
 
 **Can I rename or edit a work item after creation?**
 Edit `docs/manifast.yaml` directly and update the `title`, `description`, or `tags` fields. Do not rename the folder path — it would break existing wiki links.
 
 **What if I chose the wrong level or type?**
-Delete the folder and its entry in `manifast.yaml`, then run `/workitem` again. No artifacts have been generated yet, so nothing is lost.
+Delete the folder and its entry in `manifast.yaml`, then run `/focus` again. No artifacts have been generated yet, so nothing is lost.
 
 **Do I need to fill all three levels?**
 No. You can work at a single level. The hierarchy becomes valuable when you link items — strategic constraints propagate down to inform product and tactical work.

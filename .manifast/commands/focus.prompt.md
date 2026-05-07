@@ -1,5 +1,5 @@
 ---
-name: workitem
+name: focus
 description: "Create a new work item for the manifesto project. Use when: adding a new task or feature to the project backlog."
 tools: [vscode/askQuestions, read, edit, search, todo, vscode/memory]
 argument-hint: "For most types: provide a title, description, and tags. For Feature: you will select from an Epic's feature-list."
@@ -37,7 +37,8 @@ Use `{{language}}` for **all messages displayed to the user** and **all artifact
 
 ```yaml
 items:
-  - title: slug work item title
+  - id: title_in_underscore_slug_format
+    title: A concise title for the work item
     description: A detailed description of the work item, including any relevant information or requirements
     tags: [comma-separated tags]
     hierarchyLevel: Strategic | Product | Tactical
@@ -144,6 +145,8 @@ Set `{{parentPath}}` to the selected item's `path`, or `""` if "None".
 
 ### Step 1.5: Create the work item folder
 
+Derive `{{id}}` from `{{workItemTitle}}`: lowercase, spaces replaced with underscores, special characters removed (e.g., `"Redesign the Onboarding Process"` → `redesign_the_onboarding_process`).
+
 Use the following mapping to determine `{{folderName}}`:
 
 | workItemType | folderName   |
@@ -209,7 +212,7 @@ Create `output/log.md` with this content:
 ```markdown
 # Log: {{workItemTitle}}
 
-Activity log for this work item. Entries are prepended by `/ingest` and `/artifact`.
+Activity log for this work item. Entries are prepended by `/ingest` and `/draft`.
 ```
 
 ### Step 1.6: Create or update manifast.yaml
@@ -220,7 +223,8 @@ Activity log for this work item. Entries are prepended by `/ingest` and `/artifa
 language: {{language}}
 
 items:
-  - title: {{workItemTitle}}
+  - id: {{id}}
+    title: {{workItemTitle}}
     description: {{workItemDescription}}
     tags: [{{workItemTags}}]
     hierarchyLevel: {{hierarchyLevel}}
@@ -234,7 +238,8 @@ items:
 **If it already exists**, append only the new item entry under the existing `items:` list — do not duplicate `language:` or any other top-level key:
 
 ```yaml
-  - title: {{workItemTitle}}
+  - id: {{id}}
+    title: {{workItemTitle}}
     description: {{workItemDescription}}
     tags: [{{workItemTags}}]
     hierarchyLevel: {{hierarchyLevel}}
@@ -256,6 +261,7 @@ Using `docs/manifast.yaml` already read in Setup, use #tool:vscode/askQuestions 
 Write the `.env` file at the repository root with the following content. If the file already exists and contains variables unrelated to `MWI_*`, preserve those lines and replace only the `MWI_*` block.
 
 ```env
+MWI_ID={{id}}
 MWI_TITLE={{workItemTitle}}
 MWI_TAGS=[{{workItemTags}}]
 MWI_LEVEL={{hierarchyLevel}}
@@ -317,7 +323,7 @@ Filter `docs/manifast.yaml` for all items where `workItemType: Epic`.
 
 If an Epic was selected (not "None"), attempt to read `{{parentPath}}output/artifacts/feature-list.md`.
 
-- If the file **does not exist**: warn the user that no feature-list was found for the selected Epic and suggest running `/artifact feature-list` first. Then fall back to manual entry (ask title/description/tags as described in Step 1.3). Return to Step 1.5.
+- If the file **does not exist**: warn the user that no feature-list was found for the selected Epic and suggest running `/draft feature-list` first. Then fall back to manual entry (ask title/description/tags as described in Step 1.3). Return to Step 1.5.
 - If the file **exists**: proceed to Step C.
 
 **Step C — Select feature from list**

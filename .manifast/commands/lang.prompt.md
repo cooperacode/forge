@@ -1,5 +1,5 @@
 ---
-name: language
+name: lang
 description: "Set the language for artifact generation and user interactions. Supported: en (English), pt-BR (Brazilian Portuguese)."
 tools: [read, edit]
 argument-hint: "Language code to set (e.g., 'en' or 'pt-BR'). Omit to see the current setting and choose interactively."
@@ -27,7 +27,7 @@ Current language: {current language name} ({language code})
 
 ## Step 2 — Resolve the new language
 
-**If the user passed an argument** (e.g. `/language pt-BR`), use that value directly. Skip to Step 3.
+**If the user passed an argument** (e.g. `/lang pt-BR`), use that value directly. Skip to Step 3.
 
 **If no argument was passed**, present the menu:
 
@@ -93,7 +93,7 @@ Tell the user:
 Language updated to {language name} ({new code}).
 
 Artifacts and interactions will now be in {language name}.
-Run /workitem to apply this language to the active work item's .env.
+Run /focus to apply this language to the active work item's .env.
 ```
 
 ---

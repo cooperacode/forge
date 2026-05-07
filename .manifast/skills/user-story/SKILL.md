@@ -39,8 +39,8 @@ Attempt to read `{OUTPUT_PATH}index.md` and set `LOCAL_WIKI`:
   - **If neither exists**, stop and tell the user:
 
     > The parent work item has no artifacts that can drive user story generation.
-    > - If the parent is a **Feature**: run `/artifact feature-detail` on it first.
-    > - If the parent is an **Epic**: run `/artifact feature-list` on it first.
+    > - If the parent is a **Feature**: run `/draft feature-detail` on it first.
+    > - If the parent is an **Epic**: run `/draft feature-list` on it first.
 
 Record `PARENT_MODE` before continuing to Step 2.
 
@@ -110,7 +110,7 @@ Feature list loaded. Which feature do you want to break into user stories?
 ...
 
 Note: for richer stories, first create a Feature work item as a child of this Epic,
-run /ingest and /artifact feature-detail on it, then return here.
+run /ingest and /draft feature-detail on it, then return here.
 
 Reply with the feature ID (e.g. F-001).
 ```

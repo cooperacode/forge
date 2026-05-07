@@ -1,6 +1,6 @@
 # How To: Artifacts
 
-This guide explains how to generate software engineering artifacts from your wiki. It assumes you have already created a work item (`/workitem`) and ingested at least one source document (`/ingest`).
+This guide explains how to generate software engineering artifacts from your wiki. It assumes you have already created a work item (`/focus`) and ingested at least one source document (`/ingest`).
 
 ---
 
@@ -13,7 +13,7 @@ Source document  →  wiki page     →  artifact
      (input/)         (docs/wiki/)      (output/artifacts/)
 ```
 
-You do not write artifacts by hand. You ingest sources, then run `/artifact` to generate them.
+You do not write artifacts by hand. You ingest sources, then run `/draft` to generate them.
 
 ---
 
@@ -21,7 +21,7 @@ You do not write artifacts by hand. You ingest sources, then run `/artifact` to 
 
 Two things must be true before generating any artifact:
 
-1. **A work item is active.** Run `/workitem` to create or select one.
+1. **A work item is active.** Run `/focus` to create or select one.
 2. **The wiki has content.** Run `/ingest` on at least one source document first. If the wiki is empty, Claude will stop and remind you to ingest first.
 
 ---
@@ -29,20 +29,20 @@ Two things must be true before generating any artifact:
 ## The command
 
 ```
-/artifact
+/draft
 ```
 
 Omit the type to see a menu for the active hierarchy level. Pass a type to skip the menu:
 
 ```
-/artifact brief
-/artifact requirements
-/artifact feature-list
-/artifact feature-detail
-/artifact adr
-/artifact der
-/artifact diagram
-/artifact user-story
+/draft brief
+/draft requirements
+/draft feature-list
+/draft feature-detail
+/draft adr
+/draft der
+/draft diagram
+/draft user-story
 ```
 
 ---
@@ -99,7 +99,7 @@ Tactical level (User Story/Task)
 Every artifact follows the same three-phase pattern:
 
 1. **Claude reads the wiki** — all sources, concepts, entities from `docs/wiki/`, and any upstream context from a parent work item.
-2. **Claude surfaces scope** — lists what it found before writing. In default mode it proceeds immediately; pass `-buddy` to `/artifact` to pause and confirm scope before writing.
+2. **Claude surfaces scope** — lists what it found before writing. In default mode it proceeds immediately; pass `-buddy` to `/draft` to pause and confirm scope before writing.
 3. **Claude writes the file** — to `output/artifacts/`, then updates `index.md` and `log.md`.
 
 ---
@@ -287,7 +287,7 @@ output/artifacts/feature-detail/
 
 Sections: Feature Statement · Goal · Personas · Functional Scope (in / out of scope) · Business Rules · Entity & Data Interactions · Feature-Level Acceptance Criteria · **Proposed User Story Breakdown** · Dependencies · Gaps · Open Questions.
 
-> The proposed story breakdown is a **planning guide**, not a contract. Stories are generated later at the Tactical level with `/artifact user-story`. When they are, Claude reads `feature-detail` as its primary source.
+> The proposed story breakdown is a **planning guide**, not a contract. Stories are generated later at the Tactical level with `/draft user-story`. When they are, Claude reads `feature-detail` as its primary source.
 
 ---
 
@@ -369,7 +369,7 @@ Feature list loaded. Which feature do you want to break into user stories?
 | F-002 | Email Verification  | MVP      |
 
 Note: for richer stories, create a Feature work item as a child of this Epic,
-run /artifact feature-detail on it, then return here.
+run /draft feature-detail on it, then return here.
 
 Reply with the feature ID (e.g. F-001).
 ```
@@ -432,7 +432,7 @@ If the parent has no artifacts yet, Claude warns you before proceeding:
 
 ```
 No artifacts found in parent work item.
-Run /artifact on the parent first to generate upstream context.
+Run /draft on the parent first to generate upstream context.
 ```
 
 ---
@@ -471,7 +471,7 @@ output/
 ## Common questions
 
 **Can I regenerate an artifact after adding more sources?**
-Yes — run `/artifact [type]` again. Claude will re-read the wiki (including the new pages) and overwrite the existing file. Check `log.md` for a history of regenerations.
+Yes — run `/draft [type]` again. Claude will re-read the wiki (including the new pages) and overwrite the existing file. Check `log.md` for a history of regenerations.
 
 **What if a section has no wiki coverage?**
 Claude uses a `> [!gap]` callout for any section it cannot fill from the wiki. It will never invent content from training knowledge. Gaps are signals to ingest more sources or consult stakeholders.
@@ -480,7 +480,7 @@ Claude uses a `> [!gap]` callout for any section it cannot fill from the wiki. I
 Yes, but be careful: the next regeneration will overwrite your edits. If you have corrections, consider ingesting a new source document that captures that knowledge — then regenerate.
 
 **An artifact says "upstream context not found". What does that mean?**
-The parent work item hasn't had `/artifact` run yet. Switch to the parent with `/workitem`, generate its artifacts, then switch back and regenerate.
+The parent work item hasn't had `/draft` run yet. Switch to the parent with `/focus`, generate its artifacts, then switch back and regenerate.
 
 **Can I generate a `user-story` without a `feature-list`?**
 No. The `feature-list` in the parent Product work item is a hard dependency — Claude will stop and tell you to generate it first.

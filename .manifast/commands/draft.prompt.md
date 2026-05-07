@@ -1,5 +1,5 @@
 ---
-name: artifact
+name: draft
 description: "Generate a software engineering artifact for the active work item. Routes to the correct artifact type based on the hierarchy level set in .env."
 tools: [read, edit, search, todo]
 argument-hint: "Artifact type to generate. Strategic: brief, requirements, adr, diagram. Product: requirements, der, adr, feature-list, diagram. Tactical: user-story, diagram. Omit to see the menu for the active level."
@@ -34,6 +34,7 @@ Step 6: Register and return
 Use the Read tool to open the `.env` file. The path is `.env` relative to the current working directory (i.e., the repository root — the same directory that contains `.manifast/`). Do not infer the contents from memory or conversation history — call the Read tool explicitly. Extract:
 
 ```
+MWI_ID
 MWI_TITLE
 MWI_LEVEL
 MWI_TYPE
@@ -52,7 +53,7 @@ If the `.env` file does not exist, or any of `MWI_TITLE`, `MWI_LEVEL`, `MWI_TYPE
    c. Continue with the restored variables.
 3. If not found in memory either, tell the user:
 
-   > No active work item found. Run `/workitem` to create or select one first.
+   > No active work item found. Run `/focus` to create or select one first.
 
    Then stop.
 
@@ -71,7 +72,7 @@ INPUT_PATH  = {MWI_PATH}/input/
 OUTPUT_PATH = {MWI_PATH}/output/
 ```
 
-Verify that `OUTPUT_PATH` exists. If it does not, stop and tell the user to run `/workitem` first.
+Verify that `OUTPUT_PATH` exists. If it does not, stop and tell the user to run `/focus` first.
 
 Verify that `{OUTPUT_PATH}index.md` exists and has content (Sources, Entities, or Concepts sections with at least one entry).
 
@@ -108,7 +109,7 @@ Use `MWI_PARENT` extracted in Step 1.
    - adr/ (N files) ✓
    ```
    If no artifacts exist yet in `{CONTEXT_PATH}`, warn:
-   > No artifacts found in parent work item. Run `/artifact` on the parent first to generate upstream context.
+   > No artifacts found in parent work item. Run `/draft` on the parent first to generate upstream context.
    Then continue without context.
 
 **If `MWI_PARENT` is empty:**
@@ -119,7 +120,7 @@ Set `CONTEXT_PATH = ""`. Skills will skip upstream context reading.
 
 ### Step 3.1: Resolve artifact type
 
-If the user passed an argument (e.g. `/artifact der`), use that as the requested artifact type.
+If the user passed an argument (e.g. `/draft der`), use that as the requested artifact type.
 
 If no argument was passed, show the menu for the active `MWI_LEVEL` from the [artifact menus](#artifact-menus) and wait for a selection.
 
@@ -144,7 +145,7 @@ At Product level, the sequence splits by `MWI_TYPE`:
 If the same-level prerequisite is not `(none)` and is absent from the active work item's `artifacts` list, stop and tell the user:
 
 > Cannot generate `{artifact type}`: `{prerequisite}` has not been generated yet for this work item.
-> Run `/artifact {prerequisite}` first.
+> Run `/draft {prerequisite}` first.
 
 **Cross-level prerequisites:** check the [cross-level prerequisite table](#cross-level-prerequisites).
 
@@ -155,12 +156,12 @@ If a cross-level prerequisite applies and the active work item has no parent:
 - **If the artifact is `user-story`**: do not stop — proceed in standalone mode. The skill will derive stories from the work item description and local wiki instead of parent artifacts.
 - **Otherwise**, stop and tell the user:
 
-  > Cannot generate `{artifact type}`: this artifact requires a parent work item with `{parent prerequisite}`. Set up a parent via `/workitem` first.
+  > Cannot generate `{artifact type}`: this artifact requires a parent work item with `{parent prerequisite}`. Set up a parent via `/focus` first.
 
 If a cross-level prerequisite applies and the parent's `artifacts` list does not contain the required artifact, stop and tell the user:
 
 > Cannot generate `{artifact type}`: the parent work item has not generated `{parent prerequisite}` yet.
-> Switch to the parent work item and run `/artifact {parent prerequisite}` first.
+> Switch to the parent work item and run `/draft {parent prerequisite}` first.
 
 ## Step 5 — Execute skill
 
@@ -219,7 +220,7 @@ Output the skill's closing message. Then append a **"What's next"** block using 
 If `NEXT_ARTIFACT` exists:
 ```
 ---
-Next: run `/artifact {NEXT_ARTIFACT}` — {NEXT_DESCRIPTION}.
+Next: run `/draft {NEXT_ARTIFACT}` — {NEXT_DESCRIPTION}.
 ```
 
 If `NEXT_ARTIFACT` is _(none)_:
@@ -332,7 +333,7 @@ Available artifacts for Tactical level:
 | Strategic | —             | `adr`            | `diagram`       | C4 Level 1 or Level 2 architecture diagram |
 | Strategic | —             | `diagram`        | _(none)_        | Strategic level complete — consider creating a Product Epic work item |
 | Product   | Epic          | `requirements`   | `feature-list`  | Prioritized feature list with dependencies |
-| Product   | Epic          | `feature-list`   | `adr`           | Continue the Epic with architecture decision records — or first create a Feature child via `/workitem` and run `/artifact feature-detail` on it |
+| Product   | Epic          | `feature-list`   | `adr`           | Continue the Epic with architecture decision records — or first create a Feature child via `/focus` and run `/draft feature-detail` on it |
 | Product   | Epic          | `adr`            | `der`           | Entity-relationship diagram |
 | Product   | Epic          | `der`            | `diagram`       | C4 Level 3, process flow, or data flow diagram |
 | Product   | Epic          | `diagram`        | _(none)_        | Epic level complete — consider creating a Tactical work item |

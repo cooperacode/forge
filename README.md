@@ -15,13 +15,13 @@ The work item hierarchy mirrors what teams already use in Jira, Azure DevOps, an
 
 ```mermaid
 flowchart LR
-    A([Team]) -->|/workitem| B[Register<br/>work item]
+    A([Team]) -->|/focus| B[Register<br/>work item]
     B --> C[(manifast.yaml<br/>+ .env)]
     C --> D[Drop files<br/>into input/]
     D -->|/ingest| E[Knowledge<br/>wiki]
     E -->|/query| F([Answer<br/>with citations])
     E -->|/lint| G([Health<br/>check])
-    E -->|/artifact| H([Engineering<br/>artifact])
+    E -->|/draft| H([Engineering<br/>artifact])
 ```
 
 1. **Register** a work item — creates the folder structure and tracks the active item in `.env`. 

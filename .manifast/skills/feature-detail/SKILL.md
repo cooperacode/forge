@@ -28,13 +28,13 @@ The `feature-list.md` is an **Epic-level artifact** and lives in the parent work
 
 - **If `{CONTEXT_PATH}` is empty**, stop and tell the user:
 
-  > No parent work item is configured. Feature Detail requires an Epic-level parent with a feature list. Set up a parent work item via `/workitem` and generate its feature list with `/artifact feature-list` first.
+  > No parent work item is configured. Feature Detail requires an Epic-level parent with a feature list. Set up a parent work item via `/focus` and generate its feature list with `/draft feature-list` first.
 
 - **If `{CONTEXT_PATH}` is non-empty**, check whether `{CONTEXT_PATH}feature-list.md` exists.
 
   - **If it does not exist**, stop and tell the user:
 
-    > No `feature-list.md` found in the parent work item (`{CONTEXT_PATH}`). Run `/artifact feature-list` on the parent Epic first, then come back here.
+    > No `feature-list.md` found in the parent work item (`{CONTEXT_PATH}`). Run `/draft feature-list` on the parent Epic first, then come back here.
 
   - **If it exists**, read it in full. Extract all feature rows: `ID`, name, description, beneficiary, priority, and dependencies.
 
@@ -209,7 +209,7 @@ Done. Feature detail generated at {OUTPUT_PATH}artifacts/feature-detail/{SELECTE
 Personas: N
 Business rules: N
 Entities touched: N
-Proposed user stories: N (ready to generate with `/artifact user-story` at the Tactical level)
+Proposed user stories: N (ready to generate with `/draft user-story` at the Tactical level)
 Gaps flagged: N
 Sources read: N pages
 

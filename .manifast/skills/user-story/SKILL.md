@@ -302,6 +302,29 @@ Gaps flagged: N
 Sources read: N pages
 ```
 
+**`docs/manifast.yaml`** — register the artifact in the work item entry:
+
+1. Find the entry whose `path` matches `{WORK_ITEM_PATH}`.
+2. If it has no `artifacts` field, add one as an empty list.
+3. If `user-story` is not already in the `artifacts` list, append it.
+
+Use the Edit tool. Example — before:
+```yaml
+  - title: my-work-item
+    hierarchyLevel: Tactical
+    path: docs/tactical/tasks/20260504-my-task/
+```
+After:
+```yaml
+  - title: my-work-item
+    hierarchyLevel: Tactical
+    path: docs/tactical/tasks/20260504-my-task/
+    artifacts:
+      - user-story
+```
+
+If `artifacts` already exists, append `user-story` to the list. Never duplicate an entry already present.
+
 ---
 
 ## Step 8 — Close the loop

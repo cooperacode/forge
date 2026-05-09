@@ -64,7 +64,19 @@ Which diagram do you want to generate?
   2. State     (states and transitions of an entity or process)
 ```
 
-For Product and Tactical: wait for the user's selection. Record it as `{DIAGRAM_TYPE}`. Do not proceed until a type is chosen.
+For Product and Tactical: wait for the user's selection. Map it to the `DIAGRAM_TYPE` slug and output filename using the table below, then record both. Do not proceed until a type is chosen.
+
+| Level    | Selection               | `DIAGRAM_TYPE` | Output file                          |
+|----------|-------------------------|----------------|--------------------------------------|
+| Product  | C4 Level 3 — Component  | `c4-component` | `artifacts/diagrams/c4-component.md` |
+| Product  | Process Flow            | `process-flow` | `artifacts/diagrams/process-flow.md` |
+| Product  | Data Flow               | `data-flow`    | `artifacts/diagrams/data-flow.md`    |
+| Tactical | Sequence                | `sequence`     | `artifacts/diagrams/sequence.md`     |
+| Tactical | State                   | `state`        | `artifacts/diagrams/state.md`        |
+
+Strategic level uses fixed slugs: `c4-context` → `artifacts/diagrams/c4-context.md` and `c4-container` → `artifacts/diagrams/c4-container.md`.
+
+> ⚠️ Never use a generic filename such as `diagram.md` or `diagrama.md`. The output filename is always the `DIAGRAM_TYPE` slug exactly.
 
 ---
 
@@ -121,6 +133,15 @@ While reading, extract the elements specific to the chosen type:
 - Entry/exit actions for states (if described)
 - Terminal and initial states
 
+**Same-level ADR artifacts — always read if present:**
+
+After reading wiki pages and upstream context, check `{OUTPUT_PATH}artifacts/adr/`. If any `.md` files exist there, read them all before proceeding to Step 4. ADRs record committed architectural decisions for this work item — use them to:
+- Confirm which technologies, components, and integration patterns are already decided
+- Align element names and boundaries with what the ADRs established
+- Avoid showing options or unknowns that were already resolved by a decision record
+
+Do not include technology labels or component boundaries that contradict a committed ADR.
+
 ---
 
 ## Step 4 — Confirm diagram elements with the user
@@ -170,15 +191,15 @@ All artifact content, headings, and messages will be written in this language.
 
 ## Step 6 — Write the diagram artifact
 
-Create `{OUTPUT_PATH}artifacts/diagrams/{diagram-type-slug}.md`.
+Create `{OUTPUT_PATH}artifacts/diagrams/{DIAGRAM_TYPE}.md` — the filename is the `DIAGRAM_TYPE` slug exactly (e.g., `c4-context.md`, `process-flow.md`, `sequence.md`).
 
-Use the template from `template.md` in this same skill directory and select the section that matches `{DIAGRAM_TYPE}`.
+**Read the template file before writing anything.** Use the Read tool to open `.manifast/skills/diagram/template.md`. Locate the section whose heading matches `{DIAGRAM_TYPE}` (e.g., `## c4-context`, `## process-flow`, `## sequence`). Copy that section's fenced code block verbatim as the output file scaffold — do not reconstruct it from memory or training data. Replace only the placeholders (`{WORK_ITEM_TITLE}`, `YYYY-MM-DD`, element stubs) with actual content.
 
 **Copy the Mermaid diagram type keyword exactly as it appears in the template** — `flowchart TB`, `flowchart TD`, `flowchart LR`, `sequenceDiagram`, or `stateDiagram-v2`. Do not change it. Do not substitute `C4Context`, `C4Container`, or `C4Component` — those Mermaid types are forbidden regardless of diagram type.
 
 Fill all placeholders, preserve the section order, and do not add, remove, or rename headings outside the template.
 
-Run `scripts/validate.sh {OUTPUT_PATH}artifacts/diagrams/{diagram-type-slug}.md`. If validation fails, fix the artifact until it passes. Do not update navigation files or report success before validation passes.
+Run `scripts/validate.sh {OUTPUT_PATH}artifacts/diagrams/{DIAGRAM_TYPE}.md`. If validation fails, fix the artifact until it passes. Do not update navigation files or report success before validation passes.
 
 
 ---
@@ -189,7 +210,7 @@ Run `scripts/validate.sh {OUTPUT_PATH}artifacts/diagrams/{diagram-type-slug}.md`
 ```markdown
 ## Artifacts
 
-- [[artifacts/diagrams/{diagram-type-slug}]] — {Diagram type} (generated YYYY-MM-DD)
+- [[artifacts/diagrams/{DIAGRAM_TYPE}]] — {Diagram type} (generated YYYY-MM-DD)
 ```
 
 **`{OUTPUT_PATH}log.md`** — append one entry at the top:
@@ -197,12 +218,35 @@ Run `scripts/validate.sh {OUTPUT_PATH}artifacts/diagrams/{diagram-type-slug}.md`
 ```markdown
 ## [YYYY-MM-DD] artifact | Diagram ({diagram type})
 
-Generated: artifacts/diagrams/{diagram-type-slug}.md
+Generated: artifacts/diagrams/{DIAGRAM_TYPE}.md
 Elements: N
 Relationships: N
 Gaps flagged: N
 Sources read: N pages
 ```
+
+**`docs/manifast.yaml`** — register the artifact in the work item entry:
+
+1. Find the entry whose `path` matches `{WORK_ITEM_PATH}`.
+2. If it has no `artifacts` field, add one as an empty list.
+3. If `diagram` is not already in the `artifacts` list, append it.
+
+Use the Edit tool. Example — before:
+```yaml
+  - title: my-work-item
+    hierarchyLevel: Strategic
+    path: docs/strategic/initiatives/20260504-my-work-item/
+```
+After:
+```yaml
+  - title: my-work-item
+    hierarchyLevel: Strategic
+    path: docs/strategic/initiatives/20260504-my-work-item/
+    artifacts:
+      - diagram
+```
+
+If `artifacts` already exists, append `diagram` to the list. Never duplicate an entry already present. For Strategic level, this step runs **once** after both diagrams are written (after the second pass).
 
 ---
 
@@ -249,3 +293,6 @@ Anything you want me to revise?
 - **Never skip Step 5.** Language must be locked before any file is written — lock it once per skill invocation (not once per pass).
 - **Technology labels come only from the wiki.** If the wiki does not state the technology, use `"not stated"` in the diagram element description.
 - **One artifact file per diagram type.** Strategic generates two files (`c4-context.md` and `c4-container.md`) in a single skill run.
+- **Always read the template file at Step 6.** Use the Read tool on `.manifast/skills/diagram/template.md` — never reconstruct the template from memory. The scaffold must come from the file.
+- **Output filename is the `DIAGRAM_TYPE` slug.** Never use generic names like `diagram.md`, `diagrama.md`, or any name not derived from the slug mapping table in Step 2.
+- **ADR decisions are binding.** If ADR files exist at `{OUTPUT_PATH}artifacts/adr/`, the diagram must reflect those decisions. Technology choices or boundaries that contradict a committed ADR are forbidden.

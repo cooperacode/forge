@@ -234,7 +234,14 @@ If `artifacts` already exists, append to the list (do not replace it). Never dup
 
 ### Step 6.2: Return control
 
-Output the skill's closing message. Then append a **"What's next"** block using the [what's next table](#whats-next-table) to determine `NEXT_ARTIFACT` and `NEXT_DESCRIPTION`. At Product level, use `MWI_TYPE` to select the correct row.
+Output the skill's closing message. Then append a **"What's next"** block using the [what's next table](#whats-next-table) to determine `NEXT_ARTIFACT` and `NEXT_DESCRIPTION`.
+
+Look up the row using a **compound key** — all three columns must match simultaneously:
+1. `Level` = `MWI_LEVEL`
+2. `Work Item Type` = `MWI_TYPE` (required at Product level; use `—` for Strategic and Tactical)
+3. `Artifact just completed` = `ARTIFACT_TYPE`
+
+> ⚠️ Never match on artifact name alone. Several artifact names (`adr`, `requirements`, `diagram`) appear in multiple levels and would return the wrong next step if the level filter is skipped.
 
 **Format the "What's next" block as:**
 

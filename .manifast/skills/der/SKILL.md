@@ -147,6 +147,29 @@ Gaps flagged: N
 Sources read: N pages
 ```
 
+**`docs/manifast.yaml`** — register the artifact in the work item entry:
+
+1. Find the entry whose `path` matches `{WORK_ITEM_PATH}`.
+2. If it has no `artifacts` field, add one as an empty list.
+3. If `der` is not already in the `artifacts` list, append it.
+
+Use the Edit tool. Example — before:
+```yaml
+  - title: my-work-item
+    hierarchyLevel: Strategic
+    path: docs/strategic/initiatives/20260504-my-work-item/
+```
+After:
+```yaml
+  - title: my-work-item
+    hierarchyLevel: Strategic
+    path: docs/strategic/initiatives/20260504-my-work-item/
+    artifacts:
+      - der
+```
+
+If `artifacts` already exists, append `der` to the list. Never duplicate an entry already present.
+
 ---
 
 ## Step 7 — Close the loop

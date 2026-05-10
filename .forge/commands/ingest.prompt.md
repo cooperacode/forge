@@ -10,9 +10,9 @@ You were invoked by the orchestrator because the user wants to add a new source 
 The orchestrator passed `INPUT_PATH`, `WIKI_PATH`, and `WORK_ITEM_PATH` at the top of this prompt — use those values for all file operations.
 
 If these variables are not explicitly set, derive them from `.env`:
-- `INPUT_PATH = {MWI_PATH}/input/`
+- `INPUT_PATH = {FORGE_PATH}/input/`
 - `WIKI_PATH = docs/wiki/`
-- `WORK_ITEM_PATH = {MWI_PATH}`
+- `WORK_ITEM_PATH = {FORGE_PATH}`
 
 Derive `OUTPUT_PATH = {WORK_ITEM_PATH}/output/`.
 

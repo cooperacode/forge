@@ -1,6 +1,6 @@
 # How To: Work Items
 
-This guide walks you through creating your first work item in manifast. It assumes you have the repository open in your editor and have never used the framework before.
+This guide walks you through creating your first work item in forge. It assumes you have the repository open in your editor and have never used the framework before.
 
 ---
 
@@ -8,7 +8,7 @@ This guide walks you through creating your first work item in manifast. It assum
 
 A work item is simply a unit of work that your team needs to do. It could be a big strategic goal, a feature to build, or a single user story to implement.
 
-manifast organizes work items in a three-level hierarchy — the same structure used by tools like Jira, Azure DevOps, and SAFe:
+forge organizes work items in a three-level hierarchy — the same structure used by tools like Jira, Azure DevOps, and SAFe:
 
 ```
 Strategic  →  the big picture: goals and directions
@@ -38,7 +38,7 @@ You don't need to fill all three levels at once. Start where your current work i
 
 ## Before you start
 
-Make sure the repository is open and manifast is active in your environment. The commands below work through any AI assistant that has manifast configured — no specific editor or tool is required.
+Make sure the repository is open and forge is active in your environment. The commands below work through any AI assistant that has forge configured — no specific editor or tool is required.
 
 ---
 
@@ -50,7 +50,7 @@ Run:
 /focus
 ```
 
-**If this is the very first run** (no `docs/manifast.yaml` exists yet), Claude asks which language the project should use before anything else:
+**If this is the very first run** (no `docs/forge.yaml` exists yet), Claude asks which language the project should use before anything else:
 
 ```
 What language should this project use?
@@ -58,7 +58,7 @@ What language should this project use?
     pt-BR  — Portuguese (Brazil)
 ```
 
-Choose your preferred language. This is saved once in `docs/manifast.yaml` and never asked again. To change it later, run `/lang`.
+Choose your preferred language. This is saved once in `docs/forge.yaml` and never asked again. To change it later, run `/lang`.
 
 After the language is set, Claude skips straight to creation. If you have existing items, it will ask what you want to do instead:
 
@@ -76,7 +76,7 @@ Choose **Create a new work item**.
 
 The following example creates a Strategic Initiative called *"Redesign the onboarding process"*. Follow the same steps for any level or type.
 
-> **First run only:** before Step 1, Claude asks for the project language (`en` or `pt-BR`). This happens once and is saved in `docs/manifast.yaml`. Skip ahead if the project already exists.
+> **First run only:** before Step 1, Claude asks for the project language (`en` or `pt-BR`). This happens once and is saved in `docs/forge.yaml`. Skip ahead if the project already exists.
 
 ---
 
@@ -166,7 +166,7 @@ Run /clear to start a fresh context for this work item.
 
 ## What gets created
 
-manifast creates the following structure on disk:
+forge creates the following structure on disk:
 
 ```
 docs/
@@ -181,13 +181,14 @@ docs/
       20260503-redesign-the-onboarding-process/
         input/         ← place your source documents here
         output/
+          index.md     ← local wiki index scoped to this work item
           artifacts/   ← generated artifacts (brief, requirements, ADRs, etc.)
           log.md       ← artifact generation history for this work item
 ```
 
 > **Wiki vs. artifacts:** source documents go to `input/`, wiki pages go to `docs/wiki/` (shared), and generated artifacts go to `output/artifacts/` (per work item).
 
-And appends the item to `docs/manifast.yaml`:
+And appends the item to `docs/forge.yaml`:
 
 ```yaml
 items:
@@ -206,14 +207,14 @@ items:
 The `.env` file is also updated so every subsequent command (`/ingest`, `/draft`, etc.) knows which work item is active:
 
 ```env
-MWI_ID=redesign_the_onboarding_process
-MWI_TITLE=Redesign the onboarding process
-MWI_TAGS=[onboarding, ux, strategic]
-MWI_LEVEL=Strategic
-MWI_TYPE=Initiative
-MWI_PATH=docs/strategic/initiatives/20260503-redesign-the-onboarding-process/
-MWI_PARENT=
-MWI_LANG=en
+FORGE_ID=redesign_the_onboarding_process
+FORGE_TITLE=Redesign the onboarding process
+FORGE_TAGS=[onboarding, ux, strategic]
+FORGE_LEVEL=Strategic
+FORGE_TYPE=Initiative
+FORGE_PATH=docs/strategic/initiatives/20260503-redesign-the-onboarding-process/
+FORGE_PARENT=
+FORGE_LANG=en
 ```
 
 ---
@@ -226,7 +227,7 @@ If you have multiple work items and want to switch between them:
 /focus
 ```
 
-Choose **Select an existing work item**. Claude lists everything in `manifast.yaml`:
+Choose **Select an existing work item**. Claude lists everything in `forge.yaml`:
 
 ```
 Select a work item:
@@ -257,7 +258,7 @@ With a work item active, the typical next steps are:
    output/artifacts/ folder.
 ```
 
-See [HOW_TO.md](HOW_TO.md) for the full end-to-end sequence.
+See [HOW_TO_WIKI.md](HOW_TO_WIKI.md) to build the knowledge base, and [HOW_TO_ARTIFACTS.md](HOW_TO_ARTIFACTS.md) to generate artifacts.
 
 ---
 
@@ -267,10 +268,10 @@ See [HOW_TO.md](HOW_TO.md) for the full end-to-end sequence.
 No — `.env` tracks one active item at a time. Run `/focus` to switch.
 
 **Can I rename or edit a work item after creation?**
-Edit `docs/manifast.yaml` directly and update the `title`, `description`, or `tags` fields. Do not rename the folder path — it would break existing wiki links.
+Edit `docs/forge.yaml` directly and update the `title`, `description`, or `tags` fields. Do not rename the folder path — it would break existing wiki links.
 
 **What if I chose the wrong level or type?**
-Delete the folder and its entry in `manifast.yaml`, then run `/focus` again. No artifacts have been generated yet, so nothing is lost.
+Delete the folder and its entry in `forge.yaml`, then run `/focus` again. No artifacts have been generated yet, so nothing is lost.
 
 **Do I need to fill all three levels?**
 No. You can work at a single level. The hierarchy becomes valuable when you link items — strategic constraints propagate down to inform product and tactical work.

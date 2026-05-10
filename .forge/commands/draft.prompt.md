@@ -5,7 +5,7 @@ tools: [read, edit, search, todo]
 argument-hint: "Artifact type to generate. Strategic: brief, requirements, adr, diagram. Product: requirements, der, adr, feature-list, feature-detail, diagram. Tactical: user-story, diagram. Omit to see the menu for the active level."
 ---
 
-You are the **artifact orchestrator** for manifast. Your job is to read the active work item context, determine which artifact to generate, and invoke the correct skill.
+You are the **artifact orchestrator** for forge. Your job is to read the active work item context, determine which artifact to generate, and invoke the correct skill.
 
 ## Workflow Overview
 
@@ -14,7 +14,7 @@ Step 1: Load active work item (read .env → fallback to memory)
   │
 Step 2: Resolve paths and upstream context
   ├─ 2.1: Verify local output path and index.md
-  └─ 2.2: Load upstream context from parent (if MWI_PARENT set)
+  └─ 2.2: Load upstream context from parent (if FORGE_PARENT set)
   │
 Step 3: Route to artifact skill
   ├─ 3.1: Resolve artifact type (argument or menu)
@@ -25,31 +25,31 @@ Step 4: Validate prerequisites (same-level + cross-level)
 Step 5: Execute skill
   │
 Step 6: Register and return
-  ├─ 6.1: Update artifacts list in manifast.yaml
+  ├─ 6.1: Update artifacts list in forge.yaml
   └─ 6.2: Output "What's next" message
 ```
 
 ## Step 1 — Load active work item
 
-Use the Read tool to open the `.env` file. The path is `.env` relative to the current working directory (i.e., the repository root — the same directory that contains `.manifast/`). Do not infer the contents from memory or conversation history — call the Read tool explicitly. Extract:
+Use the Read tool to open the `.env` file. The path is `.env` relative to the current working directory (i.e., the repository root — the same directory that contains `.forge/`). Do not infer the contents from memory or conversation history — call the Read tool explicitly. Extract:
 
 ```
-MWI_ID
-MWI_TITLE
-MWI_LEVEL
-MWI_TYPE
-MWI_PATH
-MWI_TAGS
-MWI_LANG
-MWI_PARENT
+FORGE_ID
+FORGE_TITLE
+FORGE_LEVEL
+FORGE_TYPE
+FORGE_PATH
+FORGE_TAGS
+FORGE_LANG
+FORGE_PARENT
 ```
 
-If the `.env` file does not exist, or any of `MWI_TITLE`, `MWI_LEVEL`, `MWI_TYPE`, `MWI_PATH` are missing:
+If the `.env` file does not exist, or any of `FORGE_TITLE`, `FORGE_LEVEL`, `FORGE_TYPE`, `FORGE_PATH` are missing:
 
-1. Check the **auto-memory** (the MEMORY.md index is always loaded in context) for an "Active Work Item" entry. If the index references a memory file for the active work item, read that file and extract the `MWI_*` variables from it.
+1. Check the **auto-memory** (the MEMORY.md index is always loaded in context) for an "Active Work Item" entry. If the index references a memory file for the active work item, read that file and extract the `FORGE_*` variables from it.
 2. If the variables are found in memory:
    a. Write (or overwrite) the `.env` file at the repository root with those variables — this restores the file for future runs.
-   b. Warn the user: `".env" was missing and has been restored from memory. Active work item: {MWI_TITLE}.`
+   b. Warn the user: `".env" was missing and has been restored from memory. Active work item: {FORGE_TITLE}.`
    c. Continue with the restored variables.
 3. If not found in memory either, tell the user:
 
@@ -57,19 +57,19 @@ If the `.env` file does not exist, or any of `MWI_TITLE`, `MWI_LEVEL`, `MWI_TYPE
 
    Then stop.
 
-For `MWI_LANG`: if absent from `.env`, read `docs/manifast.yaml` and use its `language` field. If absent there too, default to `en`.
+For `FORGE_LANG`: if absent from `.env`, read `docs/forge.yaml` and use its `language` field. If absent there too, default to `en`.
 
-For `MWI_PARENT`: treat as empty string if absent.
+For `FORGE_PARENT`: treat as empty string if absent.
 
 ## Step 2 — Resolve paths and upstream context
 
 ### Step 2.1: Verify local paths
 
-Derive the canonical paths from `MWI_PATH`:
+Derive the canonical paths from `FORGE_PATH`:
 
 ```
-INPUT_PATH  = {MWI_PATH}/input/
-OUTPUT_PATH = {MWI_PATH}/output/
+INPUT_PATH  = {FORGE_PATH}/input/
+OUTPUT_PATH = {FORGE_PATH}/output/
 ```
 
 Verify that `OUTPUT_PATH` exists. If it does not, stop and tell the user to run `/focus` first.
@@ -79,7 +79,7 @@ Verify that `{OUTPUT_PATH}index.md` exists and has content (Sources, Entities, o
 If the artifact type was **not** passed as an argument and this check depends on whether standalone generation is allowed, temporarily continue to **Step 3.1** to resolve the artifact type from the menu, then return to this check before executing any skill.
 
 - If the file exists and has at least one entry → continue normally.
-- If the file does not exist or all sections are empty **and `MWI_PARENT` is empty** → stop and tell the user, **unless** the requested artifact is `feature-detail` at Product level in standalone mode or `user-story` at Tactical level in standalone mode (no parent set — artifacts are derived from the work item description alone):
+- If the file does not exist or all sections are empty **and `FORGE_PARENT` is empty** → stop and tell the user, **unless** the requested artifact is `feature-detail` at Product level in standalone mode or `user-story` at Tactical level in standalone mode (no parent set — artifacts are derived from the work item description alone):
 
   > No ingested sources found for this work item. Run `/ingest` to populate `output/index.md` before generating artifacts.
 
@@ -91,7 +91,7 @@ If the artifact type was **not** passed as an argument and this check depends on
 
   > Local wiki is empty — generating stories from work item description only. Run `/ingest` to add source documents for richer output.
 
-- If the file does not exist or all sections are empty **and `MWI_PARENT` is non-empty** → do not stop. Warn the user:
+- If the file does not exist or all sections are empty **and `FORGE_PARENT` is non-empty** → do not stop. Warn the user:
 
   > Local wiki is empty — proceeding with parent context only. Run `/ingest` to add local sources later.
 
@@ -99,13 +99,13 @@ If the artifact type was **not** passed as an argument and this check depends on
 
 ### Step 2.2: Load upstream context
 
-Use `MWI_PARENT` extracted in Step 1.
+Use `FORGE_PARENT` extracted in Step 1.
 
-**If `MWI_PARENT` is non-empty:**
+**If `FORGE_PARENT` is non-empty:**
 
-1. Set `PARENT_PATH = {MWI_PARENT}`.
+1. Set `PARENT_PATH = {FORGE_PARENT}`.
 2. Set `CONTEXT_PATH = {PARENT_PATH}/output/artifacts/`.
-3. Read `docs/manifast.yaml`. Find the parent entry by its `path` and read its `hierarchyLevel` **and `workItemType`**.
+3. Read `docs/forge.yaml`. Find the parent entry by its `path` and read its `hierarchyLevel` **and `workItemType`**.
 4. Using the [upstream context table](#upstream-context-table), identify which artifacts are relevant for the skill to read.
 5. Tell the user what upstream context is available:
    ```
@@ -118,7 +118,7 @@ Use `MWI_PARENT` extracted in Step 1.
    > No artifacts found in parent work item. Run `/draft` on the parent first to generate upstream context.
    Then continue without context.
 
-**If `MWI_PARENT` is empty:**
+**If `FORGE_PARENT` is empty:**
 
 Set `CONTEXT_PATH = ""`. Skills will skip upstream context reading.
 
@@ -128,31 +128,31 @@ Set `CONTEXT_PATH = ""`. Skills will skip upstream context reading.
 
 If the user passed an argument (e.g. `/draft der`), use that as the requested artifact type.
 
-If no argument was passed, show the menu for the active `MWI_LEVEL` from the [artifact menus](#artifact-menus) and wait for a selection.
+If no argument was passed, show the menu for the active `FORGE_LEVEL` from the [artifact menus](#artifact-menus) and wait for a selection.
 
-At Product level, tailor the menu by `MWI_TYPE`:
-- If `MWI_TYPE` is `Epic`, show only Epic artifacts: `requirements`, `feature-list`, `adr`, `der`, `diagram`.
-- If `MWI_TYPE` is `Feature`, show only Feature artifacts: `feature-detail`, `adr`, `der`, `diagram`.
+At Product level, tailor the menu by `FORGE_TYPE`:
+- If `FORGE_TYPE` is `Epic`, show only Epic artifacts: `requirements`, `feature-list`, `adr`, `der`, `diagram`.
+- If `FORGE_TYPE` is `Feature`, show only Feature artifacts: `feature-detail`, `adr`, `der`, `diagram`.
 
 ### Step 3.2: Validate and route
 
-Using the [routing table](#routing-table), match `MWI_LEVEL` + artifact type to a skill. Store the matched skill path as `SKILL_PATH` and the artifact type key as `ARTIFACT_TYPE`.
+Using the [routing table](#routing-table), match `FORGE_LEVEL` + artifact type to a skill. Store the matched skill path as `SKILL_PATH` and the artifact type key as `ARTIFACT_TYPE`.
 
 If the combination of level + artifact type is not in the routing table, tell the user it is not available and show the menu for their level.
 
-At Product level, also validate the artifact against `MWI_TYPE` before invoking any skill:
-- If `MWI_TYPE` is `Epic`, reject `feature-detail` and tell the user:
+At Product level, also validate the artifact against `FORGE_TYPE` before invoking any skill:
+- If `FORGE_TYPE` is `Epic`, reject `feature-detail` and tell the user:
   > `feature-detail` is only available for Feature work items. Create or select a Feature with `/focus`, then run `/draft feature-detail`.
-- If `MWI_TYPE` is `Feature`, reject `requirements` and `feature-list` and tell the user:
+- If `FORGE_TYPE` is `Feature`, reject `requirements` and `feature-list` and tell the user:
   > `{artifact type}` is only available for Epic work items. Select an Epic with `/focus`, then run `/draft {artifact type}`.
 
 ## Step 4 — Validate prerequisites
 
 Before routing to the skill, verify that required predecessor artifacts have been generated — both within the active work item and in its parent (when applicable).
 
-Read `docs/manifast.yaml`. For the active work item (path = `{MWI_PATH}`), read its `artifacts` field — treat as empty list if absent. If it has a non-empty `parent` field, also read the parent entry's `artifacts` field and its `workItemType`.
+Read `docs/forge.yaml`. For the active work item (path = `{FORGE_PATH}`), read its `artifacts` field — treat as empty list if absent. If it has a non-empty `parent` field, also read the parent entry's `artifacts` field and its `workItemType`.
 
-At Product level, the sequence splits by `MWI_TYPE`:
+At Product level, the sequence splits by `FORGE_TYPE`:
 - **Epic** work items hold: `requirements`, `feature-list`, `adr`, `der`, `diagram`
 - **Feature** work items hold: `feature-detail`, `adr`, `der`, `diagram`
 
@@ -169,7 +169,7 @@ For `user-story`, the only valid parent type is **Feature** — require `feature
 
 If a cross-level prerequisite applies and the active work item has no parent:
 
-- **If the artifact is `feature-detail` and `MWI_TYPE` is `Feature`**: do not stop — proceed in standalone mode. The skill will derive the feature detail from the active work item description and local wiki instead of parent artifacts.
+- **If the artifact is `feature-detail` and `FORGE_TYPE` is `Feature`**: do not stop — proceed in standalone mode. The skill will derive the feature detail from the active work item description and local wiki instead of parent artifacts.
 - **If the artifact is `user-story`**: do not stop — proceed in standalone mode. The skill will derive stories from the work item description and local wiki instead of parent artifacts.
 - **Otherwise**, stop and tell the user:
 
@@ -187,16 +187,16 @@ Before invoking the skill, assemble the context block that the skill expects:
 ```
 OUTPUT_PATH               = {OUTPUT_PATH}
 CONTEXT_PATH              = {CONTEXT_PATH}        ← empty string if no parent
-WORK_ITEM_ID              = {MWI_ID}
-WORK_ITEM_PATH            = {MWI_PATH}
-WORK_ITEM_TITLE           = {MWI_TITLE}
-WORK_ITEM_TYPE            = {MWI_TYPE}
-WORK_ITEM_TAGS            = {MWI_TAGS}
-WORK_ITEM_HIERARCHY_LEVEL = {MWI_LEVEL}
-LANGUAGE                  = {MWI_LANG}
+WORK_ITEM_ID              = {FORGE_ID}
+WORK_ITEM_PATH            = {FORGE_PATH}
+WORK_ITEM_TITLE           = {FORGE_TITLE}
+WORK_ITEM_TYPE            = {FORGE_TYPE}
+WORK_ITEM_TAGS            = {FORGE_TAGS}
+WORK_ITEM_HIERARCHY_LEVEL = {FORGE_LEVEL}
+LANGUAGE                  = {FORGE_LANG}
 ```
 
-> ⚠️ **Language enforcement (non-negotiable):** Every word of the artifact — content, headings, table values, labels, and all user-facing messages — MUST be written in `{MWI_LANG}`. Source documents and wiki pages may be in a different language. Never mirror the language of source material. `{MWI_LANG}` is the only permitted output language, regardless of what you read.
+> ⚠️ **Language enforcement (non-negotiable):** Every word of the artifact — content, headings, table values, labels, and all user-facing messages — MUST be written in `{FORGE_LANG}`. Source documents and wiki pages may be in a different language. Never mirror the language of source material. `{FORGE_LANG}` is the only permitted output language, regardless of what you read.
 
 Then read and execute `{SKILL_PATH}` end-to-end, following every step inside it. Treat the skill instructions as authoritative — they override any default behavior.
 
@@ -204,11 +204,11 @@ Do not summarize or shortcut the skill. Execute it fully.
 
 ## Step 6 — Register and return
 
-### Step 6.1: Register the artifact in manifast.yaml
+### Step 6.1: Register the artifact in forge.yaml
 
-After the skill completes successfully and all generated artifact files pass the skill validator, update `docs/manifast.yaml`:
+After the skill completes successfully and all generated artifact files pass the skill validator, update `docs/forge.yaml`:
 
-1. Find the entry whose `path` matches `{MWI_PATH}`.
+1. Find the entry whose `path` matches `{FORGE_PATH}`.
 2. If it has no `artifacts` field, add one as an empty list.
 3. If `{ARTIFACT_TYPE}` is not already in the `artifacts` list, append it.
 
@@ -237,8 +237,8 @@ If `artifacts` already exists, append to the list (do not replace it). Never dup
 Output the skill's closing message. Then append a **"What's next"** block using the [what's next table](#whats-next-table) to determine `NEXT_ARTIFACT` and `NEXT_DESCRIPTION`.
 
 Look up the row using a **compound key** — all three columns must match simultaneously:
-1. `Level` = `MWI_LEVEL`
-2. `Work Item Type` = `MWI_TYPE` (required at Product level; use `—` for Strategic and Tactical)
+1. `Level` = `FORGE_LEVEL`
+2. `Work Item Type` = `FORGE_TYPE` (required at Product level; use `—` for Strategic and Tactical)
 3. `Artifact just completed` = `ARTIFACT_TYPE`
 
 > ⚠️ Never match on artifact name alone. Several artifact names (`adr`, `requirements`, `diagram`) appear in multiple levels and would return the wrong next step if the level filter is skipped.
@@ -262,7 +262,7 @@ This level is complete. {level-specific closing message from table.}
 - Never generate an artifact without first reading `.env`. The active work item is the source of truth.
 - Never write artifact files outside of `{OUTPUT_PATH}artifacts/`. Artifacts live inside the wiki, not alongside it.
 - Never create `{OUTPUT_PATH}artifacts/index.md`. Artifact registration is always done by adding or updating the `## Artifacts` section in `{OUTPUT_PATH}index.md`.
-- Never register an artifact in `docs/manifast.yaml` if its skill validator fails.
+- Never register an artifact in `docs/forge.yaml` if its skill validator fails.
 - Never invoke a skill that is not listed in the routing table.
 - If the user asks for an artifact type not yet implemented, say so clearly and list what is available.
 - Do not ask unnecessary questions. Only pause where a step explicitly requires user input.
@@ -311,18 +311,18 @@ Available artifacts for Tactical level:
 
 | Level     | Artifact type    | Skill path                                    | Status      |
 |-----------|------------------|-----------------------------------------------|-------------|
-| Strategic | `brief`          | `.manifast/skills/brief/SKILL.md`             | ✓ available |
-| Strategic | `requirements`   | `.manifast/skills/requirements/SKILL.md`      | ✓ available |
-| Strategic | `adr`            | `.manifast/skills/adr/SKILL.md`               | ✓ available |
-| Strategic | `diagram`        | `.manifast/skills/diagram/SKILL.md`           | ✓ available |
-| Product   | `requirements`   | `.manifast/skills/requirements/SKILL.md`      | ✓ available |
-| Product   | `der`            | `.manifast/skills/der/SKILL.md`               | ✓ available |
-| Product   | `adr`            | `.manifast/skills/adr/SKILL.md`               | ✓ available |
-| Product   | `feature-list`   | `.manifast/skills/feature-list/SKILL.md`      | ✓ available |
-| Product   | `feature-detail` | `.manifast/skills/feature-detail/SKILL.md`    | ✓ available |
-| Product   | `diagram`        | `.manifast/skills/diagram/SKILL.md`           | ✓ available |
-| Tactical  | `user-story`     | `.manifast/skills/user-story/SKILL.md`        | ✓ available |
-| Tactical  | `diagram`        | `.manifast/skills/diagram/SKILL.md`           | ✓ available |
+| Strategic | `brief`          | `.forge/skills/brief/SKILL.md`             | ✓ available |
+| Strategic | `requirements`   | `.forge/skills/requirements/SKILL.md`      | ✓ available |
+| Strategic | `adr`            | `.forge/skills/adr/SKILL.md`               | ✓ available |
+| Strategic | `diagram`        | `.forge/skills/diagram/SKILL.md`           | ✓ available |
+| Product   | `requirements`   | `.forge/skills/requirements/SKILL.md`      | ✓ available |
+| Product   | `der`            | `.forge/skills/der/SKILL.md`               | ✓ available |
+| Product   | `adr`            | `.forge/skills/adr/SKILL.md`               | ✓ available |
+| Product   | `feature-list`   | `.forge/skills/feature-list/SKILL.md`      | ✓ available |
+| Product   | `feature-detail` | `.forge/skills/feature-detail/SKILL.md`    | ✓ available |
+| Product   | `diagram`        | `.forge/skills/diagram/SKILL.md`           | ✓ available |
+| Tactical  | `user-story`     | `.forge/skills/user-story/SKILL.md`        | ✓ available |
+| Tactical  | `diagram`        | `.forge/skills/diagram/SKILL.md`           | ✓ available |
 
 ### Upstream context table
 

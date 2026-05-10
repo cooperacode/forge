@@ -127,7 +127,7 @@ Number sequentially starting at `001`. If ADR files already exist in that folder
 
 Use the template from `template.md` in this same skill directory. Fill all placeholders, preserve the section order, and do not add, remove, or rename headings outside the template.
 
-Run `scripts/validate.sh <generated-adr-file.md>` for each generated ADR. If validation fails for any ADR, fix it until it passes. Do not write the ADR index, update navigation files, or report success before all ADR files pass validation.
+Validation runs automatically via hook after each Write or Edit. If a validation error appears in context, fix the artifact before proceeding. Do not write the ADR index, update navigation files, or report success before all errors are resolved.
 
 ---
 
@@ -175,7 +175,7 @@ Gaps flagged: N (decisions without documented alternatives)
 Sources read: N pages
 ```
 
-**`docs/manifast.yaml`** — register the artifact in the work item entry:
+**`docs/forge.yaml`** — register the artifact in the work item entry:
 
 1. Find the entry whose `path` matches `{WORK_ITEM_PATH}`.
 2. If it has no `artifacts` field, add one as an empty list.

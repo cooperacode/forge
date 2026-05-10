@@ -48,11 +48,11 @@ Record `PARENT_MODE` before continuing.
 
 ## Step 2 — Resolve feature scope from the active work item
 
-Read `docs/manifast.yaml` and find the item whose `path` matches `{WORK_ITEM_PATH}`.
+Read `docs/forge.yaml` and find the item whose `path` matches `{WORK_ITEM_PATH}`.
 
 - If no item matches `{WORK_ITEM_PATH}`, stop and tell the user:
 
-  > The active Feature work item could not be found in `docs/manifast.yaml`. Run `/focus` again to restore the active context.
+  > The active Feature work item could not be found in `docs/forge.yaml`. Run `/focus` again to restore the active context.
 
 Extract from the matched item:
 
@@ -60,7 +60,7 @@ Extract from the matched item:
 SELECTED_FEATURE_NAME = {title}
 SELECTED_FEATURE_DESC = {description}
 SELECTED_FEATURE_SLUG = {kebab-case short name, ASCII only}
-ACTIVE_WORK_ITEM_SOURCE = [[docs/manifast.yaml]]
+ACTIVE_WORK_ITEM_SOURCE = [[docs/forge.yaml]]
 ```
 
 Resolve `SELECTED_FEATURE_ID` in this order:
@@ -104,7 +104,7 @@ Wait for confirmation before continuing.
 
 The active work item description is the **primary source**.
 
-When a statement comes directly from the active work item entry rather than the local wiki, cite `[[docs/manifast.yaml]]`.
+When a statement comes directly from the active work item entry rather than the local wiki, cite `[[docs/forge.yaml]]`.
 
 If `LOCAL_WIKI = false`, warn the user:
 
@@ -121,7 +121,7 @@ If `LOCAL_WIKI = false`, warn the user:
 
 The active work item description remains the **primary source**. The parent Epic artifacts provide upstream product context.
 
-When a statement comes directly from the active work item entry rather than the local wiki or parent artifacts, cite `[[docs/manifast.yaml]]`.
+When a statement comes directly from the active work item entry rather than the local wiki or parent artifacts, cite `[[docs/forge.yaml]]`.
 
 If `LOCAL_WIKI = false`, warn the user:
 
@@ -223,7 +223,7 @@ Use the template from `template.md` in this same skill directory. Fill all place
 
 Keep the INVEST guidance applied in the `Proposed User Story Breakdown` section.
 
-Run `scripts/validate.sh {OUTPUT_PATH}artifacts/feature-detail/{SELECTED_FEATURE_ID}-{SELECTED_FEATURE_SLUG}.md`. If validation fails, fix the artifact until it passes. Do not update navigation files or report success before validation passes.
+Validation runs automatically via hook after each Write or Edit. If a validation error appears in context, fix the artifact before proceeding. Do not update navigation files or report success before all errors are resolved.
 
 
 ---
@@ -252,7 +252,7 @@ Gaps flagged: N
 Sources read: N pages
 ```
 
-**`docs/manifast.yaml`** — register the artifact in the work item entry:
+**`docs/forge.yaml`** — register the artifact in the work item entry:
 
 1. Find the entry whose `path` matches `{WORK_ITEM_PATH}`.
 2. If it has no `artifacts` field, add one as an empty list.
@@ -310,4 +310,4 @@ Anything you want me to revise?
 - **User story breakdown is a proposal, not a commitment.** Stories are generated later at the Tactical level — this breakdown is guidance, not a locked contract.
 - **Apply INVEST to every proposed story.** Flag violations explicitly in the INVEST Notes column: split stories that violate **S** (too large for one sprint); mark as `> [!gap]` stories that violate **E** or **T** (cannot estimate or verify due to missing wiki detail); note explicit dependencies for stories that violate **I**. Never write a story that fails **V** — if no persona benefits, it is a technical task, not a user story.
 - **Never write to source/concept/entity pages.** This skill is read-only on the wiki.
-- **Source citation format:** use `[[sources/slug]]`, `[[concepts/slug]]`, or `[[entities/slug]]` for local wiki pages. For facts derived directly from the active work item entry, use `[[docs/manifast.yaml]]`. For files read from `{CONTEXT_PATH}`, substitute the actual runtime value and write the full repo-relative path. Never use short names or computed relative paths for cross-work-item references.
+- **Source citation format:** use `[[sources/slug]]`, `[[concepts/slug]]`, or `[[entities/slug]]` for local wiki pages. For facts derived directly from the active work item entry, use `[[docs/forge.yaml]]`. For files read from `{CONTEXT_PATH}`, substitute the actual runtime value and write the full repo-relative path. Never use short names or computed relative paths for cross-work-item references.

@@ -99,7 +99,7 @@ Tactical level (User Story/Task)
 Every artifact follows the same three-phase pattern:
 
 1. **Claude reads the wiki** — all sources, concepts, entities from `docs/wiki/`, and any upstream context from a parent work item.
-2. **Claude surfaces scope** — lists what it found before writing. In default mode it proceeds immediately; pass `-buddy` to `/draft` to pause and confirm scope before writing.
+2. **Claude surfaces scope** — lists what it found before writing. In default mode it proceeds immediately.
 3. **Claude writes the file** — to `output/artifacts/`, then updates `index.md` and `log.md`.
 
 ---
@@ -358,20 +358,12 @@ US-003 · As a new user, I want to request a new link if mine expired, so that I
 Does this breakdown look right? Any stories to add, remove, or merge?
 ```
 
-**Parent = Epic** (direct, no Feature level)
-Claude reads `feature-list` from the parent Epic and asks which feature to cover. No `feature-detail` is available in this path.
+**No parent (standalone mode)**
+If the Tactical work item has no parent, Claude derives stories from the work item description and local wiki alone. This produces workable stories but without the precision of a `feature-detail`.
+
 ```
-Feature list loaded. Which feature do you want to break into user stories?
-
-| ID    | Feature              | Priority |
-|-------|---------------------|----------|
-| F-001 | User Registration   | MVP      |
-| F-002 | Email Verification  | MVP      |
-
-Note: for richer stories, create a Feature work item as a child of this Epic,
-run /draft feature-detail on it, then return here.
-
-Reply with the feature ID (e.g. F-001).
+No parent work item found — generating stories in standalone mode.
+Run /ingest to add source documents for richer output.
 ```
 
 **What gets created (one file per story):**
@@ -493,4 +485,4 @@ No. `feature-detail` reads the feature list from the parent Epic's `output/artif
 
 ---
 
-See [HOW_TO.md](HOW_TO.md) for the full end-to-end sequence from setup to first artifact.
+See [HOW_TO_WORKITEMS.md](HOW_TO_WORKITEMS.md) to get started, and [HOW_TO_WIKI.md](HOW_TO_WIKI.md) for the full wiki cycle before generating artifacts.

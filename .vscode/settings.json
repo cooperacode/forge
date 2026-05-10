@@ -3,20 +3,26 @@
         ".github/prompts": true,
         ".claude/prompts": true,
         "~/.copilot/prompts": true,
-        ".manifast/commands": true
+        ".forge/commands": true
     },
     "chat.agent.enabled": true,
     "chat.agentFilesLocations": {
         ".github/agents": true,
         ".claude/agents": true,
         "~/.copilot/agents": true,
-        ".manifast/agents": true
+        ".forge/agents": true
     },
     "chat.useAgentSkills": true,
     "chat.agentSkillsLocations": {
         ".github/skills": true,
         ".claude/skills": true,
         "~/.copilot/skills": true,
-        ".manifast/skills": true
+        ".forge/skills": true
+    },
+    "chat.hookFilesLocations": {
+        ".github/hooks": true,
+        ".claude/hooks": true,
+        "~/.copilot/hooks": true,
+        ".forge/hooks": true
     }
 }

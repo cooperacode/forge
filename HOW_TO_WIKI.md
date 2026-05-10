@@ -377,7 +377,7 @@ There is no required number of sources before running `/draft`. The wiki tells y
 ## Common questions
 
 **Can I ingest the same file twice?**
-Claude will create a duplicate source page. To avoid this, check `index.md` before ingesting — if the slug is already listed, skip it or ingest an updated version of the file instead.
+Claude automatically skips files that have already been ingested. Before processing, `/ingest` checks `output/index.md` and filters out any file whose slug already appears in the Sources section. If you updated a source and want to re-ingest it, remove its entry from `output/index.md` first.
 
 **Can I paste content directly into the chat instead of using a file?**
 No. Claude will ask you to save it to `input/` first. This keeps the source layer clean and traceable — every wiki claim should be resolvable back to a file on disk.

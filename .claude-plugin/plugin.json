@@ -1,7 +1,7 @@
 {
-  "name": "manifast",
-  "description": "A wiki for software development teams, organized around work items and their relationships.",
-  "version": "1.0.0",
+  "name": "forge",
+  "description": "AI-assisted agile artifact generation organized around a Strategic → Product → Tactical work item hierarchy. Manages a knowledge wiki and produces engineering artifacts (briefs, requirements, ADRs, diagrams, user stories) from ingested sources.",
+  "version": "1.0.0-beta",
   "author": {
     "name": "yan justino",
     "url": "https://github.com/yanjustino"
@@ -15,10 +15,14 @@
     "work items",
     "project management"
   ],
-  "skills": "./.manifast/skills/",
+  "skills": "./.forge/skills/",
+  "hooks": "./.forge/hooks/hooks.json",
   "commands": [
-    "./.manifast/commands/workitem.prompt.md",
-    "./.manifast/commands/artifact.prompt.md",
-    "./.manifast/commands/language.prompt.md"
+    "./.forge/commands/lang.prompt.md",
+    "./.forge/commands/draft.prompt.md",
+    "./.forge/commands/focus.prompt.md",
+    "./.forge/commands/ingest.prompt.md",
+    "./.forge/commands/lint.prompt.md",
+    "./.forge/commands/query.prompt.md"
   ]
 }

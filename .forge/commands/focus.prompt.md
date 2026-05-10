@@ -1,6 +1,6 @@
 ---
 name: focus
-description: "Create a new work item for the manifesto project. Use when: adding a new task or feature to the project backlog."
+description: "Create or select the active work item. Creates a new work item or switches focus to an existing one, writing the .env context file used by all other commands."
 tools: [vscode/askQuestions, read, edit, search, todo, vscode/memory]
 argument-hint: "For most types: provide a title, description, and tags. For Feature: select from an Epic's feature-list or create standalone."
 ---
@@ -9,7 +9,7 @@ You are helping create a new work item for the project backlog. Follow the workf
 
 ## Setup
 
-Read `docs/manifast.yaml` **once** before any step — this single read serves language detection and the existence check used in Step 0.
+Read `docs/forge.yaml` **once** before any step — this single read serves language detection and the existence check used in Step 0.
 
 - If the file **exists**: extract the `language` field and set `{{language}}`. Note whether any items are present.
 - If the file **does not exist**: use #tool:vscode/askQuestions to ask:
@@ -33,7 +33,7 @@ Use `{{language}}` for **all messages displayed to the user** and **all artifact
 | Tactical  | Task       | "Design the password reset page" |
 | Tactical  | Bug        | "Fix the login page error when using special characters in the password" |
 
-### Work item schema (`docs/manifast.yaml`)
+### Work item schema (`docs/forge.yaml`)
 
 ```yaml
 items:
@@ -52,7 +52,7 @@ items:
 ## Workflow Overview
 
 ```
-Setup: read docs/manifast.yaml once; set {{language}}
+Setup: read docs/forge.yaml once; set {{language}}
   │
   └─► Step 0: if file exists, ask Create or Select
             ├─ Create (or file missing) ──► Step 1 (1.1 → 1.2 → 1.3 → [1.4] → 1.5 → 1.6)
@@ -70,7 +70,7 @@ Step 1.3 dispatches to sub-flows for Feature and User Story types — both retur
 
 ## Step 0: Choose Action
 
-If `docs/manifast.yaml` **does not exist** (detected in Setup), go directly to **Step 1**.
+If `docs/forge.yaml` **does not exist** (detected in Setup), go directly to **Step 1**.
 
 If it **already exists**, use #tool:vscode/askQuestions to ask:
 > Q: What action would you like to perform?
@@ -128,7 +128,7 @@ Valid parent types by child level:
 | Epic        | Strategic (Theme, Initiative)                     | Ask if candidates exist; otherwise skip silently. |
 | Tactical    | Product (Epic, Feature)                           | Ask if candidates exist; otherwise skip silently. |
 
-Using `docs/manifast.yaml` already read in Setup, filter existing items to show only valid parents for `{{hierarchyLevel}}`.
+Using `docs/forge.yaml` already read in Setup, filter existing items to show only valid parents for `{{hierarchyLevel}}`.
 
 **If valid parent candidates exist**, use #tool:vscode/askQuestions to ask:
 > Q: Select the parent work item (or "None" for a root-level item):
@@ -215,9 +215,9 @@ Create `output/log.md` with this content:
 Activity log for this work item. Entries are prepended by `/ingest` and `/draft`.
 ```
 
-### Step 1.6: Create or update manifast.yaml
+### Step 1.6: Create or update forge.yaml
 
-**If `docs/manifast.yaml` does not exist**, create it with the full structure:
+**If `docs/forge.yaml` does not exist**, create it with the full structure:
 
 ```yaml
 language: {{language}}
@@ -254,28 +254,28 @@ After completing Step 1.6, go to **Step 3**.
 
 ## Step 2: Select Work Item
 
-Using `docs/manifast.yaml` already read in Setup, use #tool:vscode/askQuestions to display the list of existing work items. Once selected, display its details (title, description, tags, hierarchy level, work item type, creation date, update date). Go to **Step 3**.
+Using `docs/forge.yaml` already read in Setup, use #tool:vscode/askQuestions to display the list of existing work items. Once selected, display its details (title, description, tags, hierarchy level, work item type, creation date, update date). Go to **Step 3**.
 
 ## Step 3: Write .env
 
-Write the `.env` file at the repository root with the following content. If the file already exists and contains variables unrelated to `MWI_*`, preserve those lines and replace only the `MWI_*` block.
+Write the `.env` file at the repository root with the following content. If the file already exists and contains variables unrelated to `FORGE_*`, preserve those lines and replace only the `FORGE_*` block.
 
 ```env
-MWI_ID={{id}}
-MWI_TITLE={{workItemTitle}}
-MWI_TAGS=[{{workItemTags}}]
-MWI_LEVEL={{hierarchyLevel}}
-MWI_TYPE={{workItemType}}
-MWI_PATH={{workItemPath}}
-MWI_PARENT={{parentPath}}
-MWI_LANG={{language}}
+FORGE_ID={{id}}
+FORGE_TITLE={{workItemTitle}}
+FORGE_TAGS=[{{workItemTags}}]
+FORGE_LEVEL={{hierarchyLevel}}
+FORGE_TYPE={{workItemType}}
+FORGE_PATH={{workItemPath}}
+FORGE_PARENT={{parentPath}}
+FORGE_LANG={{language}}
 ```
 
 Use the `Write` tool (or equivalent file-creation tool) to create or overwrite `.env`. Do not use `Edit` on a file that may not yet exist.
 
 ## Step 4: Save Memory
 
-Save a memory entry named **"Active Work Item"** with type `project` containing the same `MWI_*` variables written above and a one-line note explaining the work item context. This ensures the active work item is recoverable after `/clear` even if `.env` is deleted.
+Save a memory entry named **"Active Work Item"** with type `project` containing the same `FORGE_*` variables written above and a one-line note explaining the work item context. This ensures the active work item is recoverable after `/clear` even if `.env` is deleted.
 
 ## Step 5: Finish
 
@@ -290,7 +290,7 @@ Run /clear to start a fresh context for this work item.
 ## Restrictions
 
 - Do not create files or folders outside of the `docs` directory (the `.env` file at the project root is the only exception).
-- Ensure all work items are stored in `manifast.yaml` in the correct format.
+- Ensure all work items are stored in `forge.yaml` in the correct format.
 - Do not modify or delete existing work items unless explicitly instructed by the user.
 - Do not ask the user for information outside the defined question steps.
 
@@ -304,7 +304,7 @@ Called from Step 1.3 when `{{workItemType}}` is **Feature**. Returns to Step 1.5
 
 **Step A — List available Epics**
 
-Filter `docs/manifast.yaml` for all items where `workItemType: Epic`.
+Filter `docs/forge.yaml` for all items where `workItemType: Epic`.
 
 If any Epics exist, use #tool:vscode/askQuestions to ask:
 > Q: Which Epic does this Feature belong to?
@@ -363,7 +363,7 @@ Called from Step 1.3 when `{{workItemType}}` is **User Story**. Returns to Step 
 
 **Step A — List all available feature-details**
 
-Scan `docs/manifast.yaml` for all items where `workItemType: Feature`. For each Feature item, check whether any `.md` file exists inside `{path}output/artifacts/feature-detail/`.
+Scan `docs/forge.yaml` for all items where `workItemType: Feature`. For each Feature item, check whether any `.md` file exists inside `{path}output/artifacts/feature-detail/`.
 
 Build a list of Features that have at least one feature-detail artifact. Use #tool:vscode/askQuestions to ask:
 > Q: Which feature do you want to derive a user story from?

@@ -10,7 +10,7 @@ You were invoked by the orchestrator because the user asked a question about the
 The orchestrator passed `INPUT_PATH` and `WIKI_PATH` at the top of this prompt — use those values for all file operations.
 
 If these variables are not explicitly set, derive them from `.env`:
-- `INPUT_PATH = {MWI_PATH}/input/`
+- `INPUT_PATH = {FORGE_PATH}/input/`
 - `WIKI_PATH = docs/wiki/`
 
 Follow every step in order.
@@ -100,7 +100,7 @@ After answering, ask:
 Want me to save this as a wiki page?
 ```
 
-If the user says yes, ask for a title if not obvious, then create `{WIKI_PATH}concepts/<slug>.md` using the concept page template from `skills/ingest/SKILL.md`. The page should contain the synthesized answer, with all citations intact, plus a `## Source question` section at the top:
+If the user says yes, ask for a title if not obvious, then create `{WIKI_PATH}concepts/<slug>.md` using the concept page structure defined in `commands/ingest.prompt.md` (see "Creating a new concept page" section). The page should contain the synthesized answer, with all citations intact, plus a `## Source question` section at the top:
 
 ```markdown
 ## Source question

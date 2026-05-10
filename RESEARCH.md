@@ -1,4 +1,4 @@
-# Manifast Documentation
+# Forge Documentation
 
 - [Origins](#origins)
 - [Agile-friendly by design](#agile-friendly-by-design)
@@ -12,7 +12,7 @@
 
 ## Origins
 
-manifast did not emerge from scratch. It is the tooling realization of a research lineage that began in academic work and evolved through a practical engineering protocol.
+forge did not emerge from scratch. It is the tooling realization of a research lineage that began in academic work and evolved through a practical engineering protocol.
 
 **2021 — SPReaD (Springer)**
 
@@ -22,21 +22,21 @@ The foundation is [SPReaD: Service-oriented Process for Reengineering and DevOps
 
 SPReaD's process orientation was extended to the AI-assisted development era in [protocolo-es-ai](https://github.com/yanjustino/protocolo-es-ai) — a protocol for adopting LLMs across the software development cycle. Organized across three levels (Framework, Process, AI-Enabled Activities), it defined structured guidelines and evaluation metrics for AI use in activities such as requirement extraction, user story generation, architecture diagramming, and API contract creation. The protocol was validated in a real digital transformation scenario at a major Brazilian bank.
 
-**2026 — manifast**
+**2026 — forge**
 
-manifast operationalizes the protocolo-es-ai as a running tool. Where the protocol defines *what* AI-assisted engineering activities should look like, manifast provides the commands, skills, and wiki infrastructure that make those activities executable inside a standard git repository and editor. The work item hierarchy, the ingest-query-artifact pipeline, and the traceability chain from source document to shipped artifact are all direct implementations of the process model established in the protocol — which itself inherits the structured, artifact-driven approach of SPReaD.
+forge operationalizes the protocolo-es-ai as a running tool. Where the protocol defines *what* AI-assisted engineering activities should look like, forge provides the commands, skills, and wiki infrastructure that make those activities executable inside a standard git repository and editor. The work item hierarchy, the ingest-query-artifact pipeline, and the traceability chain from source document to shipped artifact are all direct implementations of the process model established in the protocol — which itself inherits the structured, artifact-driven approach of SPReaD.
 
 ```
 SPReaD (Springer, 2021)        → structured process for SE + DevOps
         ↓
 protocolo-es-ai (2023)         → protocol for LLM adoption in SE activities
         ↓
-manifast                       → tooling that runs the protocol inside your editor
+forge                       → tooling that runs the protocol inside your editor
 ```
 
-### Protocol → manifast mapping
+### Protocol → forge mapping
 
-The diagram maps each methodological activity of the protocolo-es-ai to the manifast commands that implement it. Protocol activities are shown in dark grey; manifast commands in light grey.
+The diagram maps each methodological activity of the protocolo-es-ai to the forge commands that implement it. Protocol activities are shown in dark grey; forge commands in light grey.
 
 ```mermaid
 flowchart TD
@@ -51,7 +51,7 @@ flowchart TD
             CI --> CP --> CA
         end
 
-        subgraph CONCEPT_M["manifast"]
+        subgraph CONCEPT_M["forge"]
             CM1["/focus<br/>/ingest · /query"]
             CM2["/draft brief"]
             CM3["/draft requirements"]
@@ -70,7 +70,7 @@ flowchart TD
             DD["🏗️ Design<br/>Architecture · ER modeling<br/>Quality attribute analysis<br/>API contract creation<br/>Prototyping"]
         end
 
-        subgraph DEVELOP_M["manifast"]
+        subgraph DEVELOP_M["forge"]
             DM1["/draft feature-list"]
             DM2["/draft adr · /draft der"]
             DM3["/draft diagram · /draft user-story"]
@@ -89,7 +89,7 @@ flowchart TD
             OA["Maintenance<br/>Knowledge currency<br/>Contradiction resolution<br/>Process traceability"]
         end
 
-        subgraph OPERATE_M["manifast"]
+        subgraph OPERATE_M["forge"]
             OM["/lint · /query"]
         end
 
@@ -116,7 +116,7 @@ flowchart TD
 
 ## Agile-friendly by design
 
-Agility is not about moving fast — it is about delivering **value continuously and adaptably**. manifast organizes knowledge around the same work item hierarchy that engineering teams already use in their day-to-day workflow.
+Agility is not about moving fast — it is about delivering **value continuously and adaptably**. forge organizes knowledge around the same work item hierarchy that engineering teams already use in their day-to-day workflow.
 
 ```mermaid
 
@@ -172,7 +172,7 @@ flowchart LR
     CC["Claude Code CLI<br/>claude --plugin ."]
     VS["VS Code<br/>GitHub Copilot Chat<br/>or Claude for VS Code"]
 
-    CC --> SKILLS["Skills & Commands<br/>.manifast/"]
+    CC --> SKILLS["Skills & Commands<br/>.forge/"]
     VS --> SKILLS
 
     style CC fill:#c0bfc0,stroke:#7a797a,color:#1e1e3f
@@ -201,8 +201,8 @@ cd manifesto
 
 ```json
 {
-  "chat.promptFilesLocations":  { ".manifast/commands": true },
-  "chat.agentSkillsLocations":  { ".manifast/skills":   true }
+  "chat.promptFilesLocations":  { ".forge/commands": true },
+  "chat.agentSkillsLocations":  { ".forge/skills":   true }
 }
 ```
 
@@ -284,23 +284,22 @@ docs/
     features/
       20260502-feature-name/
         input/    ← place source files here
-        output/   ← wiki pages will be generated here
-        context/  ← upstream artifacts propagated from parent work item
+        output/   ← local wiki index, log, and generated artifacts
 ```
 
-The item is appended to `docs/focuss.yaml` and `.env` is updated:
+The item is appended to `docs/forge.yaml` and `.env` is updated:
 
 ```env
-MWI_TITLE=feature-name
-MWI_TAGS=[tag1, tag2]
-MWI_LEVEL=Product
-MWI_TYPE=Feature
-MWI_PATH=docs/product/features/20260502-feature-name/
-MWI_PARENT=docs/strategic/initiatives/20260503-parent-initiative
-MWI_LANG=en
+FORGE_TITLE=feature-name
+FORGE_TAGS=[tag1, tag2]
+FORGE_LEVEL=Product
+FORGE_TYPE=Feature
+FORGE_PATH=docs/product/features/20260502-feature-name/
+FORGE_PARENT=docs/strategic/initiatives/20260503-parent-initiative
+FORGE_LANG=en
 ```
 
-If `workitems.yaml` already has entries, `/focus` lets you pick one from the list instead. Selecting an item updates `.env` so subsequent commands target the correct folders.
+If `forge.yaml` already has entries, `/focus` lets you pick one from the list instead. Selecting an item updates `.env` so subsequent commands target the correct folders.
 
 ---
 
@@ -560,7 +559,7 @@ flowchart TD
     style TG fill:#d5d4d5,stroke:#8f8e8f,color:#1e1e3f
 ```
 
-Dashed arrows show **upstream context** — artifacts from a parent work item that are automatically loaded into the child's `context/` folder before the skill runs.
+Dashed arrows show **upstream context** — artifacts from a parent work item that are read directly from the parent's `output/artifacts/` folder when the skill runs.
 
 ### Recommended generation order within a work item
 
@@ -603,7 +602,7 @@ Work items form a hierarchy. When a Product Epic is linked to a Strategic Initia
 When creating a work item with `/focus`, step 1.3b presents a list of valid parent candidates from `workitems.yaml`. Selecting one stores the relationship:
 
 ```yaml
-# docs/focuss.yaml
+# docs/forge.yaml
 items:
   - title: initiative-title
     hierarchyLevel: Strategic
@@ -657,7 +656,7 @@ flowchart LR
     style PE fill:#c0bfc0,stroke:#7a797a,color:#1e1e3f
 ```
 
-Before invoking any skill, the orchestrator copies the parent's published artifacts into the child's `context/` folder. Skills read `context/` after the local wiki — upstream artifacts take precedence over inferences from local sources when there is a conflict.
+Before invoking any skill, the orchestrator resolves `CONTEXT_PATH` pointing directly to the parent's `output/artifacts/` folder. Skills read from it on demand — nothing is copied. Upstream artifacts take precedence over inferences from local sources when there is a conflict.
 
 If the parent has no published artifacts yet, the orchestrator warns:
 

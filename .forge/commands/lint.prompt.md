@@ -61,7 +61,7 @@ Pages missing required frontmatter fields as defined in `{WIKI_PATH}SCHEMA.md`. 
 Pages with frontmatter but no substantive body content — less than 3 lines of non-frontmatter text. These were likely created as placeholders and never filled in.
 
 ### 2f — Orphan work item references
-Pages whose `source_workitem` field points to a work item path that no longer exists in `docs/manifast.yaml`. These are wiki pages left behind by removed work items.
+Pages whose `source_workitem` field points to a work item path that no longer exists in `docs/forge.yaml`. These are wiki pages left behind by removed work items.
 
 ---
 
@@ -101,7 +101,7 @@ Present a structured report to the user before fixing anything. Format:
 - Broken wikilinks (N): page → [[target]] does not exist
 - Missing frontmatter (N): ...
 - Stub pages (N): ...
-- Orphan work item refs (N): page → source_workitem path not in manifast.yaml
+- Orphan work item refs (N): page → source_workitem path not in forge.yaml
 
 ### Content
 - Known contradictions (N): concept/x ↔ sources/y on topic Z
@@ -203,7 +203,7 @@ Options:
 ```
 Orphan reference: sources/some-document has source_workitem pointing to
 docs/strategic/initiatives/20260503-deleted-initiative/ which is no longer
-in manifast.yaml.
+in forge.yaml.
 
 Options:
 (1) Update source_workitem to the closest active work item

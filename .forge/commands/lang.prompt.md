@@ -5,7 +5,7 @@ tools: [read, edit]
 argument-hint: "Language code to set (e.g., 'en' or 'pt-BR'). Omit to see the current setting and choose interactively."
 ---
 
-You are configuring the **language** used by manifast for artifact generation and all user-facing interactions.
+You are configuring the **language** used by forge for artifact generation and all user-facing interactions.
 
 > Follow the steps below. Do not ask unnecessary questions.
 
@@ -13,7 +13,7 @@ You are configuring the **language** used by manifast for artifact generation an
 
 ## Step 1 — Read current setting
 
-Read `docs/manifast.yaml`. Extract the `language` field.
+Read `docs/forge.yaml`. Extract the `language` field.
 
 If the field is absent, treat the current language as `en` (English).
 
@@ -59,9 +59,9 @@ Then stop.
 
 ---
 
-## Step 4 — Update manifast.yaml
+## Step 4 — Update forge.yaml
 
-Edit `docs/manifast.yaml`. Replace the value of the `language` field with the new code. If the field does not exist, add it as the first line before `items:`:
+Edit `docs/forge.yaml`. Replace the value of the `language` field with the new code. If the field does not exist, add it as the first line before `items:`:
 
 ```yaml
 language: {new code}
@@ -73,13 +73,13 @@ language: {new code}
 
 Check whether a `.env` file exists at the root of the repository.
 
-If it exists, read it and replace the `MWI_LANG` line with:
+If it exists, read it and replace the `FORGE_LANG` line with:
 
 ```
-MWI_LANG={new code}
+FORGE_LANG={new code}
 ```
 
-If `MWI_LANG` is not present in `.env`, append it at the end.
+If `FORGE_LANG` is not present in `.env`, append it at the end.
 
 If `.env` does not exist, skip this step silently.
 

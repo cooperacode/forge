@@ -54,7 +54,7 @@ Record `PARENT_MODE` before continuing to Step 2.
 
 There is no parent work item. The scope comes from the work item itself.
 
-Read the active work item entry from `docs/manifast.yaml` (match by `{MWI_PATH}`). Extract:
+Read the active work item entry from `docs/forge.yaml` (match by `{FORGE_PATH}`). Extract:
 - `title` → use as `SELECTED_FEATURE_NAME`
 - `description` → use as the primary narrative for story derivation
 
@@ -62,7 +62,7 @@ Set:
 ```
 PARENT_MODE           = STANDALONE
 SELECTED_FEATURE_ID   = (none)
-SELECTED_FEATURE_NAME = {title from manifast.yaml}
+SELECTED_FEATURE_NAME = {title from forge.yaml}
 FEATURE_DETAIL_PATH   = (empty)
 ```
 
@@ -269,7 +269,7 @@ Example (STANDALONE): `output/artifacts/user-stories/US-001-corrigir-label-botao
 
 Use the template from `template.md` in this same skill directory. Fill all placeholders, preserve the section order, and do not add, remove, or rename headings outside the template.
 
-Run `scripts/validate.sh <generated-story-file.md>` for each generated story file. If validation fails for any story, fix it until it passes. Do not update navigation files or report success before all generated files pass validation.
+Validation runs automatically via hook after each Write or Edit. If a validation error appears in context, fix the artifact before proceeding. Do not update navigation files or report success before all errors are resolved.
 
 
 Write all stories before moving to Step 6. If a story has a `> [!gap]` confirmed by the user as acceptable, write the file with the gap note included.
@@ -302,7 +302,7 @@ Gaps flagged: N
 Sources read: N pages
 ```
 
-**`docs/manifast.yaml`** — register the artifact in the work item entry:
+**`docs/forge.yaml`** — register the artifact in the work item entry:
 
 1. Find the entry whose `path` matches `{WORK_ITEM_PATH}`.
 2. If it has no `artifacts` field, add one as an empty list.

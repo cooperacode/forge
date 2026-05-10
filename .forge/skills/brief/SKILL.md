@@ -95,7 +95,7 @@ Create the file `{OUTPUT_PATH}artifacts/brief.md`.
 
 Use the template from `template.md` in this same skill directory. Fill all placeholders, preserve the section order, and do not add, remove, or rename headings outside the template.
 
-Run `scripts/validate.sh {OUTPUT_PATH}artifacts/brief.md`. If validation fails, fix the artifact until it passes. Do not update navigation files or report success before validation passes.
+Validation runs automatically via hook after each Write or Edit. If a validation error appears in context, fix the artifact before proceeding. Do not update navigation files or report success before all errors are resolved.
 
 
 Rules while writing:
@@ -128,7 +128,7 @@ Gaps flagged: N
 Open questions: N
 ```
 
-**`docs/manifast.yaml`** — register the artifact in the work item entry:
+**`docs/forge.yaml`** — register the artifact in the work item entry:
 
 1. Find the entry whose `path` matches `{WORK_ITEM_PATH}`.
 2. If it has no `artifacts` field, add one as an empty list.

@@ -74,7 +74,7 @@ total_stories: N
 
 ## Sources
 
-- [[docs/manifast.yaml]]
+- [[docs/forge.yaml]]
 - [[overview]]
 - [[sources/...]]
 - [[concepts/...]]

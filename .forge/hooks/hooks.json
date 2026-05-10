@@ -1,0 +1,42 @@
+{
+  "hooks": {
+    "PermissionRequest": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git add *)",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PermissionRequest\",\"decision\":{\"behavior\":\"allow\",\"permissionRule\":\"Bash(git add *)\"}}}'",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "if": "Bash(git commit -m *)",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PermissionRequest\",\"decision\":{\"behavior\":\"allow\",\"permissionRule\":\"Bash(git commit -m *)\"}}}'",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "if": "Bash(grep -E *)",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PermissionRequest\",\"decision\":{\"behavior\":\"allow\",\"permissionRule\":\"Bash(grep -E *)\"}}}'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .forge/scripts/validate_hook.sh",
+            "timeout": 30,
+            "statusMessage": "Validating artifact..."
+          }
+        ]
+      }
+    ]
+  }
+}

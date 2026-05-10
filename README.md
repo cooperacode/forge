@@ -11,6 +11,8 @@ Every artifact traces back to a source document. Every decision can be explained
 
 The work item hierarchy mirrors what teams already use in Jira, Azure DevOps, and SAFe — **Strategic** (Themes, Initiatives), **Product** (Epics, Features), and **Tactical** (User Stories, Tasks, Bugs). Artifacts generated at the strategic level automatically propagate as constraints into product-level work; product artifacts flow into tactical ones. The knowledge travels with the hierarchy.
 
+New to `forge`? Start with the [Quick Start](QUICKSTART.md).
+
 ## How it works
 
 ```mermaid
@@ -40,6 +42,7 @@ flowchart LR
 
 | Guide | Description |
 |---|---|
+| [Quick Start](QUICKSTART.md) | End-to-end case walkthrough from Strategic Initiative to Tactical user stories |
 | [How To: Create Work Items](HOW_TO_WORKITEMS.md) | Create and select work items; understanding the hierarchy |
 | [How To: Create and Maintain a Wiki](HOW_TO_WIKI.md) | Ingest sources, query the wiki, and run health checks |
 | [How To: Generate Artifacts](HOW_TO_ARTIFACTS.md) | Generate briefs, requirements, ADRs, diagrams, and user stories |

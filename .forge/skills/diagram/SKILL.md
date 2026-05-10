@@ -11,6 +11,12 @@ The orchestrator passed `OUTPUT_PATH`, `WORK_ITEM_TITLE`, `WORK_ITEM_TYPE`, and 
 
 Follow every step in order.
 
+## Buddy mode
+
+By default this skill runs non-interactively — it writes the artifact without pausing for confirmation.
+
+If `BUDDY_MODE = true` was passed by the orchestrator, pause at confirmation steps and wait for user input before writing.
+
 > ⚠️ **Language lock:** Write the entire artifact — content, headings, table values, and all messages — in `{LANGUAGE}`. Source documents may be in a different language; never mirror them. This constraint is active from the first character to the last, throughout every step.
 
 ---
@@ -164,7 +170,9 @@ Relationships / transitions ({N}):
 Does this look right? Anything to add, rename, or remove?
 ```
 
-Wait for a response. If the user says "go ahead", proceed.
+**Default mode:** Proceed immediately with your judgment. Do not wait for a response.
+
+**Buddy mode:** Wait for a response. If the user says "go ahead", proceed.
 
 ---
 

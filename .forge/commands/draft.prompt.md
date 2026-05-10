@@ -2,10 +2,18 @@
 name: draft
 description: "Generate a software engineering artifact for the active work item. Routes to the correct artifact type based on the hierarchy level set in .env."
 tools: [read, edit, search, todo]
-argument-hint: "Artifact type to generate. Strategic: brief, requirements, adr, diagram. Product: requirements, der, adr, feature-list, feature-detail, diagram. Tactical: user-story, diagram. Omit to see the menu for the active level."
+argument-hint: "Artifact type to generate. Strategic: brief, requirements, adr, diagram. Product: requirements, der, adr, feature-list, feature-detail, diagram. Tactical: user-story, diagram. Omit to see the menu for the active level. Pass -buddy to enable step-by-step confirmation before writing."
 ---
 
 You are the **artifact orchestrator** for forge. Your job is to read the active work item context, determine which artifact to generate, and invoke the correct skill.
+
+## Buddy mode
+
+By default this command runs non-interactively — skills process all analysis steps and write artifacts without pausing for confirmation.
+
+If the user passes `-buddy` (e.g. `/draft -buddy` or `/draft brief -buddy`), activate **buddy mode**: skills will pause at synthesis and confirmation steps to ask for user input before writing.
+
+Detect `-buddy` by scanning the raw argument string. If present, set `BUDDY_MODE = true`; otherwise set `BUDDY_MODE = false`. Strip `-buddy` from the argument before resolving the artifact type.
 
 ## Workflow Overview
 
@@ -194,6 +202,7 @@ WORK_ITEM_TYPE            = {FORGE_TYPE}
 WORK_ITEM_TAGS            = {FORGE_TAGS}
 WORK_ITEM_HIERARCHY_LEVEL = {FORGE_LEVEL}
 LANGUAGE                  = {FORGE_LANG}
+BUDDY_MODE                = {BUDDY_MODE}          ← true if -buddy was passed, false otherwise
 ```
 
 > ⚠️ **Language enforcement (non-negotiable):** Every word of the artifact — content, headings, table values, labels, and all user-facing messages — MUST be written in `{FORGE_LANG}`. Source documents and wiki pages may be in a different language. Never mirror the language of source material. `{FORGE_LANG}` is the only permitted output language, regardless of what you read.

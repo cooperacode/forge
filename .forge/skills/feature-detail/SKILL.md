@@ -13,6 +13,12 @@ This skill is for **Product-level Feature work items only**. If `{WORK_ITEM_TYPE
 
 Follow every step in order.
 
+## Buddy mode
+
+By default this skill runs non-interactively — it writes the artifact without pausing for confirmation.
+
+If `BUDDY_MODE = true` was passed by the orchestrator, pause at confirmation steps and wait for user input before writing.
+
 > ⚠️ **Language lock:** Write the entire artifact — content, headings, table values, and all messages — in `{LANGUAGE}`. Source documents may be in a different language; never mirror them. This constraint is active from the first character to the last, throughout every step.
 
 ---
@@ -94,7 +100,9 @@ Check whether `{OUTPUT_PATH}artifacts/feature-detail/{SELECTED_FEATURE_ID}-{SELE
 
 > A detail for `{SELECTED_FEATURE_ID}` already exists. Continuing will overwrite it. Proceed?
 
-Wait for confirmation before continuing.
+**Default mode:** Proceed with the overwrite without waiting.
+
+**Buddy mode:** Wait for confirmation before continuing.
 
 ---
 
@@ -190,7 +198,9 @@ US-002 · As a {persona}, I want {action}, so that {benefit}.
 Does this analysis look right? Any behaviors to add, remove, or merge?
 ```
 
-Wait for confirmation or corrections. Do not write any file until the user approves.
+**Default mode:** Proceed immediately with your judgment. Do not wait for a response.
+
+**Buddy mode:** Wait for confirmation or corrections. Do not write any file until the user approves.
 
 ---
 

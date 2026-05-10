@@ -15,7 +15,6 @@
     "work items",
     "project management"
   ],
-  "skills": "./.forge/skills/",
   "hooks": "./.forge/hooks/hooks.json",
   "commands": [
     "./.forge/commands/lang.prompt.md",

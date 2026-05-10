@@ -9,7 +9,7 @@ related_sources: [sources/readme, sources/how-to-claude]
 related_concepts: [artifact-pipeline, work-item-hierarchy, source-traceability]
 ---
 
-**forge** is a Claude Code plugin created by [[entities/yan-justino]] that provides AI-assisted agile artifact generation. It is the tooling realization of [[entities/protocolo-es-ai]].
+**forge** is a Claude Code plugin created by [yan-justino](yan-justino.md) that provides AI-assisted agile artifact generation. It is the tooling realization of [protocolo-es-ai](protocolo-es-ai.md).
 
 **Loading:**
 - Local development: `claude --plugin-dir .` — Claude Code detects `.claude-plugin/plugin.json` and activates the plugin.
@@ -36,4 +36,4 @@ related_concepts: [artifact-pipeline, work-item-hierarchy, source-traceability]
 
 **Supported environments:** Claude Code CLI; VS Code (via `chat.promptFilesLocations` / `chat.agentSkillsLocations` in `.vscode/settings.json`).
 
-See [[sources/how-to-claude]] for the full loading walkthrough and command reference.
+See [how-to-claude](../sources/how-to-claude.md) for the full loading walkthrough and command reference.

@@ -33,12 +33,12 @@ Context flow between levels is one-way and read-on-demand: strategic artifacts a
 
 ## Connections to existing wiki
 
-This source substantially enriches [[concepts/artifact-pipeline]] with:
+This source substantially enriches [artifact-pipeline](../concepts/artifact-pipeline.md) with:
 - `feature-detail` as a distinct artifact type (not fully described in prior sources)
 - Explicit dependency enforcement rules
 - Gap callout convention
 
-It also enriches [[concepts/cross-work-item-context]] with the guardrail detail (unaligned features, constraint violations, ADR contradictions).
+It also enriches [cross-work-item-context](../concepts/cross-work-item-context.md) with the guardrail detail (unaligned features, constraint violations, ADR contradictions).
 
 ## Open questions
 

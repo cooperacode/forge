@@ -57,16 +57,16 @@ Pages should never be deleted — use `> [!outdated]` or `> [!deprecated]` and r
 
 ## Evidence and claims
 
-From [[sources/how-to-wiki]]:
+From [how-to-wiki](../sources/how-to-wiki.md):
 > "The wiki lives in a single centralized folder at `docs/wiki/`, shared across all work items."
 
 > "The local index is created as an empty stub when you run `/focus` and populated automatically each time you run `/ingest`. You never need to edit it manually."
 
 ## Connections
 
-- [[concepts/source-traceability]] — the `source_workitem` field and callout conventions are the operational layer of the traceability principle
-- [[concepts/artifact-pipeline]] — the local index is the scoping mechanism that prevents artifacts from being informed by unrelated sources
-- [[concepts/cross-work-item-context]] — complements the local scoping: parent context is read on demand, not merged into the local index
+- [source-traceability](source-traceability.md) — the `source_workitem` field and callout conventions are the operational layer of the traceability principle
+- [artifact-pipeline](artifact-pipeline.md) — the local index is the scoping mechanism that prevents artifacts from being informed by unrelated sources
+- [cross-work-item-context](cross-work-item-context.md) — complements the local scoping: parent context is read on demand, not merged into the local index
 
 ## Open questions
 

@@ -11,7 +11,7 @@ related_concepts: [source-traceability, artifact-pipeline]
 
 **SPReaD** (Service-oriented Process for Reengineering and DevOps) is a structured methodology for migrating legacy systems to microservice architectures while integrating DevOps practices throughout the process. It was published at SOCA 2022 (Springer) by da Silva, Justino & Adachi.
 
-SPReaD established the foundational principle that software engineering activities should follow a traceable, repeatable process with defined steps, artifacts, and quality checkpoints. This principle became the theoretical backbone of [[entities/protocolo-es-ai]] and, through it, of forge itself.
+SPReaD established the foundational principle that software engineering activities should follow a traceable, repeatable process with defined steps, artifacts, and quality checkpoints. This principle became the theoretical backbone of [protocolo-es-ai](protocolo-es-ai.md) and, through it, of forge itself.
 
 The three-generation lineage is:
 ```

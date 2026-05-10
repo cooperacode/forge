@@ -11,7 +11,7 @@ related_concepts: [artifact-pipeline, work-item-hierarchy, source-traceability]
 
 ## Definition
 
-Cross-work-item context is the mechanism by which artifacts from a parent work item act as constraints and guardrails for artifact generation in child work items. It is how strategic decisions travel downward through the [[concepts/work-item-hierarchy|work item hierarchy]] without manual copying.
+Cross-work-item context is the mechanism by which artifacts from a parent work item act as constraints and guardrails for artifact generation in child work items. It is how strategic decisions travel downward through the [work item hierarchy](work-item-hierarchy.md) without manual copying.
 
 ## How it works
 
@@ -28,7 +28,7 @@ Propagation mapping:
 
 Upstream artifacts take precedence over inferences from local sources when there is a conflict.
 
-**Guardrail behavior** (from [[sources/how-to-artifacts]]):
+**Guardrail behavior** (from [how-to-artifacts](../sources/how-to-artifacts.md)):
 - `brief.md` — features that don't serve any strategic goal are flagged as unaligned.
 - `requirements.md` — functional requirements that violate an established constraint are flagged.
 - `adr/` — new ADRs that contradict an upstream decision are flagged explicitly.
@@ -41,13 +41,13 @@ Run /draft on the parent first to generate upstream context.
 
 ## Evidence and claims
 
-From [[sources/research]]:
+From [research](../sources/research.md):
 > "Before invoking any skill, the orchestrator resolves `CONTEXT_PATH` pointing directly to the parent's `output/artifacts/` folder. Skills read from it on demand — nothing is copied. Upstream artifacts take precedence over inferences from local sources when there is a conflict."
 
 ## Connections
 
-- [[concepts/artifact-pipeline]] — the artifact chain that cross-work-item context constrains
-- [[concepts/work-item-hierarchy]] — the parent-child relationship that determines what `CONTEXT_PATH` resolves to
+- [artifact-pipeline](artifact-pipeline.md) — the artifact chain that cross-work-item context constrains
+- [work-item-hierarchy](work-item-hierarchy.md) — the parent-child relationship that determines what `CONTEXT_PATH` resolves to
 
 ## Open questions
 

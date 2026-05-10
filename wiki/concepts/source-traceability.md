@@ -23,7 +23,7 @@ The traceability chain is maintained at three levels:
 
 The global `docs/wiki/log.md` records every ingest event, including which pages were touched and which contradictions were flagged.
 
-**Callout conventions** (from [[sources/how-to-wiki]]):
+**Callout conventions** (from [how-to-wiki](../sources/how-to-wiki.md)):
 - `> [!contradiction]` — two sources or pages conflict; never auto-resolved; user decides.
 - `> [!outdated]` — content superseded by a newer source; user updates or removes the section.
 - `> [!gap]` — an artifact section has no wiki coverage; never filled from training knowledge.
@@ -32,17 +32,17 @@ These callouts are the operational surface of traceability — they make uncerta
 
 ## Evidence and claims
 
-From [[sources/readme]]:
+From [readme](../sources/readme.md):
 > "Every artifact traces back to a source document. Every decision can be explained."
 
 The academic grounding for this principle is Cleland-Huang et al., "Software traceability: trends and future directions" (FOSE 2014), cited in the README as the foundation for forge's traceability promise.
 
-The operational predecessor [[entities/protocolo-es-ai]] established the practical need: without traceability, AI-generated artifacts in a real transformation program cannot be audited or explained to stakeholders.
+The operational predecessor [protocolo-es-ai](../entities/protocolo-es-ai.md) established the practical need: without traceability, AI-generated artifacts in a real transformation program cannot be audited or explained to stakeholders.
 
 ## Connections
 
-- [[concepts/artifact-pipeline]] — traceability is the invariant the pipeline must maintain at every step
-- [[concepts/work-item-hierarchy]] — each level in the hierarchy maintains its own source and artifact trail
+- [artifact-pipeline](artifact-pipeline.md) — traceability is the invariant the pipeline must maintain at every step
+- [work-item-hierarchy](work-item-hierarchy.md) — each level in the hierarchy maintains its own source and artifact trail
 
 ## Open questions
 

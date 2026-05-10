@@ -33,10 +33,10 @@ Installation is zero-configuration: `git clone`, and the plugin discovers itself
 
 ## Connections to existing wiki
 
-This source substantially extends [[sources/readme]] with:
-- Explicit artifact type enumeration and generation ordering (adds to [[concepts/artifact-pipeline]])
-- Cross-work-item context propagation mechanics (new concept, see [[concepts/cross-work-item-context]])
-- SPReaD-to-forge lineage detail (new entity, see [[entities/spread-methodology]])
+This source substantially extends [readme](readme.md) with:
+- Explicit artifact type enumeration and generation ordering (adds to [artifact-pipeline](../concepts/artifact-pipeline.md))
+- Cross-work-item context propagation mechanics (new concept, see [cross-work-item-context](../concepts/cross-work-item-context.md))
+- SPReaD-to-forge lineage detail (new entity, see [spread-methodology](../entities/spread-methodology.md))
 - Full command reference table
 
 ## Open questions

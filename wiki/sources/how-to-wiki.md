@@ -38,8 +38,8 @@ The `/lint` command performs two categories of checks: structural problems (auto
 ## Connections to existing wiki
 
 This source completes the picture of the wiki system:
-- Introduces the two-index architecture (new concept: [[concepts/wiki-architecture]])
-- Adds callout conventions (`> [!contradiction]`, `> [!outdated]`) to [[concepts/source-traceability]]
+- Introduces the two-index architecture (new concept: [wiki-architecture](../concepts/wiki-architecture.md))
+- Adds callout conventions (`> [!contradiction]`, `> [!outdated]`) to [source-traceability](../concepts/source-traceability.md)
 - Confirms `/ingest` batch size of 5 (consistent with current ingest behavior)
 
 ## Open questions

@@ -34,7 +34,7 @@ Work item type detail:
 
 Each level has a dedicated folder structure in the repository under `docs/{level}/`. The active work item at any time is tracked in `.env` via `FORGE_*` variables and in `docs/forge.yaml`. **Only one work item is active at a time.** Run `/focus` → "Select existing" to switch.
 
-**Rule of thumb for choosing a level** (from [[sources/how-to-workitems]]):
+**Rule of thumb for choosing a level** (from [how-to-workitems](../sources/how-to-workitems.md)):
 > "Is this something we decide (Strategic), something we build (Product), or how it gets built (Tactical)?"
 
 **Parent linking rules:**
@@ -57,15 +57,15 @@ Each work item has its own `input/` folder for source documents and `output/` fo
 
 ## Evidence and claims
 
-From [[sources/readme]]:
+From [readme](../sources/readme.md):
 > "The work item hierarchy mirrors what teams already use in Jira, Azure DevOps, and SAFe — Strategic (Themes, Initiatives), Product (Epics, Features), and Tactical (User Stories, Tasks, Bugs). Artifacts generated at the strategic level automatically propagate as constraints into product-level work; product artifacts flow into tactical ones."
 
 ## Connections
 
-- [[concepts/artifact-pipeline]] — the artifact types available depend on the hierarchy level
-- [[concepts/source-traceability]] — each level maintains its own source and artifact trail
+- [artifact-pipeline](artifact-pipeline.md) — the artifact types available depend on the hierarchy level
+- [source-traceability](source-traceability.md) — each level maintains its own source and artifact trail
 
-## From [[sources/how-to-workitems]]
+## From [how-to-workitems](../sources/how-to-workitems.md)
 
 Adds the decision heuristic ("decide / build / execute"), the explicit parent linking table, the one-active-at-a-time constraint, and the rename-breaks-links warning.
 

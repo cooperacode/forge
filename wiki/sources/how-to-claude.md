@@ -32,7 +32,7 @@ The plugin filesystem layout is split: `.claude-plugin/plugin.json` holds the ma
 
 ## Connections to existing wiki
 
-This source adds the implementation layer — how forge commands are actually invoked and how the plugin integrates with Claude Code's hook system. It does not change any existing concept pages but introduces [[entities/forge-plugin]] as a new entity.
+This source adds the implementation layer — how forge commands are actually invoked and how the plugin integrates with Claude Code's hook system. It does not change any existing concept pages but introduces [forge-plugin](../entities/forge-plugin.md) as a new entity.
 
 ## Open questions
 

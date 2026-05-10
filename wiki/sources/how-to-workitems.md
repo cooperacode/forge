@@ -33,7 +33,7 @@ The parent linking rules determine how the artifact pipeline's cross-work-item c
 
 ## Connections to existing wiki
 
-This source largely confirms [[concepts/work-item-hierarchy]] and [[concepts/cross-work-item-context]]. It adds:
+This source largely confirms [work-item-hierarchy](../concepts/work-item-hierarchy.md) and [cross-work-item-context](../concepts/cross-work-item-context.md). It adds:
 - The practical decision rule ("decide / build / execute")
 - The parent linking table with specific valid combinations
 - The one-active-at-a-time constraint

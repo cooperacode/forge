@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="assets/images/banner.png" alt="manifesto logo" width="800"/>
+    <img src="assets/images/banner-v2.png" alt="manifesto logo" width="800"/>
 </p>
 
 > An AI-assisted knowledge and artifact pipeline for engineering teams — traceable from source document to shipped user story.

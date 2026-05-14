@@ -148,6 +148,14 @@ After reading wiki pages and upstream context, check `{OUTPUT_PATH}artifacts/adr
 
 Do not include technology labels or component boundaries that contradict a committed ADR.
 
+**Same-level DER artifact — read if present (optional):**
+
+Check whether `{OUTPUT_PATH}artifacts/der.md` exists. If it does, read it before proceeding to Step 4. The DER is optional and may not have been generated. When present, use it to:
+- Use entity names and relationships from the DER verbatim in component, data-flow, sequence, and state diagrams
+- Ensure diagram elements are consistent with the canonical entity model
+
+If `der.md` does not exist, continue normally — the diagram is derived from wiki pages and ADRs alone.
+
 ---
 
 ## Step 4 — Confirm diagram elements with the user

@@ -353,11 +353,11 @@ Available artifacts for Tactical level:
 | Product   | Epic               | `feature-list`   | `requirements`           |
 | Product   | Epic               | `adr`            | `feature-list`           |
 | Product   | Epic               | `der`            | `adr`                    |
-| Product   | Epic               | `diagram`        | `der`                    |
+| Product   | Epic               | `diagram`        | `adr`                    |
 | Product   | Feature            | `feature-detail` | (none)                   |
 | Product   | Feature            | `adr`            | `feature-detail`         |
 | Product   | Feature            | `der`            | `adr`                    |
-| Product   | Feature            | `diagram`        | `der`                    |
+| Product   | Feature            | `diagram`        | `adr`                    |
 | Tactical  | any                | `user-story`     | (none)                   |
 | Tactical  | any                | `diagram`        | `user-story`             |
 
@@ -379,11 +379,11 @@ Available artifacts for Tactical level:
 | Strategic | —             | `diagram`        | _(none)_        | Strategic level complete — consider creating a Product Epic work item |
 | Product   | Epic          | `requirements`   | `feature-list`  | Prioritized feature list with dependencies |
 | Product   | Epic          | `feature-list`   | `adr`           | Continue the Epic with architecture decision records — or first create a Feature child via `/focus` and run `/draft feature-detail` on it |
-| Product   | Epic          | `adr`            | `der`           | Entity-relationship diagram |
+| Product   | Epic          | `adr`            | `diagram`       | C4 Level 3, process flow, or data flow diagram — or run `/draft der` first for an optional entity model |
 | Product   | Epic          | `der`            | `diagram`       | C4 Level 3, process flow, or data flow diagram |
 | Product   | Epic          | `diagram`        | _(none)_        | Epic level complete — consider creating a Tactical work item |
 | Product   | Feature       | `feature-detail` | `adr`           | Feature-scoped architecture decision records |
-| Product   | Feature       | `adr`            | `der`           | Entity-relationship diagram |
+| Product   | Feature       | `adr`            | `diagram`       | C4 Level 3, process flow, or data flow diagram — or run `/draft der` first for an optional entity model |
 | Product   | Feature       | `der`            | `diagram`       | C4 Level 3, process flow, or data flow diagram |
 | Product   | Feature       | `diagram`        | _(none)_        | Feature level complete — consider creating a Tactical work item |
 | Tactical  | —             | `user-story`     | `diagram`       | Sequence or state diagram |

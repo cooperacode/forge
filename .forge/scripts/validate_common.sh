@@ -37,6 +37,12 @@ frontmatter_text() {
   sed -n "2,$((FRONTMATTER_END_LINE - 1))p" "$file"
 }
 
+frontmatter_field() {
+  local file="$1"
+  local key="$2"
+  frontmatter_text "$file" | sed -n "s/^${key}: //p" | head -n1
+}
+
 assert_frontmatter_line() {
   local file="$1"
   local pattern="$2"

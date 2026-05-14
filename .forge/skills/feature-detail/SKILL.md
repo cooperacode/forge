@@ -229,7 +229,7 @@ All artifact content, headings, and messages will be written in this language.
 
 Create `{OUTPUT_PATH}artifacts/feature-detail/{SELECTED_FEATURE_ID}-{SELECTED_FEATURE_SLUG}.md`.
 
-Use the template from `template.md` in this same skill directory. Fill all placeholders, preserve the section order, and do not add, remove, or rename headings outside the template.
+Use the template from `locales/{LANGUAGE}/template.md` if it exists (e.g., `locales/pt-BR/template.md` when `{LANGUAGE}` is `pt-BR`); otherwise fall back to `template.md`. Fill all placeholders, preserve section order, and do not add, remove, or change the count or hierarchy level of headings.
 
 Keep the INVEST guidance applied in the `Proposed User Story Breakdown` section.
 

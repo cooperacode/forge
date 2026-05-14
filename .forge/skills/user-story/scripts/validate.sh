@@ -18,24 +18,21 @@ assert_frontmatter_line "$FILE" '^persona:' "Missing frontmatter field: persona"
 assert_frontmatter_line "$FILE" '^generated:' "Missing frontmatter field: generated"
 assert_frontmatter_line "$FILE" '^sources_read:' "Missing frontmatter field: sources_read"
 
-assert_exact_headings "$FILE" 2 \
-  "## Business Context" \
-  "## Acceptance Criteria" \
-  "## Gherkin Scenarios" \
-  "## Business Rules" \
-  "## Definition of Done" \
-  "## Dependencies & Blockers" \
-  "## Out of Scope" \
-  "## Open Questions" \
-  "## Sources"
+LANG_CODE="$(frontmatter_field "$FILE" language)"
+LANG_CODE="${LANG_CODE:-en}"
+LOCALE_FILE="$SCRIPT_DIR/../locales/${LANG_CODE}.sh"
+[[ -f "$LOCALE_FILE" ]] || LOCALE_FILE="$SCRIPT_DIR/../locales/en.sh"
+# shellcheck source=/dev/null
+source "$LOCALE_FILE"
 
-assert_body_line "$FILE" '^\| # \| Criterion \| Source \|$' "Missing Acceptance Criteria table header"
+assert_exact_headings "$FILE" 2 "${LOCALE_H2[@]}"
 assert_body_line "$FILE" '^```gherkin$' "Missing Gherkin code block"
 assert_body_line "$FILE" '^Feature: ' "Missing Gherkin Feature title"
 assert_body_line "$FILE" '^[[:space:]]+Given ' "Each story must include a Given step"
 assert_body_line "$FILE" '^[[:space:]]+When ' "Each story must include a When step"
 assert_body_line "$FILE" '^[[:space:]]+Then ' "Each story must include a Then step"
-assert_body_line "$FILE" '^\| # \| Rule \| Source \|$' "Missing Business Rules table header"
-assert_body_line "$FILE" '^\| Type \| Item \| Status \| Source \|$' "Missing Dependencies & Blockers table header"
+assert_body_line "$FILE" "$LOCALE_TABLE_CRITERIA" "$LOCALE_TABLE_CRITERIA_MSG"
+assert_body_line "$FILE" "$LOCALE_TABLE_RULES" "$LOCALE_TABLE_RULES_MSG"
+assert_body_line "$FILE" "$LOCALE_TABLE_DEPS" "$LOCALE_TABLE_DEPS_MSG"
 
 echo "OK: user-story structure matches template for $FILE"

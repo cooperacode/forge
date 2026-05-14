@@ -17,19 +17,18 @@ assert_frontmatter_line "$FILE" '^entities_count:' "Missing frontmatter field: e
 assert_frontmatter_line "$FILE" '^relationships_confirmed:' "Missing frontmatter field: relationships_confirmed"
 assert_frontmatter_line "$FILE" '^relationships_inferred:' "Missing frontmatter field: relationships_inferred"
 
-assert_exact_headings "$FILE" 2 \
-  "## Diagram" \
-  "## Entity Glossary" \
-  "## Confirmed Relationships" \
-  "## Inferred Relationships" \
-  "## Gaps" \
-  "## Open Questions" \
-  "## Sources"
+LANG_CODE="$(frontmatter_field "$FILE" language)"
+LANG_CODE="${LANG_CODE:-en}"
+LOCALE_FILE="$SCRIPT_DIR/../locales/${LANG_CODE}.sh"
+[[ -f "$LOCALE_FILE" ]] || LOCALE_FILE="$SCRIPT_DIR/../locales/en.sh"
+# shellcheck source=/dev/null
+source "$LOCALE_FILE"
 
+assert_exact_headings "$FILE" 2 "${LOCALE_H2[@]}"
 assert_body_line "$FILE" '^```mermaid$' "Missing Mermaid block"
 assert_body_line "$FILE" '^erDiagram$' "Mermaid keyword must be erDiagram"
-assert_body_line "$FILE" '^\| Entity \| Description \| Attributes documented \| Source \|$' "Missing Entity Glossary table header"
-assert_body_line "$FILE" '^\| Relationship \| Cardinality \| Label \| Source \|$' "Missing Confirmed Relationships table header"
-assert_body_line "$FILE" '^\| Relationship \| Cardinality \| Evidence \| Source \|$' "Missing Inferred Relationships table header"
+assert_body_line "$FILE" "$LOCALE_TABLE_ENTITY_GLOSSARY" "$LOCALE_TABLE_ENTITY_GLOSSARY_MSG"
+assert_body_line "$FILE" "$LOCALE_TABLE_CONFIRMED" "$LOCALE_TABLE_CONFIRMED_MSG"
+assert_body_line "$FILE" "$LOCALE_TABLE_INFERRED" "$LOCALE_TABLE_INFERRED_MSG"
 
 echo "OK: DER structure matches template for $FILE"

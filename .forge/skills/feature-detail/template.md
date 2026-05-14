@@ -6,6 +6,7 @@ feature_id: {SELECTED_FEATURE_ID}
 work_item_type: {WORK_ITEM_TYPE}
 hierarchy_level: Product
 generated: YYYY-MM-DD
+language: {LANGUAGE}
 sources_read: N
 total_stories: N
 ---

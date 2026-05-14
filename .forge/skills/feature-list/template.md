@@ -5,6 +5,7 @@ subtype: feature-list
 work_item_type: {WORK_ITEM_TYPE}
 hierarchy_level: Product
 generated: YYYY-MM-DD
+language: {LANGUAGE}
 sources_read: N
 total_features: N
 ---

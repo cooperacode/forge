@@ -133,7 +133,7 @@ Create a numbered ADR file for each confirmed decision at:
 
 Number sequentially starting at `001`. If ADR files already exist in that folder, continue from the highest existing number.
 
-Use the template from `template.md` in this same skill directory. Fill all placeholders, preserve the section order, and do not add, remove, or rename headings outside the template.
+Use the template from `locales/{LANGUAGE}/template.md` if it exists (e.g., `locales/pt-BR/template.md` when `{LANGUAGE}` is `pt-BR`); otherwise fall back to `template.md`. Fill all placeholders, preserve section order, and do not add, remove, or change the count or hierarchy level of headings.
 
 Validation runs automatically via hook after each Write or Edit. If a validation error appears in context, fix the artifact before proceeding. Do not write the ADR index, update navigation files, or report success before all errors are resolved.
 

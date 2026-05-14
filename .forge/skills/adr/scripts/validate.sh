@@ -16,19 +16,15 @@ assert_frontmatter_line "$FILE" '^work_item_type:' "Missing frontmatter field: w
 assert_frontmatter_line "$FILE" '^hierarchy_level:' "Missing frontmatter field: hierarchy_level"
 assert_frontmatter_line "$FILE" '^generated:' "Missing frontmatter field: generated"
 
-assert_exact_headings "$FILE" 2 \
-  "## Status" \
-  "## Context" \
-  "## Decision" \
-  "## Alternatives Considered" \
-  "## Consequences" \
-  "## Sources"
+LANG_CODE="$(frontmatter_field "$FILE" language)"
+LANG_CODE="${LANG_CODE:-en}"
+LOCALE_FILE="$SCRIPT_DIR/../locales/${LANG_CODE}.sh"
+[[ -f "$LOCALE_FILE" ]] || LOCALE_FILE="$SCRIPT_DIR/../locales/en.sh"
+# shellcheck source=/dev/null
+source "$LOCALE_FILE"
 
-assert_exact_headings "$FILE" 3 \
-  "### Positive" \
-  "### Negative / Trade-offs" \
-  "### Neutral"
-
-assert_body_line "$FILE" '^\| Alternative \| Why rejected \|$' "Missing Alternatives Considered table header"
+assert_exact_headings "$FILE" 2 "${LOCALE_H2[@]}"
+assert_exact_headings "$FILE" 3 "${LOCALE_H3[@]}"
+assert_body_line "$FILE" "$LOCALE_TABLE_ALTERNATIVES" "$LOCALE_TABLE_ALTERNATIVES_MSG"
 
 echo "OK: ADR structure matches template for $FILE"

@@ -14,11 +14,16 @@ assert_frontmatter_line "$FILE" '^diagram_type:' "Missing frontmatter field: dia
 assert_frontmatter_line "$FILE" '^hierarchy_level:' "Missing frontmatter field: hierarchy_level"
 assert_frontmatter_line "$FILE" '^generated:' "Missing frontmatter field: generated"
 
-assert_exact_headings "$FILE" 2 \
-  "## Diagram" \
-  "## Sources"
+LANG_CODE="$(frontmatter_field "$FILE" language)"
+LANG_CODE="${LANG_CODE:-en}"
+LOCALE_FILE="$SCRIPT_DIR/../locales/${LANG_CODE}.sh"
+[[ -f "$LOCALE_FILE" ]] || LOCALE_FILE="$SCRIPT_DIR/../locales/en.sh"
+# shellcheck source=/dev/null
+source "$LOCALE_FILE"
 
-DIAGRAM_TYPE="$(frontmatter_text "$FILE" | sed -n 's/^diagram_type: //p' | head -n1)"
+assert_exact_headings "$FILE" 2 "${LOCALE_H2[@]}"
+
+DIAGRAM_TYPE="$(frontmatter_field "$FILE" diagram_type)"
 
 case "$DIAGRAM_TYPE" in
   c4-context|c4-container|c4-component)

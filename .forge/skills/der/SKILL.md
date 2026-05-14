@@ -122,7 +122,7 @@ All artifact content, headings, and messages will be written in this language.
 
 Create `{OUTPUT_PATH}artifacts/der.md`.
 
-Use the template from `template.md` in this same skill directory. Fill all placeholders, preserve the section order, and do not add, remove, or rename headings outside the template.
+Use the template from `locales/{LANGUAGE}/template.md` if it exists (e.g., `locales/pt-BR/template.md` when `{LANGUAGE}` is `pt-BR`); otherwise fall back to `template.md`. Fill all placeholders, preserve section order, and do not add, remove, or change the count or hierarchy level of headings.
 
 Validation runs automatically via hook after each Write or Edit. If a validation error appears in context, fix the artifact before proceeding. Do not update navigation files or report success before all errors are resolved.
 

@@ -16,16 +16,15 @@ assert_frontmatter_line "$FILE" '^generated:' "Missing frontmatter field: genera
 assert_frontmatter_line "$FILE" '^sources_read:' "Missing frontmatter field: sources_read"
 assert_frontmatter_line "$FILE" '^total_features:' "Missing frontmatter field: total_features"
 
-assert_exact_headings "$FILE" 2 \
-  "## Summary" \
-  "## Features" \
-  "## Out of Scope" \
-  "## Gaps" \
-  "## Dependency Map" \
-  "## Open Questions" \
-  "## Sources"
+LANG_CODE="$(frontmatter_field "$FILE" language)"
+LANG_CODE="${LANG_CODE:-en}"
+LOCALE_FILE="$SCRIPT_DIR/../locales/${LANG_CODE}.sh"
+[[ -f "$LOCALE_FILE" ]] || LOCALE_FILE="$SCRIPT_DIR/../locales/en.sh"
+# shellcheck source=/dev/null
+source "$LOCALE_FILE"
 
-assert_body_line "$FILE" '^\| ID \| Feature \| Description \| Beneficiary \| Priority \| Dependencies \| Source \|$' "Missing Features table header"
-assert_body_line "$FILE" '^\| Feature \| Reason for exclusion \| Source \|$' "Missing Out of Scope table header"
+assert_exact_headings "$FILE" 2 "${LOCALE_H2[@]}"
+assert_body_line "$FILE" "$LOCALE_TABLE_FEATURES" "$LOCALE_TABLE_FEATURES_MSG"
+assert_body_line "$FILE" "$LOCALE_TABLE_OUT_OF_SCOPE" "$LOCALE_TABLE_OUT_OF_SCOPE_MSG"
 
 echo "OK: feature-list structure matches template for $FILE"

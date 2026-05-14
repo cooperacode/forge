@@ -7,6 +7,7 @@ status: accepted
 work_item_type: {WORK_ITEM_TYPE}
 hierarchy_level: {Strategic | Product}
 generated: YYYY-MM-DD
+language: {LANGUAGE}
 ---
 
 # ADR-NNN: {Decision title}

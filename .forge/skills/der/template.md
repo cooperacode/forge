@@ -5,6 +5,7 @@ subtype: der
 work_item_type: {WORK_ITEM_TYPE}
 hierarchy_level: Product
 generated: YYYY-MM-DD
+language: {LANGUAGE}
 entities_count: N
 relationships_confirmed: N
 relationships_inferred: N

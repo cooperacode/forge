@@ -8,6 +8,7 @@ mode: constraints
 work_item_type: {WORK_ITEM_TYPE}
 hierarchy_level: Strategic
 generated: YYYY-MM-DD
+language: {LANGUAGE}
 sources_read: N
 ---
 
@@ -59,6 +60,7 @@ mode: functional
 work_item_type: {WORK_ITEM_TYPE}
 hierarchy_level: Product
 generated: YYYY-MM-DD
+language: {LANGUAGE}
 sources_read: N
 ---
 

@@ -12,23 +12,23 @@ generated: YYYY-MM-DD
 sources_read: N
 ---
 
-# User Story: {story.action short title}
+# História de Usuário: {story.action short title}
 
-> As a **{story.persona}**,
-> I want **{story.action}**,
-> so that **{story.benefit}**.
+> Como **{story.persona}**,
+> quero **{story.action}**,
+> para que **{story.benefit}**.
 
-## Business Context
+## Contexto de Negócio
 
 ...
 
-## Acceptance Criteria
+## Critérios de Aceitação
 
-| # | Criterion | Source |
-|---|-----------|--------|
+| # | Critério | Fonte |
+|---|----------|-------|
 | AC-1 | ... | [[sources/slug]] |
 
-## Gherkin Scenarios
+## Cenários Gherkin
 
 ```gherkin
 Feature: {story.action short title}
@@ -38,31 +38,31 @@ Feature: {story.action short title}
     Then ...
 ```
 
-## Business Rules
+## Regras de Negócio
 
-| # | Rule | Source |
-|---|------|--------|
-| BR-1 | ... | [[sources/slug]] |
+| # | Regra | Fonte |
+|---|-------|-------|
+| RN-1 | ... | [[sources/slug]] |
 
-## Definition of Done
+## Definição de Pronto
 
 - [ ] ...
 
-## Dependencies & Blockers
+## Dependências e Bloqueios
 
-| Type | Item | Status | Source |
-|------|------|--------|--------|
+| Tipo | Item | Status | Fonte |
+|------|------|--------|-------|
 | ... | ... | ... | [[sources/slug]] |
 
-## Out of Scope
+## Fora de Escopo
 
 - ...
 
-## Open Questions
+## Questões Abertas
 
 - [ ] ...
 
-## Sources
+## Fontes
 
 - [[overview]]
 - [[sources/...]]

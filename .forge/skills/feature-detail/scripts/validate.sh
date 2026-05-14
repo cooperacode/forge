@@ -17,29 +17,20 @@ assert_frontmatter_line "$FILE" '^generated:' "Missing frontmatter field: genera
 assert_frontmatter_line "$FILE" '^sources_read:' "Missing frontmatter field: sources_read"
 assert_frontmatter_line "$FILE" '^total_stories:' "Missing frontmatter field: total_stories"
 
-assert_exact_headings "$FILE" 2 \
-  "## Feature Statement" \
-  "## Goal" \
-  "## Personas" \
-  "## Functional Scope" \
-  "## Business Rules" \
-  "## Entity & Data Interactions" \
-  "## Feature-Level Acceptance Criteria" \
-  "## Proposed User Story Breakdown" \
-  "## Dependencies" \
-  "## Gaps" \
-  "## Open Questions" \
-  "## Sources"
+LANG_CODE="$(frontmatter_field "$FILE" language)"
+LANG_CODE="${LANG_CODE:-en}"
+LOCALE_FILE="$SCRIPT_DIR/../locales/${LANG_CODE}.sh"
+[[ -f "$LOCALE_FILE" ]] || LOCALE_FILE="$SCRIPT_DIR/../locales/en.sh"
+# shellcheck source=/dev/null
+source "$LOCALE_FILE"
 
-assert_exact_headings "$FILE" 3 \
-  "### In scope" \
-  "### Out of scope"
-
-assert_body_line "$FILE" '^\| Persona \| Role \| Interaction with this feature \| Source \|$' "Missing Personas table header"
-assert_body_line "$FILE" '^\| # \| Rule \| Source \|$' "Missing Business Rules table header"
-assert_body_line "$FILE" '^\| Entity \| Operation \| Notes \| Source \|$' "Missing Entity & Data Interactions table header"
-assert_body_line "$FILE" '^\| # \| Criterion \| Source \|$' "Missing Feature-Level Acceptance Criteria table header"
-assert_body_line "$FILE" '^\| Story ID \| Story \| Persona \| Priority \| INVEST Notes \| Depends On \|$' "Missing Proposed User Story Breakdown table header"
-assert_body_line "$FILE" '^\| Type \| Item \| Direction \| Source \|$' "Missing Dependencies table header"
+assert_exact_headings "$FILE" 2 "${LOCALE_H2[@]}"
+assert_exact_headings "$FILE" 3 "${LOCALE_H3[@]}"
+assert_body_line "$FILE" "$LOCALE_TABLE_PERSONAS" "$LOCALE_TABLE_PERSONAS_MSG"
+assert_body_line "$FILE" "$LOCALE_TABLE_RULES" "$LOCALE_TABLE_RULES_MSG"
+assert_body_line "$FILE" "$LOCALE_TABLE_ENTITIES" "$LOCALE_TABLE_ENTITIES_MSG"
+assert_body_line "$FILE" "$LOCALE_TABLE_CRITERIA" "$LOCALE_TABLE_CRITERIA_MSG"
+assert_body_line "$FILE" "$LOCALE_TABLE_STORIES" "$LOCALE_TABLE_STORIES_MSG"
+assert_body_line "$FILE" "$LOCALE_TABLE_DEPS" "$LOCALE_TABLE_DEPS_MSG"
 
 echo "OK: feature-detail structure matches template for $FILE"

@@ -15,26 +15,19 @@ assert_frontmatter_line "$FILE" '^hierarchy_level: Strategic$' "Frontmatter must
 assert_frontmatter_line "$FILE" '^generated:' "Missing frontmatter field: generated"
 assert_frontmatter_line "$FILE" '^sources_read:' "Missing frontmatter field: sources_read"
 
-assert_exact_headings "$FILE" 2 \
-  "## Executive Summary" \
-  "## Business Context" \
-  "## Goals & Objectives" \
-  "## Scope" \
-  "## Key Stakeholders" \
-  "## Success Metrics" \
-  "## Timeline & Milestones" \
-  "## Risks & Dependencies" \
-  "## Open Questions" \
-  "## Sources"
+LANG_CODE="$(frontmatter_field "$FILE" language)"
+LANG_CODE="${LANG_CODE:-en}"
+LOCALE_FILE="$SCRIPT_DIR/../locales/${LANG_CODE}.sh"
+[[ -f "$LOCALE_FILE" ]] || LOCALE_FILE="$SCRIPT_DIR/../locales/en.sh"
+# shellcheck source=/dev/null
+source "$LOCALE_FILE"
 
-assert_exact_headings "$FILE" 3 \
-  "### In scope" \
-  "### Out of scope"
-
-assert_body_line "$FILE" '^\| # \| Objective \| Expected Outcome \|$' "Missing Goals & Objectives table header"
-assert_body_line "$FILE" '^\| Stakeholder \| Role / Interest \|$' "Missing Key Stakeholders table header"
-assert_body_line "$FILE" '^\| Metric \| Target \| Source \|$' "Missing Success Metrics table header"
-assert_body_line "$FILE" '^\| Milestone \| Target Date \| Notes \|$' "Missing Timeline & Milestones table header"
-assert_body_line "$FILE" '^\| # \| Risk / Dependency \| Likelihood \| Impact \| Mitigation \|$' "Missing Risks & Dependencies table header"
+assert_exact_headings "$FILE" 2 "${LOCALE_H2[@]}"
+assert_exact_headings "$FILE" 3 "${LOCALE_H3[@]}"
+assert_body_line "$FILE" "$LOCALE_TABLE_GOALS" "$LOCALE_TABLE_GOALS_MSG"
+assert_body_line "$FILE" "$LOCALE_TABLE_STAKEHOLDERS" "$LOCALE_TABLE_STAKEHOLDERS_MSG"
+assert_body_line "$FILE" "$LOCALE_TABLE_METRICS" "$LOCALE_TABLE_METRICS_MSG"
+assert_body_line "$FILE" "$LOCALE_TABLE_TIMELINE" "$LOCALE_TABLE_TIMELINE_MSG"
+assert_body_line "$FILE" "$LOCALE_TABLE_RISKS" "$LOCALE_TABLE_RISKS_MSG"
 
 echo "OK: brief structure matches template for $FILE"

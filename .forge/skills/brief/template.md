@@ -5,6 +5,7 @@ subtype: brief
 work_item_type: {WORK_ITEM_TYPE}
 hierarchy_level: Strategic
 generated: YYYY-MM-DD
+language: {LANGUAGE}
 sources_read: N
 ---
 

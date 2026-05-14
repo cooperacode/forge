@@ -16,35 +16,26 @@ assert_frontmatter_line "$FILE" '^hierarchy_level:' "Missing frontmatter field: 
 assert_frontmatter_line "$FILE" '^generated:' "Missing frontmatter field: generated"
 assert_frontmatter_line "$FILE" '^sources_read:' "Missing frontmatter field: sources_read"
 
-MODE="$(frontmatter_text "$FILE" | sed -n 's/^mode: //p' | head -n1)"
+MODE="$(frontmatter_field "$FILE" mode)"
+LANG_CODE="$(frontmatter_field "$FILE" language)"
+LANG_CODE="${LANG_CODE:-en}"
+LOCALE_FILE="$SCRIPT_DIR/../locales/${LANG_CODE}.sh"
+[[ -f "$LOCALE_FILE" ]] || LOCALE_FILE="$SCRIPT_DIR/../locales/en.sh"
+# shellcheck source=/dev/null
+source "$LOCALE_FILE"
 
 case "$MODE" in
   constraints)
-    assert_exact_headings "$FILE" 2 \
-      "## Context" \
-      "## Non-Functional Requirements" \
-      "## Architectural Constraints" \
-      "## Compliance & Regulatory Obligations" \
-      "## Exclusions" \
-      "## Open Questions" \
-      "## Sources"
-    assert_body_line "$FILE" '^\| ID \| Category \| Requirement \| Priority \| Source \|$' "Missing Non-Functional Requirements table header"
-    assert_body_line "$FILE" '^\| ID \| Constraint \| Rationale \| Source \|$' "Missing Architectural Constraints table header"
-    assert_body_line "$FILE" '^\| ID \| Obligation \| Regulatory Body / Standard \| Source \|$' "Missing Compliance table header"
+    assert_exact_headings "$FILE" 2 "${LOCALE_CONSTRAINTS_H2[@]}"
+    assert_body_line "$FILE" "$LOCALE_CONSTRAINTS_TABLE_NFR" "$LOCALE_CONSTRAINTS_TABLE_NFR_MSG"
+    assert_body_line "$FILE" "$LOCALE_CONSTRAINTS_TABLE_ARCH" "$LOCALE_CONSTRAINTS_TABLE_ARCH_MSG"
+    assert_body_line "$FILE" "$LOCALE_CONSTRAINTS_TABLE_COMP" "$LOCALE_CONSTRAINTS_TABLE_COMP_MSG"
     ;;
   functional)
-    assert_exact_headings "$FILE" 2 \
-      "## Context" \
-      "## Functional Requirements" \
-      "## Integration Requirements" \
-      "## Data Requirements" \
-      "## Exclusions" \
-      "## Gaps" \
-      "## Open Questions" \
-      "## Sources"
-    assert_body_line "$FILE" '^\| ID \| Title \| Description \| Acceptance Criteria \| Priority \| Source \|$' "Missing Functional Requirements table header"
-    assert_body_line "$FILE" '^\| ID \| Source System \| Target System \| Interaction \| Source \|$' "Missing Integration Requirements table header"
-    assert_body_line "$FILE" '^\| ID \| Data Element \| Format \| Volume / Frequency \| Source \|$' "Missing Data Requirements table header"
+    assert_exact_headings "$FILE" 2 "${LOCALE_FUNCTIONAL_H2[@]}"
+    assert_body_line "$FILE" "$LOCALE_FUNCTIONAL_TABLE_FR" "$LOCALE_FUNCTIONAL_TABLE_FR_MSG"
+    assert_body_line "$FILE" "$LOCALE_FUNCTIONAL_TABLE_IR" "$LOCALE_FUNCTIONAL_TABLE_IR_MSG"
+    assert_body_line "$FILE" "$LOCALE_FUNCTIONAL_TABLE_DR" "$LOCALE_FUNCTIONAL_TABLE_DR_MSG"
     ;;
   *)
     fail "Unsupported requirements mode: $MODE" 4

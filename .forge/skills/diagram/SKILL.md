@@ -209,7 +209,7 @@ All artifact content, headings, and messages will be written in this language.
 
 Create `{OUTPUT_PATH}artifacts/diagrams/{DIAGRAM_TYPE}.md` — the filename is the `DIAGRAM_TYPE` slug exactly (e.g., `c4-context.md`, `process-flow.md`, `sequence.md`).
 
-**Read the template file before writing anything.** Use the Read tool to open `.forge/skills/diagram/template.md`. Locate the section whose heading matches `{DIAGRAM_TYPE}` (e.g., `## c4-context`, `## process-flow`, `## sequence`). Copy that section's fenced code block verbatim as the output file scaffold — do not reconstruct it from memory or training data. Replace only the placeholders (`{WORK_ITEM_TITLE}`, `YYYY-MM-DD`, element stubs) with actual content.
+**Read the template file before writing anything.** If `.forge/skills/diagram/locales/{LANGUAGE}/template.md` exists (e.g., `locales/pt-BR/template.md` when `{LANGUAGE}` is `pt-BR`), open that; otherwise open `.forge/skills/diagram/template.md`. Locate the section whose heading matches `{DIAGRAM_TYPE}` (e.g., `## c4-context`, `## process-flow`, `## sequence`). Copy that section's fenced code block verbatim as the output file scaffold — do not reconstruct it from memory or training data. Replace only the placeholders (`{WORK_ITEM_TITLE}`, `YYYY-MM-DD`, element stubs) with actual content.
 
 **Copy the Mermaid diagram type keyword exactly as it appears in the template** — `flowchart TB`, `flowchart TD`, `flowchart LR`, `sequenceDiagram`, or `stateDiagram-v2`. Do not change it. Do not substitute `C4Context`, `C4Container`, or `C4Component` — those Mermaid types are forbidden regardless of diagram type.
 
@@ -309,6 +309,6 @@ Anything you want me to revise?
 - **Never skip Step 5.** Language must be locked before any file is written — lock it once per skill invocation (not once per pass).
 - **Technology labels come only from the wiki.** If the wiki does not state the technology, use `"not stated"` in the diagram element description.
 - **One artifact file per diagram type.** Strategic generates two files (`c4-context.md` and `c4-container.md`) in a single skill run.
-- **Always read the template file at Step 6.** Use the Read tool on `.forge/skills/diagram/template.md` — never reconstruct the template from memory. The scaffold must come from the file.
+- **Always read the template file at Step 6.** Use `locales/{LANGUAGE}/template.md` if it exists; otherwise use the Read tool on `.forge/skills/diagram/template.md` — never reconstruct the template from memory. The scaffold must come from the file.
 - **Output filename is the `DIAGRAM_TYPE` slug.** Never use generic names like `diagram.md`, `diagrama.md`, or any name not derived from the slug mapping table in Step 2.
 - **ADR decisions are binding.** If ADR files exist at `{OUTPUT_PATH}artifacts/adr/`, the diagram must reflect those decisions. Technology choices or boundaries that contradict a committed ADR are forbidden.
